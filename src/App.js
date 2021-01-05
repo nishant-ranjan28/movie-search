@@ -1,28 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 import MovieList from "./components/MovieList";
+import MovieListHeading from "./components/MovieListHeading";
+import SearchBox from "./components/SearchBox";
+import AddFavorites from "./components/AddFavorites"
 
 function App() {
-  const [movies, setMovies] = useState([
-    {
-      Title: "Guardians of the Galaxy Vol. 2",
-      Year: "2017",
-      imdbID: "tt3896198",
-      Type: "movie",
-      Poster:
-        "https://m.media-amazon.com/images/M/MV5BNjM0NTc0NzItM2FlYS00YzEwLWE0YmUtNTA2ZWIzODc2OTgxXkEyXkFqcGdeQXVyNTgwNzIyNzg@._V1_SX300.jpg",
-    },
-    {
-      Title: "Star Wars: Episode VI - Return of the Jedi",
-      Year: "1983",
-      imdbID: "tt0086190",
-      Type: "movie",
-      Poster:
-        "https://m.media-amazon.com/images/M/MV5BOWZlMjFiYzgtMTUzNC00Y2IzLTk1NTMtZmNhMTczNTk0ODk1XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_SX300.jpg",
-    },
-  ]);
+  const [movies, setMovies] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+
+  const getMovieList = async () => {
+    const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=30d9191f`;
+
+    const response = await fetch(url);
+    const responseJson = await response.json();
+
+    if (responseJson.Search) {
+      setMovies(responseJson.Search);
+    }
+  };
+
+  useEffect(() => {
+    getMovieList(searchValue);
+  }, [searchValue]);
   return (
-    <div>
-      <MovieList movies={movies} />
+    <div className='container-fluid movie-app'>
+      <div className='row d-flex align-items-center mt-4 mb-4'>
+        <MovieListHeading heading='Movies' />
+        <SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />
+      </div>
+
+      <div className='row'>
+        <MovieList movies={movies} favotiteComponent={AddFavorites}/>
+      </div>
     </div>
   );
 }
