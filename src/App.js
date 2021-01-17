@@ -46,6 +46,7 @@ function App() {
       (favorite) => favorite.imdbID !== movie.imdbID
     );
     setFavorites(newFavoriteList);
+    localStorage.setItem("react-movie-app-favorites", JSON.stringify(newFavoriteList));
   };
 
   return (
