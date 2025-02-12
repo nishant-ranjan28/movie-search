@@ -1,27 +1,43 @@
 import React from "react";
 
-const MovieList = (props) => {
-  const FavotiteComponent = props.favotiteComponent;
-  
+const MovieList = ({
+  movies,
+  handleFavoritesClick,
+  favoriteComponent,
+  handleMovieClick,
+}) => {
+  const FavoriteComponent = favoriteComponent;
+
   return (
     <>
-      {
-        props.movies.map((movie, index) => (
-          <div
-            className='image-container d-flex justify-content-start m-3'
-            key={index}
+      {movies.map((movie, index) => (
+        <div
+          className="image-container d-flex justify-content-start m-3"
+          key={index}
+        >
+          <img src={movie.Poster} alt="movie"></img>
+          <button
+            className="favorite-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFavoritesClick(movie);
+            }}
           >
-            <img src={movie.Poster} alt='movie' />
-            <div
-              onClick={() => props.handleFavoritesClick(movie)}
-              className='overlay d-flex align-items-center justify-content'
-            >
-              <FavotiteComponent />
-            </div>
-          </div>
-        ))
-      }
+            <FavoriteComponent />
+          </button>
+          <button
+            className="btn btn-primary show-details-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleMovieClick(movie.imdbID);
+            }}
+          >
+            Show Details
+          </button>
+        </div>
+      ))}
     </>
   );
 };
+
 export default MovieList;
