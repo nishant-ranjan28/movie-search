@@ -10,26 +10,75 @@ body {
 
 .image-container {
   position: relative;
-  transition: transform 0.2s;
+  width: 200px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Ensure the button is at the bottom */
 }
 
-.image-container:hover {
-  cursor: pointer;
-  transform: scale(1.1);
-}
-
-.image-container:hover .overlay {
-  opacity: 1;
+.image-container img {
+  width: 100%;
+  height: 250px; /* Set a fixed height for the images */
+  object-fit: cover; /* Ensure the image covers the container */
 }
 
 .overlay {
   position: absolute;
-  background: rgba(0, 0, 0, 0.8);
-  width: 100%;
-  transition: 0.5s ease;
-  opacity: 0;
+  top: 0;
   bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   font-size: 20px;
   padding: 20px;
   text-align: center;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.favorite-button:hover {
+  background-color: #cc0000;
+}
+
+.movie-details {
+  background-color: #222;
+  color: #fff;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.movie-details img {
+  width: 200px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.show-details-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 10px; /* Ensure some space at the bottom */
+  align-self: center; /* Center the button horizontally */
+}
+
+.show-details-button:hover {
+  background-color: #0056b3;
 }
