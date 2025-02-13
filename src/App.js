@@ -13,31 +13,48 @@ function App() {
   const [showModal, setShowModal] = useState(false); // State for modal visibility
 
   const getMovieList = useCallback(async () => {
-    const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=71109bf1`;
-    const response = await fetch(url);
-    const responseJson = await response.json();
+    try {
+      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=71109bf1`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const responseJson = await response.json();
 
-    if (responseJson.Search) {
-      const moviesWithRatings = await Promise.all(
-        responseJson.Search.map(async (movie) => {
-          const detailsUrl = `http://www.omdbapi.com/?i=${movie.imdbID}&apikey=71109bf1`;
-          const detailsResponse = await fetch(detailsUrl);
-          const detailsJson = await detailsResponse.json();
-          return { ...movie, imdbRating: detailsJson.imdbRating };
-        })
-      );
-      setMovies(moviesWithRatings);
+      if (responseJson.Search) {
+        const moviesWithRatings = await Promise.all(
+          responseJson.Search.map(async (movie) => {
+            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=71109bf1`;
+            const detailsResponse = await fetch(detailsUrl);
+            if (!detailsResponse.ok) {
+              throw new Error(`HTTP error! status: ${detailsResponse.status}`);
+            }
+            const detailsJson = await detailsResponse.json();
+            return { ...movie, imdbRating: detailsJson.imdbRating };
+          })
+        );
+        setMovies(moviesWithRatings);
+      }
+    } catch (error) {
+      console.error("Failed to fetch movie list:", error);
     }
   }, [searchValue]);
 
   const getMovieDetails = async (imdbID) => {
-    const url = `http://www.omdbapi.com/?i=${imdbID}&apikey=71109bf1`;
-    const response = await fetch(url);
-    const responseJson = await response.json();
+    try {
+      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=71109bf1`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const responseJson = await response.json();
 
-    if (responseJson) {
-      setSelectedMovie(responseJson);
-      setShowModal(true); // Show the modal when movie details are fetched
+      if (responseJson) {
+        setSelectedMovie(responseJson);
+        setShowModal(true); // Show the modal when movie details are fetched
+      }
+    } catch (error) {
+      console.error("Failed to fetch movie details:", error);
     }
   };
 
