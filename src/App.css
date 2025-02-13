@@ -9,8 +9,9 @@ body {
 }
 
 .movie-app > .row {
-  overflow: auto;
-  flex-wrap: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .image-container {
@@ -20,7 +21,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  margin-right: 10px;
+  margin: 10px;
   transition: transform 0.3s;
   cursor: pointer; /* Make the movie item cursor a pointer */
 }
