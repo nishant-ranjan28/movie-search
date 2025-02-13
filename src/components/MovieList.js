@@ -9,6 +9,7 @@ const MovieList = ({ movies, handleMovieClick }) => {
           key={index}
           onClick={() => handleMovieClick(movie.imdbID)}
         >
+          <div className="rating-badge">{movie.imdbRating}</div>
           <img src={movie.Poster} alt="movie"></img>
         </div>
       ))}

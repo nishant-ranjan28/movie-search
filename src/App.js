@@ -18,7 +18,15 @@ function App() {
     const responseJson = await response.json();
 
     if (responseJson.Search) {
-      setMovies(responseJson.Search);
+      const moviesWithRatings = await Promise.all(
+        responseJson.Search.map(async (movie) => {
+          const detailsUrl = `http://www.omdbapi.com/?i=${movie.imdbID}&apikey=71109bf1`;
+          const detailsResponse = await fetch(detailsUrl);
+          const detailsJson = await detailsResponse.json();
+          return { ...movie, imdbRating: detailsJson.imdbRating };
+        })
+      );
+      setMovies(moviesWithRatings);
     }
   }, [searchValue]);
 
