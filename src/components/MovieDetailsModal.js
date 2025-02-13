@@ -3,11 +3,11 @@ import { Modal, Button } from "react-bootstrap";
 
 const MovieDetailsModal = ({ show, handleClose, movie }) => {
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>{movie.Title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="movie-details-modal-body">
         <img src={movie.Poster} alt="movie poster" style={{ width: "100%" }} />
         <p>
           <strong>Year:</strong> {movie.Year}

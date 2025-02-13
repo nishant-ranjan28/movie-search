@@ -1,6 +1,11 @@
 body {
   background-color: #141414;
   color: #ffffff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.movie-app {
+  padding: 20px;
 }
 
 .movie-app > .row {
@@ -14,13 +19,21 @@ body {
   height: 300px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Ensure the button is at the bottom */
+  justify-content: flex-end;
+  margin-right: 10px;
+  transition: transform 0.3s;
+  cursor: pointer; /* Make the movie item cursor a pointer */
+}
+
+.image-container:hover {
+  transform: scale(1.1);
 }
 
 .image-container img {
   width: 100%;
-  height: 250px; /* Set a fixed height for the images */
-  object-fit: cover; /* Ensure the image covers the container */
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .overlay {
@@ -41,7 +54,7 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #ff0000;
+  background-color: rgba(255, 0, 0, 0.8);
   color: white;
   border: none;
   padding: 5px 10px;
@@ -51,7 +64,7 @@ body {
 }
 
 .favorite-button:hover {
-  background-color: #cc0000;
+  background-color: rgba(255, 0, 0, 1);
 }
 
 .movie-details {
@@ -69,16 +82,43 @@ body {
 }
 
 .show-details-button {
-  background-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.8);
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
   border-radius: 5px;
-  margin-bottom: 10px; /* Ensure some space at the bottom */
-  align-self: center; /* Center the button horizontally */
+  margin-bottom: 10px;
+  align-self: center;
+  transition: background-color 0.3s;
 }
 
 .show-details-button:hover {
-  background-color: #0056b3;
+  background-color: rgba(0, 123, 255, 1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+}
+
+input.form-control {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+input.form-control::placeholder {
+  color: #bbb;
+}
+
+/* Add the custom class for the modal body */
+.movie-details-modal-body {
+  color: black;
 }
