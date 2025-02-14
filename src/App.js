@@ -62,11 +62,35 @@ function App() {
       const responseJson = await response.json();
 
       if (responseJson) {
-        setSelectedMovie(responseJson);
+        // Fetch the trailer URL from YouTube
+        const trailerUrl = await fetchTrailerUrl(responseJson.Title);
+        setSelectedMovie({ ...responseJson, trailerUrl });
         setShowModal(true);
       }
     } catch (error) {
       console.error("Failed to fetch movie details:", error);
+    }
+  };
+
+  const fetchTrailerUrl = async (title) => {
+    try {
+      const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
+      if (!apiKey) {
+        throw new Error("YouTube API key is not defined");
+      }
+      const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
+        title + " trailer"
+      )}&key=${apiKey}`;
+      const response = await fetch(searchUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const videoId = data.items[0]?.id?.videoId;
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    } catch (error) {
+      console.error("Failed to fetch trailer URL:", error);
+      return null;
     }
   };
 
