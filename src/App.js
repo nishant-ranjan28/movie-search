@@ -30,7 +30,16 @@ function App() {
               throw new Error(`HTTP error! status: ${detailsResponse.status}`);
             }
             const detailsJson = await detailsResponse.json();
-            return { ...movie, imdbRating: detailsJson.imdbRating };
+            const rottenTomatoesRating = detailsJson.Ratings.find(
+              (rating) => rating.Source === "Rotten Tomatoes"
+            );
+            return {
+              ...movie,
+              imdbRating: detailsJson.imdbRating,
+              rottenTomatoesRating: rottenTomatoesRating
+                ? rottenTomatoesRating.Value
+                : "N/A",
+            };
           })
         );
         setMovies(moviesWithRatings);
