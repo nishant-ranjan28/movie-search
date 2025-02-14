@@ -76,6 +76,10 @@ function App() {
   const fetchTrailerUrl = async (title) => {
     try {
       const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
+      console.log("YouTube API Key:", apiKey); 
+      if (!apiKey) {
+        throw new Error("YouTube API key is not defined");
+      }
       const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
         title + " trailer"
       )}&key=${apiKey}`;
