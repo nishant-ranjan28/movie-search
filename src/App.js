@@ -64,7 +64,6 @@ function App() {
       if (responseJson) {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        console.log("Fetched trailerUrl:", trailerUrl); // Add this line
         setSelectedMovie({ ...responseJson, trailerUrl });
         setShowModal(true);
       }
@@ -76,7 +75,6 @@ function App() {
   const fetchTrailerUrl = async (title) => {
     try {
       const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
-      console.log("YouTube API Key:", apiKey); 
       if (!apiKey) {
         throw new Error("YouTube API key is not defined");
       }
@@ -88,9 +86,7 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("YouTube API response:", data); // Add this line
       const videoId = data.items[0]?.id?.videoId;
-      console.log("Fetched videoId:", videoId); // Add this line
       return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
     } catch (error) {
       console.error("Failed to fetch trailer URL:", error);
