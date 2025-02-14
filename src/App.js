@@ -75,7 +75,7 @@ function App() {
 
   const fetchTrailerUrl = async (title) => {
     try {
-      const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY; // Use the environment variable
+      const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
       const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
         title + " trailer"
       )}&key=${apiKey}`;
