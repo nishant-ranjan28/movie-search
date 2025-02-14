@@ -16,6 +16,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark");
   const navigate = useNavigate();
+  const { movieName } = useParams();
 
   const getMovieList = useCallback(async () => {
     try {
@@ -98,9 +99,36 @@ function App() {
     }
   };
 
+  const fetchMovieByName = useCallback(async (name) => {
+    try {
+      const url = `https://www.omdbapi.com/?t=${name}&apikey=71109bf1`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const responseJson = await response.json();
+
+      if (responseJson) {
+        // Fetch the trailer URL from YouTube
+        const trailerUrl = await fetchTrailerUrl(responseJson.Title);
+        setSelectedMovie({ ...responseJson, trailerUrl });
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch movie details:", error);
+    }
+  }, []);
+
   useEffect(() => {
     getMovieList();
   }, [getMovieList]);
+
+  useEffect(() => {
+    if (movieName) {
+      const formattedName = movieName.replace(/-/g, " ");
+      fetchMovieByName(formattedName);
+    }
+  }, [movieName, fetchMovieByName]);
 
   const handleCloseModal = () => {
     setShowModal(false);
