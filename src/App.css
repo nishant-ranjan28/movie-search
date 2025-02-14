@@ -1,17 +1,40 @@
 body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
   background-color: #141414;
   color: #ffffff;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .movie-app {
   padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.movie-app.dark {
+  background-color: #141414;
+  color: #ffffff;
+}
+
+.movie-app.light {
+  background-color: #ffffff;
+  color: #000000;
 }
 
 .movie-app > .row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.search-theme-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
 }
 
 .image-container {
@@ -23,7 +46,7 @@ body {
   justify-content: flex-end;
   margin: 10px;
   transition: transform 0.3s;
-  cursor: pointer; /* Make the movie item cursor a pointer */
+  cursor: pointer;
 }
 
 .image-container:hover {
@@ -54,6 +77,11 @@ body {
 
 .rotten-tomatoes-rating {
   top: 10px;
+  right: 10px;
+}
+
+.google-reviews {
+  bottom: 10px;
   right: 10px;
 }
 
@@ -135,11 +163,70 @@ input.form-control {
   border-radius: 5px;
 }
 
+input.form-control.light {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
 input.form-control::placeholder {
   color: #bbb;
 }
 
-/* Add the custom class for the modal body */
 .movie-details-modal-body {
   color: black;
+}
+
+.theme-toggle-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #141414;
+}
+
+.navbar.light {
+  background-color: #ffffff;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+.search-box.light {
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  color: inherit;
+  outline: none;
+  padding: 5px;
+  width: 200px;
+}
+
+.search-box input::placeholder {
+  color: #bbb;
 }

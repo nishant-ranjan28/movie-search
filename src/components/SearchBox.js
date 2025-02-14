@@ -1,12 +1,12 @@
 import React from "react";
 
-const SearchBox = (props) => {
+const SearchBox = ({ searchValue, setSearchValue, theme }) => {
   return (
-    <div className="col col-sm-4">
+    <div className={`search-box ${theme}`}>
       <input
-        className="form-control"
-        value={props.value}
-        onChange={(event) => props.setSearchValue(event.target.value)}
+        className={`form-control ${theme}`}
+        value={searchValue}
+        onChange={(event) => setSearchValue(event.target.value)}
         placeholder="Search for a movie..."
       ></input>
     </div>
