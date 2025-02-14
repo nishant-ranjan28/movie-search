@@ -4,16 +4,16 @@ import "./App.css";
 import MovieList from "./components/MovieList";
 import MovieListHeading from "./components/MovieListHeading";
 import SearchBox from "./components/SearchBox";
-import MovieDetailsModal from "./components/MovieDetailsModal"; // Import the new component
+import MovieDetailsModal from "./components/MovieDetailsModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [movies, setMovies] = useState([]);
   const [searchValue, setSearchValue] = useState("avengers");
-  const [selectedMovie, setSelectedMovie] = useState(null); // State for selected movie details
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [theme, setTheme] = useState("dark"); // State for theme
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [theme, setTheme] = useState("dark");
 
   const getMovieList = useCallback(async () => {
     try {
@@ -63,7 +63,7 @@ function App() {
 
       if (responseJson) {
         setSelectedMovie(responseJson);
-        setShowModal(true); // Show the modal when movie details are fetched
+        setShowModal(true);
       }
     } catch (error) {
       console.error("Failed to fetch movie details:", error);
@@ -97,10 +97,7 @@ function App() {
       </div>
 
       <div className="row">
-        <MovieList
-          movies={movies}
-          handleMovieClick={getMovieDetails} // Pass the click handler
-        />
+        <MovieList movies={movies} handleMovieClick={getMovieDetails} />
       </div>
 
       {selectedMovie && (

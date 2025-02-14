@@ -4,6 +4,8 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
+  background-color: #141414;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -47,7 +49,7 @@ body {
   justify-content: flex-end;
   margin: 10px;
   transition: transform 0.3s;
-  cursor: pointer; /* Make the movie item cursor a pointer */
+  cursor: pointer;
 }
 
 .image-container:hover {
@@ -167,19 +169,17 @@ input.form-control {
 input.form-control.light {
   background-color: #fff;
   color: #000;
-  border: 1px solid #ccc; /* Light border for light theme */
+  border: 1px solid #ccc;
 }
 
 input.form-control::placeholder {
   color: #bbb;
 }
 
-/* Add the custom class for the modal body */
 .movie-details-modal-body {
   color: black;
 }
 
-/* Style for the theme toggle button */
 .theme-toggle-button {
   background: none;
   border: none;

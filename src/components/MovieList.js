@@ -2,7 +2,7 @@ import React from "react";
 
 const MovieList = ({ movies, handleMovieClick }) => {
   return (
-    <>
+    <div className="d-flex flex-wrap justify-content-center">
       {movies.map((movie, index) => (
         <div
           className="image-container d-flex justify-content-start m-3"
@@ -16,7 +16,7 @@ const MovieList = ({ movies, handleMovieClick }) => {
           <img src={movie.Poster} alt="movie"></img>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
+import "./MovieDetailsModal.css";
 
 const MovieDetailsModal = ({ show, handleClose, movie }) => {
   return (
