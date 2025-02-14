@@ -82,9 +82,9 @@ function App() {
 
   return (
     <div className={`container-fluid movie-app ${theme}`}>
-      <div className="row d-flex align-items-center mt-4 mb-4 justify-content-between">
+      <div className={`navbar ${theme}`}>
         <MovieListHeading heading="Movies" />
-        <div className="d-flex align-items-center search-theme-container">
+        <div className={`search-theme-container ${theme}`}>
           <SearchBox
             searchValue={searchValue}
             setSearchValue={setSearchValue}

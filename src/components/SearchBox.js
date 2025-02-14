@@ -2,7 +2,7 @@ import React from "react";
 
 const SearchBox = ({ searchValue, setSearchValue, theme }) => {
   return (
-    <div className="col col-sm-4">
+    <div className={`search-box ${theme}`}>
       <input
         className={`form-control ${theme}`}
         value={searchValue}
