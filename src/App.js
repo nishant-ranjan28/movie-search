@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import MovieList from "./components/MovieList";
@@ -14,6 +15,7 @@ function App() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark");
+  const navigate = useNavigate();
 
   const getMovieList = useCallback(async () => {
     try {
@@ -66,6 +68,8 @@ function App() {
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
         setSelectedMovie({ ...responseJson, trailerUrl });
         setShowModal(true);
+        const movieName = responseJson.Title.toLowerCase().replace(/ /g, "-");
+        navigate(`/movie/${movieName}`);
       }
     } catch (error) {
       console.error("Failed to fetch movie details:", error);
@@ -98,7 +102,10 @@ function App() {
     getMovieList();
   }, [getMovieList]);
 
-  const handleCloseModal = () => setShowModal(false);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    navigate("/");
+  };
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "dark" ? "light" : "dark"));
@@ -124,13 +131,20 @@ function App() {
         <MovieList movies={movies} handleMovieClick={getMovieDetails} />
       </div>
 
-      {selectedMovie && (
-        <MovieDetailsModal
-          show={showModal}
-          handleClose={handleCloseModal}
-          movie={selectedMovie}
+      <Routes>
+        <Route
+          path="/movie/:movieName"
+          element={
+            selectedMovie && (
+              <MovieDetailsModal
+                show={showModal}
+                handleClose={handleCloseModal}
+                movie={selectedMovie}
+              />
+            )
+          }
         />
-      )}
+      </Routes>
     </div>
   );
 }
