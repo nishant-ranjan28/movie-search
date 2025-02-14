@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import "./MovieDetailsModal.css";
+import "../App.css";
 
 const MovieDetailsModal = ({ show, handleClose, movie }) => {
   return (
@@ -25,6 +25,19 @@ const MovieDetailsModal = ({ show, handleClose, movie }) => {
         <p>
           <strong>Plot:</strong> {movie.Plot}
         </p>
+        {movie.trailerUrl && (
+          <div className="trailer-container">
+            <iframe
+              width="100%"
+              height="315"
+              src={movie.trailerUrl}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

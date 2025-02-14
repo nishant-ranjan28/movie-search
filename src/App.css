@@ -230,3 +230,7 @@ input.form-control::placeholder {
 .search-box input::placeholder {
   color: #bbb;
 }
+
+.trailer-container {
+  margin-top: 20px;
+}
