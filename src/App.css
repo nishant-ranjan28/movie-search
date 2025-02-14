@@ -1,17 +1,41 @@
 body {
-  background-color: #141414;
-  color: #ffffff;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .movie-app {
   padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.movie-app.dark {
+  background-color: #141414;
+  color: #ffffff;
+}
+
+.movie-app.light {
+  background-color: #ffffff;
+  color: #000000;
 }
 
 .movie-app > .row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.search-theme-container {
+  display: flex;
+  align-items: center;
 }
 
 .image-container {
@@ -54,6 +78,11 @@ body {
 
 .rotten-tomatoes-rating {
   top: 10px;
+  right: 10px;
+}
+
+.google-reviews {
+  bottom: 10px;
   right: 10px;
 }
 
@@ -135,6 +164,12 @@ input.form-control {
   border-radius: 5px;
 }
 
+input.form-control.light {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc; /* Light border for light theme */
+}
+
 input.form-control::placeholder {
   color: #bbb;
 }
@@ -142,4 +177,16 @@ input.form-control::placeholder {
 /* Add the custom class for the modal body */
 .movie-details-modal-body {
   color: black;
+}
+
+/* Style for the theme toggle button */
+.theme-toggle-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
 }
