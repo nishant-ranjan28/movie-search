@@ -20,7 +20,7 @@ function App() {
 
   const getMovieList = useCallback(async () => {
     try {
-      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
+      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`; //71109bf1
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -30,7 +30,7 @@ function App() {
       if (responseJson.Search) {
         const moviesWithRatings = await Promise.all(
           responseJson.Search.map(async (movie) => {
-            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`;
+            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`; //71109bf1
             const detailsResponse = await fetch(detailsUrl);
             if (!detailsResponse.ok) {
               throw new Error(`HTTP error! status: ${detailsResponse.status}`);
@@ -57,7 +57,7 @@ function App() {
 
   const getMovieDetails = async (imdbID) => {
     try {
-      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`;
+      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`; //71109bf1
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
