@@ -16,11 +16,11 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark");
   const navigate = useNavigate();
-  const { movieName } = useParams();
+  const { imdbID } = useParams();
 
   const getMovieList = useCallback(async () => {
     try {
-      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`; //71109bf1
+      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -30,7 +30,7 @@ function App() {
       if (responseJson.Search) {
         const moviesWithRatings = await Promise.all(
           responseJson.Search.map(async (movie) => {
-            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`; //71109bf1
+            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`;
             const detailsResponse = await fetch(detailsUrl);
             if (!detailsResponse.ok) {
               throw new Error(`HTTP error! status: ${detailsResponse.status}`);
@@ -57,7 +57,7 @@ function App() {
 
   const getMovieDetails = async (imdbID) => {
     try {
-      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`; //71109bf1
+      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -67,10 +67,12 @@ function App() {
       if (responseJson) {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        setSelectedMovie({ ...responseJson, trailerUrl });
+        const streamingPlatform = await fetchStreamingPlatform(
+          responseJson.Title
+        );
+        setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
         setShowModal(true);
-        const movieName = responseJson.Title.toLowerCase().replace(/ /g, "-");
-        navigate(`/movie/${movieName}`);
+        navigate(`/movie/${imdbID}`);
       }
     } catch (error) {
       console.error("Failed to fetch movie details:", error);
@@ -111,7 +113,10 @@ function App() {
       if (responseJson) {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        setSelectedMovie({ ...responseJson, trailerUrl });
+        const streamingPlatform = await fetchStreamingPlatform(
+          responseJson.Title
+        );
+        setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
         setShowModal(true);
       }
     } catch (error) {
@@ -119,16 +124,38 @@ function App() {
     }
   }, []);
 
+  const fetchStreamingPlatform = async (title) => {
+    try {
+      const searchUrl = `https://apis.justwatch.com/content/titles/en_US/popular?query=${encodeURIComponent(title)}`;
+      const response = await fetch(searchUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.items && data.items.length > 0) {
+        const offers = data.items[0].offers || [];
+        const streamingPlatforms = offers
+          .map((offer) => `${offer.provider_id} (${offer.monetization_type})`)
+          .join(", ");
+        return streamingPlatforms ? streamingPlatforms : "Unknown";
+      } else {
+        return "Unknown";
+      }
+    } catch (error) {
+      console.error("Failed to fetch streaming platform:", error);
+      return "Unknown";
+    }
+  };
+
   useEffect(() => {
     getMovieList();
   }, [getMovieList]);
 
   useEffect(() => {
-    if (movieName) {
-      const formattedName = movieName.replace(/-/g, " ");
-      fetchMovieByName(formattedName);
+    if (imdbID) {
+      fetchMovieByName(imdbID);
     }
-  }, [movieName, fetchMovieByName]);
+  }, [imdbID, fetchMovieByName]);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -161,15 +188,13 @@ function App() {
 
       <Routes>
         <Route
-          path="/movie/:movieName"
+          path="/movie/:imdbID"
           element={
-            selectedMovie && (
-              <MovieDetailsModal
-                show={showModal}
-                handleClose={handleCloseModal}
-                movie={selectedMovie}
-              />
-            )
+            <MovieDetailsModal
+              show={showModal}
+              handleClose={handleCloseModal}
+              movie={selectedMovie}
+            />
           }
         />
       </Routes>
