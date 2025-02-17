@@ -11,12 +11,36 @@ import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [movies, setMovies] = useState([]);
-  const [searchValue, setSearchValue] = useState("avengers");
+  const [searchValue, setSearchValue] = useState(""); // Set initial state to an empty string
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark");
   const navigate = useNavigate();
   const { imdbID } = useParams();
+
+  const predefinedMovies = [
+    "Star Wars",
+    "Avengers",
+    "Lord of the Rings",
+    "Star Trek",
+    "Harry Potter",
+    "The Matrix",
+    "Jurassic Park",
+    "Indiana Jones",
+    "Back to the Future",
+    "The Terminator",
+    "Die Hard",
+    "The Godfather",
+    "Pulp Fiction",
+    "The Shawshank Redemption",
+    "Forrest Gump",
+    "The Dark Knight",
+    "Inception",
+    "Interstellar",
+    "The Lion King",
+    "Aladdin",
+    "The Little Mermaid",
+  ];
 
   const getMovieList = useCallback(async () => {
     try {
@@ -148,8 +172,27 @@ function App() {
   };
 
   useEffect(() => {
-    getMovieList();
-  }, [getMovieList]);
+    if (searchValue) {
+      getMovieList();
+    } else {
+      // Fetch details for predefined movies
+      const fetchPredefinedMovies = async () => {
+        const movies = await Promise.all(
+          predefinedMovies.map(async (title) => {
+            const url = `https://www.omdbapi.com/?t=${title}&apikey=17ceb17f`;
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            return responseJson;
+          })
+        );
+        setMovies(movies);
+      };
+      fetchPredefinedMovies();
+    }
+  }, [searchValue, getMovieList]);
 
   useEffect(() => {
     if (imdbID) {

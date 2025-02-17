@@ -206,6 +206,7 @@ input.form-control::placeholder {
 }
 
 .search-box {
+  position: relative;
   display: flex;
   align-items: center;
   background-color: #333;
@@ -229,6 +230,21 @@ input.form-control::placeholder {
 
 .search-box input::placeholder {
   color: #bbb;
+}
+
+.search-box .form-control {
+  flex: 1;
+}
+
+.clear-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.clear-icon:hover {
+  color: #000;
 }
 
 .trailer-container {
