@@ -92,7 +92,7 @@ function App() {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
         const streamingPlatform = await fetchStreamingPlatform(
-          responseJson.Title
+          responseJson.imdbID
         );
         setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
         setShowModal(true);
@@ -138,7 +138,7 @@ function App() {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
         const streamingPlatform = await fetchStreamingPlatform(
-          responseJson.Title
+          responseJson.imdbID
         );
         setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
         setShowModal(true);
@@ -148,18 +148,18 @@ function App() {
     }
   }, []);
 
-  const fetchStreamingPlatform = async (title) => {
+  const fetchStreamingPlatform = async (imdbID) => {
     try {
-      const searchUrl = `https://apis.justwatch.com/content/titles/en_US/popular?query=${encodeURIComponent(title)}`;
+      const apiKey = process.env.REACT_APP_TMDB_API_KEY;
+      const searchUrl = `https://api.themoviedb.org/3/movie/${imdbID}/watch/providers?api_key=${apiKey}`;
       const response = await fetch(searchUrl);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        const offers = data.items[0].offers || [];
-        const streamingPlatforms = offers
-          .map((offer) => `${offer.provider_id} (${offer.monetization_type})`)
+      if (data.results && data.results.US && data.results.US.flatrate) {
+        const streamingPlatforms = data.results.US.flatrate
+          .map((provider) => provider.provider_name)
           .join(", ");
         return streamingPlatforms ? streamingPlatforms : "Unknown";
       } else {
