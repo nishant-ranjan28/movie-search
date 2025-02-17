@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -18,29 +18,32 @@ function App() {
   const navigate = useNavigate();
   const { imdbID } = useParams();
 
-  const predefinedMovies = [
-    "Star Wars",
-    "Avengers",
-    "Lord of the Rings",
-    "Star Trek",
-    "Harry Potter",
-    "The Matrix",
-    "Jurassic Park",
-    "Indiana Jones",
-    "Back to the Future",
-    "The Terminator",
-    "Die Hard",
-    "The Godfather",
-    "Pulp Fiction",
-    "The Shawshank Redemption",
-    "Forrest Gump",
-    "The Dark Knight",
-    "Inception",
-    "Interstellar",
-    "The Lion King",
-    "Aladdin",
-    "The Little Mermaid",
-  ];
+  const predefinedMovies = useMemo(
+    () => [
+      "Star Wars",
+      "Avengers",
+      "Lord of the Rings",
+      "Star Trek",
+      "Harry Potter",
+      "The Matrix",
+      "Jurassic Park",
+      "Indiana Jones",
+      "Back to the Future",
+      "The Terminator",
+      "Die Hard",
+      "The Godfather",
+      "Pulp Fiction",
+      "The Shawshank Redemption",
+      "Forrest Gump",
+      "The Dark Knight",
+      "Inception",
+      "Interstellar",
+      "The Lion King",
+      "Aladdin",
+      "The Little Mermaid",
+    ],
+    []
+  );
 
   const getMovieList = useCallback(async () => {
     try {
@@ -192,7 +195,7 @@ function App() {
       };
       fetchPredefinedMovies();
     }
-  }, [searchValue, getMovieList]);
+  }, [searchValue, getMovieList, predefinedMovies]);
 
   useEffect(() => {
     if (imdbID) {
