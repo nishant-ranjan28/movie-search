@@ -3,6 +3,10 @@ import { Modal, Button } from "react-bootstrap";
 import "../App.css";
 
 const MovieDetailsModal = ({ show, handleClose, movie }) => {
+  if (!movie) {
+    return null; // or you can return a loading spinner or placeholder
+  }
+
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
@@ -24,6 +28,10 @@ const MovieDetailsModal = ({ show, handleClose, movie }) => {
         </p>
         <p>
           <strong>Plot:</strong> {movie.Plot}
+        </p>
+        <p>
+          <strong>Preferred Streaming Platform:</strong>{" "}
+          {movie.streamingPlatform}
         </p>
         {movie.trailerUrl && (
           <div className="trailer-container">

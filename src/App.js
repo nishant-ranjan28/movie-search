@@ -11,16 +11,40 @@ import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [movies, setMovies] = useState([]);
-  const [searchValue, setSearchValue] = useState("avengers");
+  const [searchValue, setSearchValue] = useState(""); // Set initial state to an empty string
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark");
   const navigate = useNavigate();
-  const { movieName } = useParams();
+  const { imdbID } = useParams();
+
+  const predefinedMovies = [
+    "Star Wars",
+    "Avengers",
+    "Lord of the Rings",
+    "Star Trek",
+    "Harry Potter",
+    "The Matrix",
+    "Jurassic Park",
+    "Indiana Jones",
+    "Back to the Future",
+    "The Terminator",
+    "Die Hard",
+    "The Godfather",
+    "Pulp Fiction",
+    "The Shawshank Redemption",
+    "Forrest Gump",
+    "The Dark Knight",
+    "Inception",
+    "Interstellar",
+    "The Lion King",
+    "Aladdin",
+    "The Little Mermaid",
+  ];
 
   const getMovieList = useCallback(async () => {
     try {
-      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`; //71109bf1
+      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -30,7 +54,7 @@ function App() {
       if (responseJson.Search) {
         const moviesWithRatings = await Promise.all(
           responseJson.Search.map(async (movie) => {
-            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`; //71109bf1
+            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`;
             const detailsResponse = await fetch(detailsUrl);
             if (!detailsResponse.ok) {
               throw new Error(`HTTP error! status: ${detailsResponse.status}`);
@@ -57,7 +81,7 @@ function App() {
 
   const getMovieDetails = async (imdbID) => {
     try {
-      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`; //71109bf1
+      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -67,10 +91,12 @@ function App() {
       if (responseJson) {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        setSelectedMovie({ ...responseJson, trailerUrl });
+        const streamingPlatform = await fetchStreamingPlatform(
+          responseJson.imdbID
+        );
+        setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
         setShowModal(true);
-        const movieName = responseJson.Title.toLowerCase().replace(/ /g, "-");
-        navigate(`/movie/${movieName}`);
+        navigate(`/movie/${imdbID}`);
       }
     } catch (error) {
       console.error("Failed to fetch movie details:", error);
@@ -111,7 +137,10 @@ function App() {
       if (responseJson) {
         // Fetch the trailer URL from YouTube
         const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        setSelectedMovie({ ...responseJson, trailerUrl });
+        const streamingPlatform = await fetchStreamingPlatform(
+          responseJson.imdbID
+        );
+        setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
         setShowModal(true);
       }
     } catch (error) {
@@ -119,16 +148,57 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    getMovieList();
-  }, [getMovieList]);
+  const fetchStreamingPlatform = async (imdbID) => {
+    try {
+      const apiKey = process.env.REACT_APP_TMDB_API_KEY;
+      const searchUrl = `https://api.themoviedb.org/3/movie/${imdbID}/watch/providers?api_key=${apiKey}`;
+      const response = await fetch(searchUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.results && data.results.US && data.results.US.flatrate) {
+        const streamingPlatforms = data.results.US.flatrate
+          .map((provider) => provider.provider_name)
+          .join(", ");
+        return streamingPlatforms ? streamingPlatforms : "Unknown";
+      } else {
+        return "Unknown";
+      }
+    } catch (error) {
+      console.error("Failed to fetch streaming platform:", error);
+      return "Unknown";
+    }
+  };
 
   useEffect(() => {
-    if (movieName) {
-      const formattedName = movieName.replace(/-/g, " ");
-      fetchMovieByName(formattedName);
+    if (searchValue) {
+      getMovieList();
+    } else {
+      // Fetch details for predefined movies
+      const fetchPredefinedMovies = async () => {
+        const movies = await Promise.all(
+          predefinedMovies.map(async (title) => {
+            const url = `https://www.omdbapi.com/?t=${title}&apikey=17ceb17f`;
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            return responseJson;
+          })
+        );
+        setMovies(movies);
+      };
+      fetchPredefinedMovies();
     }
-  }, [movieName, fetchMovieByName]);
+  }, [searchValue, getMovieList]);
+
+  useEffect(() => {
+    if (imdbID) {
+      fetchMovieByName(imdbID);
+    }
+  }, [imdbID, fetchMovieByName]);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -161,15 +231,13 @@ function App() {
 
       <Routes>
         <Route
-          path="/movie/:movieName"
+          path="/movie/:imdbID"
           element={
-            selectedMovie && (
-              <MovieDetailsModal
-                show={showModal}
-                handleClose={handleCloseModal}
-                movie={selectedMovie}
-              />
-            )
+            <MovieDetailsModal
+              show={showModal}
+              handleClose={handleCloseModal}
+              movie={selectedMovie}
+            />
           }
         />
       </Routes>
