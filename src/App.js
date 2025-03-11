@@ -15,6 +15,7 @@ function App() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark");
+  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
   const { imdbID } = useParams();
 
@@ -46,6 +47,7 @@ function App() {
   );
 
   const getMovieList = useCallback(async () => {
+    setIsSearching(true);
     try {
       const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
       const response = await fetch(url);
@@ -79,6 +81,8 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to fetch movie list:", error);
+    } finally {
+      setIsSearching(false);
     }
   }, [searchValue]);
 
@@ -221,6 +225,7 @@ function App() {
             searchValue={searchValue}
             setSearchValue={setSearchValue}
             theme={theme}
+            isSearching={isSearching}
           />
           <button onClick={toggleTheme} className="theme-toggle-button">
             <FontAwesomeIcon icon={theme === "dark" ? faSun : faMoon} />
