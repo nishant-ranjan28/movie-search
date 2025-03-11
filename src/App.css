@@ -208,10 +208,7 @@ input.form-control::placeholder {
 .search-box {
   position: relative;
   display: flex;
-  align-items: center;
-  background-color: #333;
-  border-radius: 5px;
-  padding: 5px 10px;
+  flex-direction: column;
 }
 
 .search-box.light {
@@ -238,15 +235,67 @@ input.form-control::placeholder {
 
 .clear-icon {
   position: absolute;
-  right: 10px;
+  right: 30px;
   cursor: pointer;
-  color: #ccc;
 }
 
 .clear-icon:hover {
   color: #000;
 }
 
+.loading-icon {
+  position: absolute;
+  right: 10px;
+}
+
+.suggested-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #000; /* Black background */
+  border: 1px solid #ccc;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggested-dropdown li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  color: #fff; /* White text */
+}
+
+.suggested-dropdown li:hover {
+  background-color: #333; /* Darker background on hover */
+}
+
+.suggested-poster {
+  width: 30px;
+  height: 45px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.no-suggestions {
+  padding: 10px;
+  color: #fff; /* White text */
+  text-align: center;
+}
+
 .trailer-container {
+  margin-top: 20px;
+}
+
+.no-movies-found {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 24px;
   margin-top: 20px;
 }

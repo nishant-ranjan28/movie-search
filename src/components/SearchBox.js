@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import SuggestedDropdown from "./SuggestedDropdown";
 
-const SearchBox = ({ searchValue, setSearchValue, theme }) => {
+const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
+  const [suggestions, setSuggestions] = useState([]);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchValue) {
+        const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
+        const response = await fetch(url);
+        const responseJson = await response.json();
+        if (responseJson.Search) {
+          setSuggestions(responseJson.Search);
+        } else {
+          setSuggestions([]);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    };
+
+    fetchSuggestions();
+  }, [searchValue]);
+
+  const handleSelectSuggestion = (suggestion) => {
+    setSearchValue(suggestion.Title);
+    setSuggestions([]);
+  };
+
   return (
     <div className={`search-box ${theme}`}>
       <input
@@ -18,6 +45,15 @@ const SearchBox = ({ searchValue, setSearchValue, theme }) => {
           onClick={() => setSearchValue("")}
         />
       )}
+      {isSearching && (
+        <FontAwesomeIcon icon={faSpinner} className="loading-icon" spin />
+      )}
+      {suggestions.length > 0 || searchValue ? (
+        <SuggestedDropdown
+          suggestions={suggestions}
+          onSelectSuggestion={handleSelectSuggestion}
+        />
+      ) : null}
     </div>
   );
 };
