@@ -27,7 +27,7 @@ const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
 
   const handleSelectSuggestion = (suggestion) => {
     setSearchValue(suggestion.Title);
-    setSuggestions([]);
+    setSuggestions([]); // Clear suggestions to close the dropdown
   };
 
   return (
@@ -48,7 +48,7 @@ const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
       {isSearching && (
         <FontAwesomeIcon icon={faSpinner} className="loading-icon" spin />
       )}
-      {suggestions.length > 0 || searchValue ? (
+      {suggestions.length > 0 ? (
         <SuggestedDropdown
           suggestions={suggestions}
           onSelectSuggestion={handleSelectSuggestion}
