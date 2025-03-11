@@ -48,12 +48,12 @@ const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
       {isSearching && (
         <FontAwesomeIcon icon={faSpinner} className="loading-icon" spin />
       )}
-      {suggestions.length > 0 && (
+      {suggestions.length > 0 || searchValue ? (
         <SuggestedDropdown
           suggestions={suggestions}
           onSelectSuggestion={handleSelectSuggestion}
         />
-      )}
+      ) : null}
     </div>
   );
 };

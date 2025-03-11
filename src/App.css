@@ -282,6 +282,20 @@ input.form-control::placeholder {
   margin-right: 10px;
 }
 
+.no-suggestions {
+  padding: 10px;
+  color: #fff; /* White text */
+  text-align: center;
+}
+
 .trailer-container {
+  margin-top: 20px;
+}
+
+.no-movies-found {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 24px;
   margin-top: 20px;
 }

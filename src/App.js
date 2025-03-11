@@ -78,6 +78,8 @@ function App() {
           })
         );
         setMovies(moviesWithRatings);
+      } else {
+        setMovies([]);
       }
     } catch (error) {
       console.error("Failed to fetch movie list:", error);
@@ -234,7 +236,11 @@ function App() {
       </div>
 
       <div className="row">
-        <MovieList movies={movies} handleMovieClick={getMovieDetails} />
+        {movies.length > 0 ? (
+          <MovieList movies={movies} handleMovieClick={getMovieDetails} />
+        ) : (
+          <div className="no-movies-found">No movies found</div>
+        )}
       </div>
 
       <Routes>
