@@ -9,11 +9,12 @@ const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (searchValue) {
-        const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
+        const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
+        const url = `https://api.themoviedb.org/3/search/movie?query=${searchValue}&api_key=${apiKey}`;
         const response = await fetch(url);
         const responseJson = await response.json();
-        if (responseJson.Search) {
-          setSuggestions(responseJson.Search);
+        if (responseJson.results) {
+          setSuggestions(responseJson.results);
         } else {
           setSuggestions([]);
         }
@@ -26,7 +27,7 @@ const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
   }, [searchValue]);
 
   const handleSelectSuggestion = (suggestion) => {
-    setSearchValue(suggestion.Title);
+    setSearchValue(suggestion.title);
     setSuggestions([]); // Clear suggestions to close the dropdown
   };
 
