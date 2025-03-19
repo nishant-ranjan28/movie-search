@@ -330,20 +330,6 @@ input.form-control::placeholder {
   margin: 10px 0;
 }
 
-.rating-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-.imdb-rating {
-  background-color: #f5c518; /* IMDb color */
-  color: #000;
-}
-
 .rotten-tomatoes-rating {
   background-color: #fa320a; /* Rotten Tomatoes color */
   color: #fff;
