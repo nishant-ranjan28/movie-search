@@ -4,11 +4,9 @@ const MovieList = ({ movies, handleMovieClick }) => {
   return (
     <div className="d-flex flex-wrap justify-content-center">
       {movies.map((movie) => (
-        <div
+        <button
           className="image-container d-flex justify-content-start m-3 position-relative"
           key={movie.id}
-          role="button"
-          tabIndex="0"
           onClick={() => handleMovieClick(movie.id)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -25,7 +23,7 @@ const MovieList = ({ movies, handleMovieClick }) => {
             alt={movie.title}
             className="img-fluid"
           />
-        </div>
+        </button>
       ))}
     </div>
   );
