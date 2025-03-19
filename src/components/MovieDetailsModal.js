@@ -10,24 +10,29 @@ const MovieDetailsModal = ({ show, handleClose, movie }) => {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>{movie.Title}</Modal.Title>
+        <Modal.Title>{movie.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="movie-details-modal-body">
-        <img src={movie.Poster} alt="movie poster" style={{ width: "100%" }} />
+        <img
+          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+          alt="movie poster"
+          style={{ width: "100%" }}
+        />
         <p>
-          <strong>Year:</strong> {movie.Year}
+          <strong>Year:</strong> {new Date(movie.release_date).getFullYear()}
         </p>
         <p>
-          <strong>Genre:</strong> {movie.Genre}
+          <strong>Genre:</strong>{" "}
+          {movie.genres.map((genre) => genre.name).join(", ")}
         </p>
         <p>
-          <strong>Director:</strong> {movie.Director}
+          <strong>Director:</strong> {movie.director}
         </p>
         <p>
-          <strong>Actors:</strong> {movie.Actors}
+          <strong>Actors:</strong> {movie.actors}
         </p>
         <p>
-          <strong>Plot:</strong> {movie.Plot}
+          <strong>Plot:</strong> {movie.overview}
         </p>
         <p>
           <strong>Preferred Streaming Platform:</strong>{" "}

@@ -7,11 +7,11 @@ const SuggestedDropdown = ({ suggestions, onSelectSuggestion }) => {
         suggestions.map((suggestion, index) => (
           <li key={index} onClick={() => onSelectSuggestion(suggestion)}>
             <img
-              src={suggestion.Poster}
-              alt={suggestion.Title}
+              src={`https://image.tmdb.org/t/p/w200${suggestion.poster_path}`}
+              alt={suggestion.title}
               className="suggested-poster"
             />
-            <span>{suggestion.Title}</span>
+            <span>{suggestion.title}</span>
           </li>
         ))
       ) : (

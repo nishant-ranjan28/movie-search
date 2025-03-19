@@ -46,31 +46,100 @@ function App() {
     []
   );
 
+  useEffect(() => {
+    if (!searchValue) {
+      const fetchPredefinedMovies = async () => {
+        const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
+        const movies = await Promise.all(
+          predefinedMovies.map(async (title) => {
+            const url = `https://api.themoviedb.org/3/search/movie?query=${title}&api_key=${apiKey}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            const movie = responseJson.results[0];
+
+            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=external_ids`;
+            const detailsResponse = await fetch(detailsUrl);
+            if (!detailsResponse.ok) {
+              throw new Error(`HTTP error! status: ${detailsResponse.status}`);
+            }
+            const detailsJson = await detailsResponse.json();
+            const imdbId = detailsJson.external_ids.imdb_id;
+            const omdbUrl = `https://www.omdbapi.com/?i=${imdbId}&apikey=17ceb17f`; // Replace with your OMDb API key
+            const omdbResponse = await fetch(omdbUrl);
+            const omdbJson = await omdbResponse.json();
+            const rottenTomatoesRating = omdbJson.Ratings?.find(
+              (rating) => rating.Source === "Rotten Tomatoes"
+            );
+
+            return {
+              ...movie,
+              rottenTomatoesRating: rottenTomatoesRating
+                ? rottenTomatoesRating.Value
+                : "N/A",
+            };
+          })
+        );
+        setMovies(movies);
+      };
+      fetchPredefinedMovies();
+    }
+  }, [searchValue, predefinedMovies]);
+
+  const fetchStreamingPlatform = useCallback(async (movieId) => {
+    try {
+      const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
+      const url = `https://api.themoviedb.org/3/movie/${movieId}/watch/providers?api_key=${apiKey}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.results && data.results.US && data.results.US.flatrate) {
+        const streamingPlatforms = data.results.US.flatrate
+          .map((provider) => provider.provider_name)
+          .join(", ");
+        return streamingPlatforms ? streamingPlatforms : "Unknown";
+      } else {
+        return "Unknown";
+      }
+    } catch (error) {
+      console.error("Failed to fetch streaming platform:", error);
+      return "Unknown";
+    }
+  }, []);
+
   const getMovieList = useCallback(async () => {
     setIsSearching(true);
     try {
-      const url = `https://www.omdbapi.com/?s=${searchValue}&apikey=17ceb17f`;
+      const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
+      const url = `https://api.themoviedb.org/3/search/movie?query=${searchValue}&api_key=${apiKey}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const responseJson = await response.json();
 
-      if (responseJson.Search) {
+      if (responseJson.results) {
         const moviesWithRatings = await Promise.all(
-          responseJson.Search.map(async (movie) => {
-            const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=17ceb17f`;
+          responseJson.results.map(async (movie) => {
+            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=external_ids`;
             const detailsResponse = await fetch(detailsUrl);
             if (!detailsResponse.ok) {
               throw new Error(`HTTP error! status: ${detailsResponse.status}`);
             }
             const detailsJson = await detailsResponse.json();
-            const rottenTomatoesRating = detailsJson.Ratings.find(
+            const imdbId = detailsJson.external_ids.imdb_id;
+            const omdbUrl = `https://www.omdbapi.com/?i=${imdbId}&apikey=17ceb17f`; // Replace with your OMDb API key
+            const omdbResponse = await fetch(omdbUrl);
+            const omdbJson = await omdbResponse.json();
+            const rottenTomatoesRating = omdbJson.Ratings?.find(
               (rating) => rating.Source === "Rotten Tomatoes"
             );
             return {
               ...movie,
-              imdbRating: detailsJson.imdbRating,
               rottenTomatoesRating: rottenTomatoesRating
                 ? rottenTomatoesRating.Value
                 : "N/A",
@@ -88,97 +157,50 @@ function App() {
     }
   }, [searchValue]);
 
-  const getMovieDetails = async (imdbID) => {
-    try {
-      const url = `https://www.omdbapi.com/?i=${imdbID}&apikey=17ceb17f`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const responseJson = await response.json();
+  const getMovieDetails = useCallback(
+    async (movieId) => {
+      try {
+        const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
+        const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&append_to_response=videos,credits`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseJson = await response.json();
 
-      if (responseJson) {
-        // Fetch the trailer URL from YouTube
-        const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        const streamingPlatform = await fetchStreamingPlatform(
-          responseJson.imdbID
-        );
-        setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
-        setShowModal(true);
-        navigate(`/movie/${imdbID}`);
-      }
-    } catch (error) {
-      console.error("Failed to fetch movie details:", error);
-    }
-  };
+        if (responseJson) {
+          const director = responseJson.credits.crew.find(
+            (member) => member.job === "Director"
+          )?.name;
+          const actors = responseJson.credits.cast
+            .slice(0, 5)
+            .map((actor) => actor.name)
+            .join(", ");
+          const trailer = responseJson.videos.results.find(
+            (video) => video.type === "Trailer"
+          );
+          const trailerUrl = trailer
+            ? `https://www.youtube.com/embed/${trailer.key}`
+            : null;
 
-  const fetchTrailerUrl = async (title) => {
-    try {
-      const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
-      if (!apiKey) {
-        throw new Error("YouTube API key is not defined");
-      }
-      const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-        title + " trailer"
-      )}&key=${apiKey}`;
-      const response = await fetch(searchUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      const videoId = data.items[0]?.id?.videoId;
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-    } catch (error) {
-      console.error("Failed to fetch trailer URL:", error);
-      return null;
-    }
-  };
+          const streamingPlatform = await fetchStreamingPlatform(movieId);
 
-  const fetchMovieByName = useCallback(async (name) => {
-    try {
-      const url = `https://www.omdbapi.com/?t=${name}&apikey=17ceb17f`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+          setSelectedMovie({
+            ...responseJson,
+            director,
+            actors,
+            trailerUrl,
+            streamingPlatform,
+          });
+          setShowModal(true);
+          navigate(`/movie/${movieId}`);
+        }
+      } catch (error) {
+        console.error("Failed to fetch movie details:", error);
       }
-      const responseJson = await response.json();
-
-      if (responseJson) {
-        // Fetch the trailer URL from YouTube
-        const trailerUrl = await fetchTrailerUrl(responseJson.Title);
-        const streamingPlatform = await fetchStreamingPlatform(
-          responseJson.imdbID
-        );
-        setSelectedMovie({ ...responseJson, trailerUrl, streamingPlatform });
-        setShowModal(true);
-      }
-    } catch (error) {
-      console.error("Failed to fetch movie details:", error);
-    }
-  }, []);
-
-  const fetchStreamingPlatform = async (imdbID) => {
-    try {
-      const apiKey = process.env.REACT_APP_TMDB_API_KEY;
-      const searchUrl = `https://api.themoviedb.org/3/movie/${imdbID}/watch/providers?api_key=${apiKey}`;
-      const response = await fetch(searchUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data.results && data.results.US && data.results.US.flatrate) {
-        const streamingPlatforms = data.results.US.flatrate
-          .map((provider) => provider.provider_name)
-          .join(", ");
-        return streamingPlatforms ? streamingPlatforms : "Unknown";
-      } else {
-        return "Unknown";
-      }
-    } catch (error) {
-      console.error("Failed to fetch streaming platform:", error);
-      return "Unknown";
-    }
-  };
+    },
+    [navigate, fetchStreamingPlatform]
+  );
 
   useEffect(() => {
     if (searchValue) {
@@ -186,15 +208,16 @@ function App() {
     } else {
       // Fetch details for predefined movies
       const fetchPredefinedMovies = async () => {
+        const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
         const movies = await Promise.all(
           predefinedMovies.map(async (title) => {
-            const url = `https://www.omdbapi.com/?t=${title}&apikey=17ceb17f`;
+            const url = `https://api.themoviedb.org/3/search/movie?query=${title}&api_key=${apiKey}`;
             const response = await fetch(url);
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             const responseJson = await response.json();
-            return responseJson;
+            return responseJson.results[0];
           })
         );
         setMovies(movies);
@@ -205,9 +228,9 @@ function App() {
 
   useEffect(() => {
     if (imdbID) {
-      fetchMovieByName(imdbID);
+      getMovieDetails(imdbID);
     }
-  }, [imdbID, fetchMovieByName]);
+  }, [imdbID, getMovieDetails]);
 
   const handleCloseModal = () => {
     setShowModal(false);
