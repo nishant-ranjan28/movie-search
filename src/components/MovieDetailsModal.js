@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Modal, Button } from "react-bootstrap";
 import "../App.css";
 
@@ -6,6 +7,26 @@ const MovieDetailsModal = ({ show, handleClose, movie }) => {
   if (!movie) {
     return null; // or you can return a loading spinner or placeholder
   }
+
+  MovieDetailsModal.propTypes = {
+    show: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    movie: PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      poster_path: PropTypes.string.isRequired,
+      release_date: PropTypes.string.isRequired,
+      genres: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+        })
+      ).isRequired,
+      director: PropTypes.string.isRequired,
+      actors: PropTypes.string.isRequired,
+      overview: PropTypes.string.isRequired,
+      streamingPlatform: PropTypes.string.isRequired,
+      trailerUrl: PropTypes.string,
+    }).isRequired,
+  };
 
   return (
     <Modal show={show} onHide={handleClose} centered>
