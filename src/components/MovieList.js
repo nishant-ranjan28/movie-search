@@ -3,11 +3,18 @@ import React from "react";
 const MovieList = ({ movies, handleMovieClick }) => {
   return (
     <div className="d-flex flex-wrap justify-content-center">
-      {movies.map((movie, index) => (
+      {movies.map((movie) => (
         <div
           className="image-container d-flex justify-content-start m-3 position-relative"
-          key={index}
+          key={movie.id}
+          role="button"
+          tabIndex="0"
           onClick={() => handleMovieClick(movie.id)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              handleMovieClick(movie.id);
+            }
+          }}
         >
           <div className="rating-badge imdb-rating">{movie.vote_average}</div>
           <div className="rating-badge rotten-tomatoes-rating">

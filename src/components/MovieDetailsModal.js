@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Modal, Button } from "react-bootstrap";
 import "../App.css";
 
@@ -6,6 +7,12 @@ const MovieDetailsModal = ({ show, handleClose, movie }) => {
   if (!movie) {
     return null; // or you can return a loading spinner or placeholder
   }
+
+  MovieDetailsModal.propTypes = {
+    show: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    movie: PropTypes.object,
+  };
 
   return (
     <Modal show={show} onHide={handleClose} centered>

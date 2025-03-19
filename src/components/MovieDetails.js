@@ -1,4 +1,17 @@
 import React from "react";
+import PropTypes from "prop-types";
+
+MovieDetails.propTypes = {
+  movie: PropTypes.shape({
+    Title: PropTypes.string,
+    Poster: PropTypes.string,
+    Year: PropTypes.string,
+    Genre: PropTypes.string,
+    Director: PropTypes.string,
+    Actors: PropTypes.string,
+    Plot: PropTypes.string,
+  }).isRequired,
+};
 
 const MovieDetails = ({ movie }) => {
   return (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import SuggestedDropdown from "./SuggestedDropdown";
@@ -57,6 +58,12 @@ const SearchBox = ({ searchValue, setSearchValue, theme, isSearching }) => {
       ) : null}
     </div>
   );
+};
+SearchBox.propTypes = {
+  searchValue: PropTypes.string.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
+  theme: PropTypes.string,
+  isSearching: PropTypes.bool,
 };
 
 export default SearchBox;
