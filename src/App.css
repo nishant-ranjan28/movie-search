@@ -1,11 +1,15 @@
+/* Common styles */
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   height: 100%;
   width: 100%;
-  background-color: #141414;
-  color: #ffffff;
+}
+
+.container-fluid {
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .movie-app {
@@ -195,11 +199,6 @@ input.form-control::placeholder {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #141414;
-}
-
-.navbar.light {
-  background-color: #ffffff;
 }
 
 .navbar h1 {
@@ -277,6 +276,18 @@ input.form-control::placeholder {
   background-color: #333; /* Darker background on hover */
 }
 
+.suggestion-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+}
+
 .suggested-poster {
   width: 30px;
   height: 45px;
@@ -329,3 +340,43 @@ input.form-control::placeholder {
   font-size: 16px;
   margin: 10px 0;
 }
+
+/* Dark theme styles */
+body.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.navbar.dark {
+  background-color: #1f1f1f;
+}
+
+.search-theme-container.dark {
+  background-color: #1f1f1f;
+}
+
+.movie-card.dark {
+  background-color: #1f1f1f;
+  color: #ffffff;
+}
+
+/* Light theme styles */
+body.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.navbar.light {
+  background-color: #f8f9fa;
+}
+
+.search-theme-container.light {
+  background-color: #f8f9fa;
+}
+
+.movie-card.light {
+  background-color: #f8f9fa;
+  color: #000000;
+}
+
+/* Other styles */

@@ -4,10 +4,10 @@ import PropTypes from "prop-types";
 const MovieList = ({ movies, handleMovieClick }) => {
   return (
     <div className="d-flex flex-wrap justify-content-center">
-      {movies.map((movie, index) => (
+      {movies.map((movie) => (
         <div
           className="movie-card d-flex flex-column justify-content-start m-3 position-relative"
-          key={index}
+          key={movie.id}
           onClick={() => handleMovieClick(movie.id)}
         >
           <img
