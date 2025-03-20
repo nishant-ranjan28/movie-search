@@ -65,6 +65,31 @@ function App() {
     }
   }, []);
 
+  const fetchMovieDetails = useCallback(async (movie) => {
+    const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
+    const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=release_dates,credits`;
+    const detailsResponse = await fetch(detailsUrl);
+    if (!detailsResponse.ok) {
+      throw new Error(`HTTP error! status: ${detailsResponse.status}`);
+    }
+    const detailsJson = await detailsResponse.json();
+
+    const director = detailsJson.credits.crew.find(
+      (member) => member.job === "Director"
+    )?.name;
+    const actors = detailsJson.credits.cast
+      .slice(0, 5)
+      .map((actor) => actor.name)
+      .join(", ");
+
+    return {
+      ...movie,
+      vote_average: movie.vote_average,
+      director,
+      actors,
+    };
+  }, []);
+
   const getMovieList = useCallback(async () => {
     setIsSearching(true);
     try {
@@ -78,26 +103,7 @@ function App() {
 
       if (responseJson.results) {
         const moviesWithRatings = await Promise.all(
-          responseJson.results.map(async (movie) => {
-            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=release_dates,credits`;
-            const detailsResponse = await fetch(detailsUrl);
-            if (!detailsResponse.ok) {
-              throw new Error(`HTTP error! status: ${detailsResponse.status}`);
-            }
-            const detailsJson = await detailsResponse.json();
-
-            return {
-              ...movie,
-              vote_average: movie.vote_average,
-              director: detailsJson.credits.crew.find(
-                (member) => member.job === "Director"
-              )?.name,
-              actors: detailsJson.credits.cast
-                .slice(0, 5)
-                .map((actor) => actor.name)
-                .join(", "),
-            };
-          })
+          responseJson.results.map(fetchMovieDetails)
         );
         setMovies(moviesWithRatings);
       } else {
@@ -108,7 +114,7 @@ function App() {
     } finally {
       setIsSearching(false);
     }
-  }, [searchValue]);
+  }, [searchValue, fetchMovieDetails]);
 
   const getMovieDetails = useCallback(
     async (movieId) => {
@@ -160,7 +166,6 @@ function App() {
     if (searchValue) {
       getMovieList();
     } else {
-      // Fetch details for predefined movies
       const fetchPredefinedMovies = async () => {
         const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
         const movies = await Promise.all(
@@ -172,32 +177,14 @@ function App() {
             }
             const responseJson = await response.json();
             const movie = responseJson.results[0];
-
-            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=release_dates,credits`;
-            const detailsResponse = await fetch(detailsUrl);
-            if (!detailsResponse.ok) {
-              throw new Error(`HTTP error! status: ${detailsResponse.status}`);
-            }
-            const detailsJson = await detailsResponse.json();
-
-            return {
-              ...movie,
-              vote_average: movie.vote_average,
-              director: detailsJson.credits.crew.find(
-                (member) => member.job === "Director"
-              )?.name,
-              actors: detailsJson.credits.cast
-                .slice(0, 5)
-                .map((actor) => actor.name)
-                .join(", "),
-            };
+            return fetchMovieDetails(movie);
           })
         );
         setMovies(movies);
       };
       fetchPredefinedMovies();
     }
-  }, [searchValue, predefinedMovies]);
+  }, [searchValue, predefinedMovies, fetchMovieDetails]);
 
   useEffect(() => {
     if (imdbID) {
