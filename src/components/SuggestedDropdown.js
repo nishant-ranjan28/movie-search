@@ -9,6 +9,12 @@ const SuggestedDropdown = ({ suggestions, onSelectSuggestion }) => {
           <li
             key={suggestion.id}
             onClick={() => onSelectSuggestion(suggestion)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                onSelectSuggestion(suggestion);
+              }
+            }}
+            tabIndex="0"
           >
             <img
               src={`https://image.tmdb.org/t/p/w200${suggestion.poster_path}`}
