@@ -55,14 +55,10 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      if (data.results && data.results.US && data.results.US.flatrate) {
-        const streamingPlatforms = data.results.US.flatrate
-          .map((provider) => provider.provider_name)
-          .join(", ");
-        return streamingPlatforms ? streamingPlatforms : "Unknown";
-      } else {
-        return "Unknown";
-      }
+      const streamingPlatforms = data.results?.US?.flatrate
+        ?.map((provider) => provider.provider_name)
+        .join(", ");
+      return streamingPlatforms || "Unknown";
     } catch (error) {
       console.error("Failed to fetch streaming platform:", error);
       return "Unknown";
