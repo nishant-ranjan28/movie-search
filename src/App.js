@@ -46,48 +46,6 @@ function App() {
     []
   );
 
-  useEffect(() => {
-    if (!searchValue) {
-      const fetchPredefinedMovies = async () => {
-        const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
-        const movies = await Promise.all(
-          predefinedMovies.map(async (title) => {
-            const url = `https://api.themoviedb.org/3/search/movie?query=${title}&api_key=${apiKey}`;
-            const response = await fetch(url);
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const responseJson = await response.json();
-            const movie = responseJson.results[0];
-
-            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=external_ids`;
-            const detailsResponse = await fetch(detailsUrl);
-            if (!detailsResponse.ok) {
-              throw new Error(`HTTP error! status: ${detailsResponse.status}`);
-            }
-            const detailsJson = await detailsResponse.json();
-            const imdbId = detailsJson.external_ids.imdb_id;
-            const omdbUrl = `https://www.omdbapi.com/?i=${imdbId}&apikey=17ceb17f`; // Replace with your OMDb API key
-            const omdbResponse = await fetch(omdbUrl);
-            const omdbJson = await omdbResponse.json();
-            const rottenTomatoesRating = omdbJson.Ratings?.find(
-              (rating) => rating.Source === "Rotten Tomatoes"
-            );
-
-            return {
-              ...movie,
-              rottenTomatoesRating: rottenTomatoesRating
-                ? rottenTomatoesRating.Value
-                : "N/A",
-            };
-          })
-        );
-        setMovies(movies);
-      };
-      fetchPredefinedMovies();
-    }
-  }, [searchValue, predefinedMovies]);
-
   const fetchStreamingPlatform = useCallback(async (movieId) => {
     try {
       const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
@@ -97,11 +55,14 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      const streamingPlatforms =
-        data.results?.US?.flatrate
-          ?.map((provider) => provider.provider_name)
-          .join(", ") || "Unknown";
-      return streamingPlatforms;
+      if (data.results && data.results.US && data.results.US.flatrate) {
+        const streamingPlatforms = data.results.US.flatrate
+          .map((provider) => provider.provider_name)
+          .join(", ");
+        return streamingPlatforms ? streamingPlatforms : "Unknown";
+      } else {
+        return "Unknown";
+      }
     } catch (error) {
       console.error("Failed to fetch streaming platform:", error);
       return "Unknown";
@@ -122,24 +83,23 @@ function App() {
       if (responseJson.results) {
         const moviesWithRatings = await Promise.all(
           responseJson.results.map(async (movie) => {
-            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=external_ids`;
+            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=release_dates,credits`;
             const detailsResponse = await fetch(detailsUrl);
             if (!detailsResponse.ok) {
               throw new Error(`HTTP error! status: ${detailsResponse.status}`);
             }
             const detailsJson = await detailsResponse.json();
-            const imdbId = detailsJson.external_ids.imdb_id;
-            const omdbUrl = `https://www.omdbapi.com/?i=${imdbId}&apikey=17ceb17f`; // Replace with your OMDb API key
-            const omdbResponse = await fetch(omdbUrl);
-            const omdbJson = await omdbResponse.json();
-            const rottenTomatoesRating = omdbJson.Ratings?.find(
-              (rating) => rating.Source === "Rotten Tomatoes"
-            );
+
             return {
               ...movie,
-              rottenTomatoesRating: rottenTomatoesRating
-                ? rottenTomatoesRating.Value
-                : "N/A",
+              vote_average: movie.vote_average,
+              director: detailsJson.credits.crew.find(
+                (member) => member.job === "Director"
+              )?.name,
+              actors: detailsJson.credits.cast
+                .slice(0, 5)
+                .map((actor) => actor.name)
+                .join(", "),
             };
           })
         );
@@ -158,7 +118,7 @@ function App() {
     async (movieId) => {
       try {
         const apiKey = process.env.REACT_APP_TMDB_API_KEY; // Replace with your TMDb API key
-        const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&append_to_response=videos,credits`;
+        const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&append_to_response=videos,credits,release_dates`;
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -188,6 +148,7 @@ function App() {
             actors,
             trailerUrl,
             streamingPlatform,
+            vote_average: responseJson.vote_average,
           });
           setShowModal(true);
           navigate(`/movie/${movieId}`);
@@ -214,14 +175,33 @@ function App() {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             const responseJson = await response.json();
-            return responseJson.results[0];
+            const movie = responseJson.results[0];
+
+            const detailsUrl = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=release_dates,credits`;
+            const detailsResponse = await fetch(detailsUrl);
+            if (!detailsResponse.ok) {
+              throw new Error(`HTTP error! status: ${detailsResponse.status}`);
+            }
+            const detailsJson = await detailsResponse.json();
+
+            return {
+              ...movie,
+              vote_average: movie.vote_average,
+              director: detailsJson.credits.crew.find(
+                (member) => member.job === "Director"
+              )?.name,
+              actors: detailsJson.credits.cast
+                .slice(0, 5)
+                .map((actor) => actor.name)
+                .join(", "),
+            };
           })
         );
         setMovies(movies);
       };
       fetchPredefinedMovies();
     }
-  }, [searchValue, getMovieList, predefinedMovies]);
+  }, [searchValue, predefinedMovies]);
 
   useEffect(() => {
     if (imdbID) {
@@ -236,6 +216,7 @@ function App() {
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "dark" ? "light" : "dark"));
+    document.body.className = theme === "dark" ? "light" : "dark";
   };
 
   return (

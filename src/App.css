@@ -1,3 +1,15 @@
+/* Common styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.container-fluid {
+  min-height: 100vh;
+  padding: 20px;
+}
+
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: 0;
@@ -340,4 +352,83 @@ input.form-control::placeholder {
 .movie-title {
   font-size: 16px;
   margin: 10px 0;
+}
+
+/* Dark theme styles */
+body.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.navbar.dark {
+  background-color: #1f1f1f;
+}
+
+.search-theme-container.dark {
+  background-color: #1f1f1f;
+}
+
+.movie-card.dark {
+  background-color: #1f1f1f;
+  color: #ffffff;
+}
+
+/* Light theme styles */
+body.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.navbar.light {
+  background-color: #f8f9fa;
+}
+
+.search-theme-container.light {
+  background-color: #f8f9fa;
+}
+
+.movie-card.light {
+  background-color: #f8f9fa;
+  color: #000000;
+}
+
+/* Other styles */
+.movie-card {
+  width: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
+  height: auto;
+}
+
+.movie-info {
+  padding: 10px;
+}
+
+.movie-title {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.rating-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.imdb-rating {
+  background-color: #f5c518; /* IMDb color */
+  color: #000;
 }
