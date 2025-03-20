@@ -5,11 +5,9 @@ const MovieList = ({ movies, handleMovieClick }) => {
   return (
     <div className="d-flex flex-wrap justify-content-center">
       {movies.map((movie) => (
-        <div
+        <button
           className="movie-card d-flex flex-column justify-content-start m-3 position-relative"
           key={movie.id}
-          role="button"
-          tabIndex="0"
           onClick={() => handleMovieClick(movie.id)}
           onKeyPress={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -26,7 +24,7 @@ const MovieList = ({ movies, handleMovieClick }) => {
             <h5 className="movie-title">{movie.title}</h5>
             <div className="rating-badge imdb-rating">{movie.vote_average}</div>
           </div>
-        </div>
+        </button>
       ))}
     </div>
   );
