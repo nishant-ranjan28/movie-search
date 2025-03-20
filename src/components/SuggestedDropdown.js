@@ -5,7 +5,10 @@ const SuggestedDropdown = ({ suggestions, onSelectSuggestion }) => {
     <ul className="suggested-dropdown">
       {suggestions.length > 0 ? (
         suggestions.map((suggestion, index) => (
-          <li key={index} onClick={() => onSelectSuggestion(suggestion)}>
+          <li
+            key={suggestion.id}
+            onClick={() => onSelectSuggestion(suggestion)}
+          >
             <img
               src={`https://image.tmdb.org/t/p/w200${suggestion.poster_path}`}
               alt={suggestion.title}

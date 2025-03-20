@@ -1,13 +1,27 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const MovieList = ({ movies, handleMovieClick }) => {
+  PropTypes.checkPropTypes(
+    MovieList.propTypes,
+    { movies, handleMovieClick },
+    "prop",
+    "MovieList"
+  );
   return (
     <div className="d-flex flex-wrap justify-content-center">
       {movies.map((movie, index) => (
         <div
           className="movie-card d-flex flex-column justify-content-start m-3 position-relative"
           key={index}
+          role="button"
+          tabIndex={0}
           onClick={() => handleMovieClick(movie.id)}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              handleMovieClick(movie.id);
+            }
+          }}
         >
           <img
             src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
@@ -25,6 +39,18 @@ const MovieList = ({ movies, handleMovieClick }) => {
       ))}
     </div>
   );
+};
+MovieList.propTypes = {
+  movies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      poster_path: PropTypes.string,
+      title: PropTypes.string,
+      vote_average: PropTypes.number,
+      rottenTomatoesRating: PropTypes.number,
+    })
+  ).isRequired,
+  handleMovieClick: PropTypes.func.isRequired,
 };
 
 export default MovieList;
