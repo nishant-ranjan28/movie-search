@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const MovieList = ({ movies, handleMovieClick }) => {
   return (
@@ -17,14 +18,23 @@ const MovieList = ({ movies, handleMovieClick }) => {
           <div className="movie-info">
             <h5 className="movie-title">{movie.title}</h5>
             <div className="rating-badge imdb-rating">{movie.vote_average}</div>
-            <div className="rating-badge rotten-tomatoes-rating">
-              {movie.rottenTomatoesRating || "N/A"}
-            </div>
           </div>
         </div>
       ))}
     </div>
   );
+};
+
+MovieList.propTypes = {
+  movies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      poster_path: PropTypes.string,
+      title: PropTypes.string.isRequired,
+      vote_average: PropTypes.number.isRequired,
+    })
+  ).isRequired,
+  handleMovieClick: PropTypes.func.isRequired,
 };
 
 export default MovieList;
