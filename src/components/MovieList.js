@@ -8,14 +8,7 @@ const MovieList = ({ movies, handleMovieClick }) => {
         <div
           className="movie-card d-flex flex-column justify-content-start m-3 position-relative"
           key={movie.id}
-          role="button"
-          tabIndex="0"
           onClick={() => handleMovieClick(movie.id)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              handleMovieClick(movie.id);
-            }
-          }}
         >
           <img
             src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
