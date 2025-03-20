@@ -184,7 +184,7 @@ function App() {
       };
       fetchPredefinedMovies();
     }
-  }, [searchValue, predefinedMovies, fetchMovieDetails]);
+  }, [searchValue, predefinedMovies, fetchMovieDetails, getMovieList]);
 
   useEffect(() => {
     if (imdbID) {
@@ -198,8 +198,11 @@ function App() {
   };
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "dark" ? "light" : "dark"));
-    document.body.className = theme === "dark" ? "light" : "dark";
+    setTheme((prevTheme) => {
+      const newTheme = prevTheme === "dark" ? "light" : "dark";
+      document.body.className = newTheme;
+      return newTheme;
+    });
   };
 
   return (
