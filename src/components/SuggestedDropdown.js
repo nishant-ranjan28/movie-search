@@ -6,22 +6,24 @@ const SuggestedDropdown = ({ suggestions, onSelectSuggestion }) => {
     <ul className="suggested-dropdown">
       {suggestions.length > 0 ? (
         suggestions.map((suggestion, index) => (
-          <li
-            key={suggestion.id}
-            onClick={() => onSelectSuggestion(suggestion)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                onSelectSuggestion(suggestion);
-              }
-            }}
-            tabIndex="0"
-          >
-            <img
-              src={`https://image.tmdb.org/t/p/w200${suggestion.poster_path}`}
-              alt={suggestion.title}
-              className="suggested-poster"
-            />
-            <span>{suggestion.title}</span>
+          <li key={suggestion.id}>
+            <button
+              onClick={() => onSelectSuggestion(suggestion)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  onSelectSuggestion(suggestion);
+                }
+              }}
+              tabIndex="0"
+              className="suggestion-button"
+            >
+              <img
+                src={`https://image.tmdb.org/t/p/w200${suggestion.poster_path}`}
+                alt={suggestion.title}
+                className="suggested-poster"
+              />
+              <span>{suggestion.title}</span>
+            </button>
           </li>
         ))
       ) : (
