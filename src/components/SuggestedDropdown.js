@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const SuggestedDropdown = ({ suggestions, onSelectSuggestion }) => {
   return (
@@ -22,6 +23,17 @@ const SuggestedDropdown = ({ suggestions, onSelectSuggestion }) => {
       )}
     </ul>
   );
+};
+
+SuggestedDropdown.propTypes = {
+  suggestions: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      poster_path: PropTypes.string,
+      title: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  onSelectSuggestion: PropTypes.func.isRequired,
 };
 
 export default SuggestedDropdown;
