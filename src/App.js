@@ -19,6 +19,10 @@ function App() {
   const navigate = useNavigate();
   const { imdbID } = useParams();
 
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
+
   const predefinedMovies = useMemo(
     () => [
       "Star Wars",
