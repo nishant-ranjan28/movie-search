@@ -1,0 +1,476 @@
+{
+    "page": 1,
+    "results": [
+        {
+            "adult": false,
+            "backdrop_path": "/bq28ajZaoMyzEIm6REelqyqtEDZ.jpg",
+            "id": 76479,
+            "name": "The Boys",
+            "original_name": "The Boys",
+            "overview": "A group of vigilantes known informally as \u201cThe Boys\u201d set out to take down corrupt superheroes with no more than blue-collar grit and a willingness to fight dirty.",
+            "poster_path": "/in1R2dDc421JxsoRWaIIAqVI2KE.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                10765,
+                10759
+            ],
+            "popularity": 639.876,
+            "first_air_date": "2019-07-25",
+            "softcore": false,
+            "vote_average": 8.44,
+            "vote_count": 12078,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/qrTAc0ZtQ859Qu5O8cixJzNJpQs.jpg",
+            "id": 202555,
+            "name": "Daredevil: Born Again",
+            "original_name": "Daredevil: Born Again",
+            "overview": "Matt Murdock, a blind lawyer with heightened abilities, is fighting for justice through his bustling law firm, while former mob boss Wilson Fisk pursues his own political endeavors in New York. When their past identities begin to emerge, both men find themselves on an inevitable collision course.",
+            "poster_path": "/xDUoAsU8lQHOOoRkFiBuarmACDN.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                18,
+                10759,
+                80
+            ],
+            "popularity": 140.5073,
+            "first_air_date": "2025-03-04",
+            "softcore": false,
+            "vote_average": 8.046,
+            "vote_count": 807,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/fIXTetAsXkPO6UUUw85IU4oactf.jpg",
+            "id": 127865,
+            "name": "The Chestnut Man",
+            "original_name": "Kastanjemanden",
+            "overview": "At a grisly murder scene sits a figurine made of chestnuts. From this creepy clue, two detectives hunt a killer linked to a politician's missing child.",
+            "poster_path": "/tdLJTZJ184PsO9QkK9aPeeAXLlo.jpg",
+            "media_type": "tv",
+            "original_language": "da",
+            "genre_ids": [
+                18,
+                80
+            ],
+            "popularity": 44.2019,
+            "first_air_date": "2021-09-29",
+            "softcore": false,
+            "vote_average": 7.5,
+            "vote_count": 661,
+            "origin_country": [
+                "DK"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/4CtOMphAmfHJ6cztlAYjkdStkHP.jpg",
+            "id": 262280,
+            "name": "Legends",
+            "original_name": "Legends",
+            "overview": "As drugs flood the streets of '90s Britain, a team of civil servants is thrust undercover to topple the gangs behind it.",
+            "poster_path": "/dGienbU1xNZJcbY8i8ubJusjDwD.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                10759,
+                80,
+                18
+            ],
+            "popularity": 39.4842,
+            "first_air_date": "2026-05-07",
+            "softcore": false,
+            "vote_average": 6.571,
+            "vote_count": 7,
+            "origin_country": [
+                "GB"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/uDxlriNvtxdizceQKQllwhC0lYG.jpg",
+            "id": 262388,
+            "name": "M.I.A.",
+            "original_name": "M.I.A.",
+            "overview": "Restless in the Florida Keys, Etta Tiger Jonze dreams of a life in Miami's glittering, sub-tropical kingdom. When her family's drug-running business shatters in tragedy, however, Etta embarks on a dangerous journey through Miami's neon-lit underbelly that will define who she is and what she's ultimately capable of.",
+            "poster_path": "/uvocuo6mgQTtNa7O6a3MQoTfuh4.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                80,
+                18
+            ],
+            "popularity": 28.5416,
+            "first_air_date": "2026-05-07",
+            "softcore": false,
+            "vote_average": 9.0,
+            "vote_count": 7,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/mce2ZupMnD6fmIT5AcpriP3zNTA.jpg",
+            "id": 114922,
+            "name": "Citadel",
+            "original_name": "Citadel",
+            "overview": "What if you lost your memory? What if a spy didn't know they were a spy? Years ago, the top agents of Citadel, Mason Kane and Nadia Sinh, had their minds wiped. But, they're called back to action as sinister forces emerge from the past. With the help of spymaster Bernard Orlick, these former lovers must remember the past to save the future.",
+            "poster_path": "/5MHtxPEfmN4b0rHzfEZRcm6v9WI.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                18,
+                80,
+                10759
+            ],
+            "popularity": 112.6486,
+            "first_air_date": "2023-04-27",
+            "softcore": false,
+            "vote_average": 6.8,
+            "vote_count": 493,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/wHNwlE6ftEpgjVbdhLXOtv1hLs0.jpg",
+            "id": 136315,
+            "name": "The Bear",
+            "original_name": "The Bear",
+            "overview": "Carmy, a young fine-dining chef, comes home to Chicago to run his family sandwich shop. As he fights to transform the shop and himself, he works alongside a rough-around-the-edges crew that ultimately reveal themselves as his chosen family.",
+            "poster_path": "/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                18,
+                35
+            ],
+            "popularity": 55.1769,
+            "first_air_date": "2022-06-23",
+            "softcore": false,
+            "vote_average": 8.154,
+            "vote_count": 1684,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/4Mt7WHox67uJ1yErwTBFcV8KWgG.jpg",
+            "id": 37854,
+            "name": "One Piece",
+            "original_name": "\u30ef\u30f3\u30d4\u30fc\u30b9",
+            "overview": "Years ago, the fearsome Pirate King, Gol D. Roger was executed leaving a huge pile of treasure and the famous \"One Piece\" behind. Whoever claims the \"One Piece\" will be named the new King of the Pirates.\n\nMonkey D. Luffy, a boy who consumed a \"Devil Fruit,\" decides to follow in the footsteps of his idol, the pirate Shanks, and find the One Piece. It helps, of course, that his body has the properties of rubber and that he's surrounded by a bevy of skilled fighters and thieves to help him along the way.\n\nLuffy will do anything to get the One Piece and become King of the Pirates!",
+            "poster_path": "/dB4EDhre2dsC2kxYDavyKWqLQwi.jpg",
+            "media_type": "tv",
+            "original_language": "ja",
+            "genre_ids": [
+                10759,
+                35,
+                16
+            ],
+            "popularity": 52.2156,
+            "first_air_date": "1999-10-20",
+            "softcore": false,
+            "vote_average": 8.724,
+            "vote_count": 5241,
+            "origin_country": [
+                "JP"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/aVvPFnpv0djtEG6KtS3dMdSCwee.jpg",
+            "id": 314916,
+            "name": "Unconditional",
+            "original_name": "\u05d4\u05d1\u05ea",
+            "overview": "A mother-daughter vacation abroad takes a devastating turn when Gali is arrested for drug possession. Refusing to accept the charges, her mother Orna risks everything on a quest for freedom\u2014only to get entangled in a web of Gali's secrets.",
+            "poster_path": "/l8fk8AvFzOT47LO13BcaKglqNZQ.jpg",
+            "media_type": "tv",
+            "original_language": "he",
+            "genre_ids": [
+                18
+            ],
+            "popularity": 5.1424,
+            "first_air_date": "2026-04-27",
+            "softcore": false,
+            "vote_average": 7.0,
+            "vote_count": 1,
+            "origin_country": [
+                "IL"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/anhYZV0WFz4Lv2Ldp2KIZdPCKAh.jpg",
+            "id": 272432,
+            "name": "Born with Luck",
+            "original_name": "\u4f4e\u667a\u5546\u72af\u7f6a",
+            "overview": "Zhang Yi'ang, a veteran detective, is sent to Sanjiangkou to investigate a case but soon finds himself caught in a web of crime and corruption. While pursuing a powerful criminal network, he unexpectedly receives help from a group of bungling thieves, who inadvertently aid his mission to unravel the truth behind a murder.",
+            "poster_path": "/3t7xGceBAsSzWMuDdUpa6xS0x7p.jpg",
+            "media_type": "tv",
+            "original_language": "zh",
+            "genre_ids": [
+                18,
+                9648,
+                80,
+                35
+            ],
+            "popularity": 25.8714,
+            "first_air_date": "2026-05-04",
+            "softcore": false,
+            "vote_average": 9.0,
+            "vote_count": 3,
+            "origin_country": [
+                "CN"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/9cahMsmh0QCyZzhiTjOLk8ABhJo.jpg",
+            "id": 75191,
+            "name": "The Terror",
+            "original_name": "The Terror",
+            "overview": "A chilling anthology series featuring stories of people in terrifying situations inspired by true historical events.",
+            "poster_path": "/2nMZzKlMj158RVb6tjmIunoaNdo.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                9648,
+                18,
+                10765
+            ],
+            "popularity": 18.6823,
+            "first_air_date": "2018-03-26",
+            "softcore": false,
+            "vote_average": 7.3,
+            "vote_count": 966,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/auyEi4Xho43HFvVQnd42LzqBdiV.jpg",
+            "id": 124364,
+            "name": "FROM",
+            "original_name": "FROM",
+            "overview": "Unravel the mystery of a nightmarish town in middle America that traps all those who enter. As the unwilling residents fight to keep a sense of normalcy and search for a way out, they must also survive the threats of the surrounding forest \u2013 including the terrifying creatures that come out when the sun goes down.",
+            "poster_path": "/pRtJagIxpfODzzb0T0NAvZSzErC.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                9648,
+                18,
+                10765
+            ],
+            "popularity": 555.1125,
+            "first_air_date": "2022-02-20",
+            "softcore": false,
+            "vote_average": 8.18,
+            "vote_count": 2727,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/5SrsdKcN9Flvccq59sIfJbhq1Fk.jpg",
+            "id": 289219,
+            "name": "Star Wars: Maul - Shadow Lord",
+            "original_name": "Star Wars: Maul - Shadow Lord",
+            "overview": "After the Clone Wars, Maul plots to rebuild his criminal syndicate on a planet untouched by the Empire.",
+            "poster_path": "/cCUQAclLHCDQH6nduHwuqMdezmm.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                10759,
+                16,
+                10765
+            ],
+            "popularity": 61.0312,
+            "first_air_date": "2026-04-06",
+            "softcore": false,
+            "vote_average": 8.12,
+            "vote_count": 104,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/dMCfHJRnAZfKoPTjYyZk2QCL8au.jpg",
+            "id": 223386,
+            "name": "Man on Fire",
+            "original_name": "Man on Fire",
+            "overview": "Haunted by his past and hunted by his enemies, a Special Forces veteran fights to keep a teenage girl alive on the deadly streets of Rio de Janeiro.",
+            "poster_path": "/9cZzmT8rhBXbZ1QFBPs3ggABYB3.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                10759,
+                80
+            ],
+            "popularity": 85.5717,
+            "first_air_date": "2026-04-30",
+            "softcore": false,
+            "vote_average": 6.299,
+            "vote_count": 67,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/l5aIu2D3uIMnoiMIUf3J3AfFaQq.jpg",
+            "id": 294462,
+            "name": "Royal Upstart",
+            "original_name": "\u8d24\u5a7f",
+            "overview": "After a mysterious accident, Xiao Ning finds himself transported into another world as the live-in son-in-law of the powerful Su family. Using ancient techniques to revolutionize tea and wine, he uses his sharp wit and strategies to quickly rise to prominence.",
+            "poster_path": "/fxzqt3iDTXULAYy9iEPQZ1rgYXf.jpg",
+            "media_type": "tv",
+            "original_language": "zh",
+            "genre_ids": [
+                18
+            ],
+            "popularity": 21.2593,
+            "first_air_date": "2025-07-08",
+            "softcore": false,
+            "vote_average": 6.0,
+            "vote_count": 2,
+            "origin_country": [
+                "CN"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/7IY4wELVMvtUc78vPiuL8kQV2iA.jpg",
+            "id": 202411,
+            "name": "Monarch: Legacy of Monsters",
+            "original_name": "Monarch: Legacy of Monsters",
+            "overview": "After surviving Godzilla's attack on San Francisco, Cate is shaken yet again by a shocking secret. Amid monstrous threats, she embarks on a globetrotting adventure to learn the truth about her family\u2014and the mysterious organization known as Monarch.",
+            "poster_path": "/7LBbaEaLSbqdviBYaSS1rRPMnrs.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                10765,
+                18,
+                10759
+            ],
+            "popularity": 110.1042,
+            "first_air_date": "2023-11-16",
+            "softcore": false,
+            "vote_average": 7.72,
+            "vote_count": 1214,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/mez2Z3WqlPKNXpi7mWoiiE5guE9.jpg",
+            "id": 85552,
+            "name": "Euphoria",
+            "original_name": "Euphoria",
+            "overview": "A group of high school students navigate love and friendships in a world of drugs, sex, trauma, and social media.",
+            "poster_path": "/aJrG7OkoTMPWG5c8opz8a93AZPY.jpg",
+            "media_type": "tv",
+            "original_language": "en",
+            "genre_ids": [
+                18
+            ],
+            "popularity": 257.8175,
+            "first_air_date": "2019-06-16",
+            "softcore": false,
+            "vote_average": 8.279,
+            "vote_count": 10499,
+            "origin_country": [
+                "US"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/p1ntnKJwn1URGv1xpU6NN33Y11O.jpg",
+            "id": 303143,
+            "name": "My Royal Nemesis",
+            "original_name": "\uba4b\uc9c4 \uc2e0\uc138\uacc4",
+            "overview": "A legendary Joseon villainess reincarnated in a modern actress\u2019s body clashes with a cold-blooded chaebol heir, sparking a chaotic love-hate romance across centuries.",
+            "poster_path": "/rYLQbyIvbEd0lF84iXrx7CbPcBB.jpg",
+            "media_type": "tv",
+            "original_language": "ko",
+            "genre_ids": [
+                18,
+                35,
+                10765
+            ],
+            "popularity": 4.2751,
+            "first_air_date": "2026-05-08",
+            "softcore": false,
+            "vote_average": 0.0,
+            "vote_count": 0,
+            "origin_country": [
+                "KR"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/b5lBe5DfYd8Io7rCmo6ykLATgDz.jpg",
+            "id": 317056,
+            "name": "Double Helix",
+            "original_name": "\u53cc\u7a0b",
+            "overview": "Years after being torn apart by family and fate, two former lovers reunite as boss and employee, forced to confront a love they can't escape.",
+            "poster_path": "/udcrxC8tceOSAZ41jKtLCc47j6F.jpg",
+            "media_type": "tv",
+            "original_language": "zh",
+            "genre_ids": [
+                18
+            ],
+            "popularity": 3.0379,
+            "first_air_date": "2026-05-08",
+            "softcore": false,
+            "vote_average": 0.0,
+            "vote_count": 0,
+            "origin_country": [
+                "CN"
+            ]
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/x6y59dJBE1o0r4YRsWVQXE2nnlB.jpg",
+            "id": 65942,
+            "name": "Re:ZERO -Starting Life in Another World-",
+            "original_name": "Re:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b",
+            "overview": "Natsuki Subaru, an ordinary high school  student, is on his way home from the convenience store when he finds  himself transported to another world. As he's lost and confused in a new  world where he doesn't even know left from right, the only person to  reach out to him was a beautiful girl with silver hair. Determined to  repay her somehow for saving him from his own despair, Subaru agrees to  help the girl find something she's looking for.",
+            "poster_path": "/5MrRCj7z92YLWMXHeWKp19eJPYv.jpg",
+            "media_type": "tv",
+            "original_language": "ja",
+            "genre_ids": [
+                16,
+                10759,
+                10765,
+                9648
+            ],
+            "popularity": 73.7508,
+            "first_air_date": "2016-04-04",
+            "softcore": false,
+            "vote_average": 7.839,
+            "vote_count": 610,
+            "origin_country": [
+                "JP"
+            ]
+        }
+    ],
+    "total_pages": 500,
+    "total_results": 10000
+}
