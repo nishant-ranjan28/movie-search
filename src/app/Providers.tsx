@@ -21,7 +21,7 @@ export function Providers({ children }: Props) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={150}>
         {children}
         <Toaster />
         {import.meta.env.DEV ? (

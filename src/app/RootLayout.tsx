@@ -13,13 +13,13 @@ const navItems: { to: string; label: string; end?: boolean }[] = [
 export function RootLayout() {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-bg/80 px-4 backdrop-blur">
         <div className="text-lg font-semibold tracking-tight">Reel</div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
             type="button"
-            className="hidden text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 sm:inline"
+            className="hidden text-sm text-muted hover:text-fg sm:inline"
             aria-label="Install app"
           >
             Install
@@ -33,7 +33,7 @@ export function RootLayout() {
 
       <nav
         aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95"
+        className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-border bg-bg/95 backdrop-blur"
       >
         {navItems.map(({ to, label, end }) => (
           <NavLink
@@ -43,9 +43,7 @@ export function RootLayout() {
             className={({ isActive }) =>
               cn(
                 "flex flex-1 flex-col items-center justify-center text-xs font-medium",
-                isActive
-                  ? "text-slate-900 dark:text-slate-50"
-                  : "text-slate-500 dark:text-slate-400",
+                isActive ? "text-fg" : "text-muted hover:text-fg",
               )
             }
           >
