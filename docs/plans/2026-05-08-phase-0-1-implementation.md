@@ -382,14 +382,18 @@ EOF
 
 ### T0.7 Vitest + RTL + MSW + jsdom setup
 
+> **Adapted from original plan:** the Vite template installed Vite 8, which Vitest 2 does not peer-support. Bumped Vitest to `latest` (3.x); same for `@vitest/ui`.
+
 **Install**
 ```bash
 npm install -D \
-  vitest@^2 @vitest/ui \
+  vitest@latest @vitest/ui@latest \
   @testing-library/react @testing-library/jest-dom @testing-library/user-event \
   jsdom \
   msw@^2
 ```
+
+If `npm install` reports a peer-dep conflict between `vitest` and the installed `vite@8`, retry with `--legacy-peer-deps` and report the resolved versions in your commit message.
 
 **Files**
 - Create: `vitest.config.ts`, `src/test/setup.ts`, `src/test/server.ts`, `src/test/handlers.ts`
@@ -475,21 +479,49 @@ EOF
 
 ---
 
-### T0.8 Add ESLint + Prettier (optional but recommended)
+### T0.8 Extend ESLint flat config + add Prettier
 
+> **Adapted from original plan:** Vite shipped ESLint 10 (flat-config only) plus the unified `typescript-eslint` package and an `eslint.config.js` already at the repo root. Do **not** create `.eslintrc.cjs` (legacy config — removed in ESLint 9). Do **not** install `@typescript-eslint/parser` or `@typescript-eslint/eslint-plugin` (replaced by `typescript-eslint`, already present).
+
+**Install (only what's missing)**
 ```bash
-npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin \
-  eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y \
-  prettier eslint-config-prettier
+npm install -D eslint-plugin-jsx-a11y prettier eslint-config-prettier
 ```
 
-**Create `.eslintrc.cjs`**, **`.prettierrc.json`**, add `lint` and `format` scripts. Run `npm run lint -- --fix` and commit.
+**Modify the existing `eslint.config.js`** to:
+1. `import jsxA11y from "eslint-plugin-jsx-a11y"`
+2. `import eslintConfigPrettier from "eslint-config-prettier"`
+3. Add `jsxA11y.flatConfigs.recommended` to the config array.
+4. Add `eslintConfigPrettier` **last** in the config array (turns off rules that Prettier handles).
+5. Set `languageOptions.parserOptions.project` to `["./tsconfig.json", "./tsconfig.app.json", "./tsconfig.node.json"]` so type-aware rules work.
 
-(Full file contents elided here to keep the plan terse — generate standard configs.)
+**Create `.prettierrc.json`**:
+```json
+{
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "arrowParens": "always"
+}
+```
 
-**Verify**: `npm run lint && npm run typecheck`.
+**Add `package.json` scripts**:
+```json
+"lint": "eslint .",
+"lint:fix": "eslint . --fix",
+"format": "prettier --write ."
+```
 
-**Commit**: `chore: add ESLint and Prettier`.
+(`lint` already exists from the Vite scaffold; replace it if needed.)
+
+**Verify**
+```bash
+npm run lint && npm run typecheck
+```
+Both must exit 0 (running `npm run lint:fix` first is fine).
+
+**Commit**: `chore: extend ESLint flat config with jsx-a11y + Prettier`.
 
 ---
 
@@ -682,25 +714,26 @@ Each page is a stub that renders its name; real impls land in subsequent tasks.
 
 ---
 
-### T0.14 Update `.gitignore` and write a new README
+### T0.14 Update `.gitignore`, rewrite README, set app title
 
-**`.gitignore` add**:
+**`.gitignore` add** (only entries not already present from the Vite-template merge):
 ```
 /dist
 /.vercel
 /.idea
-/.vscode/*
-!/.vscode/extensions.json
 /coverage
 /playwright-report
 /test-results
 .env*.local
 .env
 ```
+(Many of these are already present after T0.2 merged the Vite-template `.gitignore`. Just diff and add what's missing.)
+
+**Set `index.html` `<title>` to `Movie Search`** (Vite scaffold leaked `vite-tmp` from the temp-dir name).
 
 **Rewrite `README.md`** to describe: what the app is, env vars (`VITE_TMDB_KEY`), `npm run dev/build/test/lint/typecheck`, deploy target (Vercel), link to design doc.
 
-**Commit**: `docs: rewrite README for new Vite app`.
+**Commit**: `docs: rewrite README, finalize .gitignore, set app title`.
 
 ---
 
