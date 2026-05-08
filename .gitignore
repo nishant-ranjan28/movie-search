@@ -42,3 +42,10 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Vercel
+/.vercel
+
+# Tests
+/playwright-report
+/test-results

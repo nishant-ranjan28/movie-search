@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# Movie Search
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An entertainment hub for movies, TV, anime, games, and books — all in one PWA.
 
-Currently, two official plugins are available:
+## Status
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This is the v2 revamp, currently being built on the `revamp/super-app` branch.
 
-## React Compiler
+- Design doc: [`docs/plans/2026-05-08-entertainment-super-app-design.md`](docs/plans/2026-05-08-entertainment-super-app-design.md)
+- Implementation plan: [`docs/plans/2026-05-08-phase-0-1-implementation.md`](docs/plans/2026-05-08-phase-0-1-implementation.md)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- Vite + React 19 + TypeScript (strict)
+- Tailwind CSS + shadcn/ui
+- react-router 7
+- TanStack Query
+- Zustand
+- Vitest + React Testing Library + MSW
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Quick start
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install --legacy-peer-deps
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`--legacy-peer-deps` is required temporarily because `eslint-plugin-jsx-a11y`'s
+peer-range trails ESLint 10. We will drop the flag when upstream catches up.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Environment variables
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Create a `.env.local` file at the repo root.
+
+| Variable         | Required for     | Notes                                                              |
+| ---------------- | ---------------- | ------------------------------------------------------------------ |
+| `VITE_TMDB_KEY`  | Phase 1: Movies/TV | TMDB API key — https://developer.themoviedb.org/                  |
+
+Phase 2+ adds `VITE_RAWG_KEY` (games). Phase 6 adds VAPID keys for web push.
+
+## Scripts
+
+- `npm run dev` — start the Vite dev server
+- `npm run build` — production build
+- `npm run preview` — serve the production build locally
+- `npm run test` — Vitest in watch mode
+- `npm run test:run` — Vitest single-pass (CI mode)
+- `npm run typecheck` — `tsc --noEmit`
+- `npm run lint` / `npm run lint:fix`
+- `npm run format` / `npm run format:check`
+
+## Deploy
+
+Hosted on Vercel. After linking the project, just run:
+
+```bash
+vercel
 ```
+
+Build command and output directory are configured in `vercel.json`.
+
+## Project layout
+
+See the design doc for the full layout. In short:
+
+- `src/features/<domain>/` — feature code (movies, tv, anime, games, books)
+- `src/shared/` — cross-domain code (UI primitives, hooks, utilities)
+- `src/app/` — app shell, providers, and routing
+
+## License
+
+See [`LICENSE`](LICENSE).
