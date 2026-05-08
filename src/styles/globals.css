@@ -28,6 +28,12 @@
     --accent-game: 5 150 105;
     --accent-book: 2 132 199;
   }
-  html, body, #root { height: 100%; }
-  body { @apply bg-bg text-fg font-sans antialiased; }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+  }
 }
