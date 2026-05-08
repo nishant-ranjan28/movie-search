@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 const config: Config = {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
@@ -23,6 +24,6 @@ const config: Config = {
       borderRadius: { lg: "12px", md: "8px", sm: "4px" },
     },
   },
-  plugins: [],
+  plugins: [animate],
 };
 export default config;

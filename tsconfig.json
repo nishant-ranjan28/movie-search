@@ -6,6 +6,7 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    // note: paths is duplicated from tsconfig.app.json for shadcn CLI preflight; keep in sync.
     "paths": { "@/*": ["./src/*"] }
   }
 }
