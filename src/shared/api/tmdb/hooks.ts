@@ -82,8 +82,11 @@ export const useUpcomingMovies = (
 /**
  * Combined theatrical + digital upcoming releases. Each event carries its
  * `releaseType` so the UI can label theatrical releases ("In theaters") and
- * digital releases (provider name when known, else "OTT"). Sorted by date
- * ascending; deduped by `${itemId}@${date}`.
+ * surface streaming-provider names when TMDB has them. Digital releases with
+ * unknown providers render no label (TMDB has no reliable platform data for
+ * pre-release titles, so a generic "OTT" placeholder would just be noise —
+ * see labelForRelease.ts). Sorted by date ascending; deduped by
+ * `${itemId}@${date}`.
  */
 export const useUpcomingReleases = (
   from: Date,

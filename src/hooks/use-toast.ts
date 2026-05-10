@@ -170,6 +170,9 @@ function toast({ ...props }: Toast) {
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);
 
+  // Register the listener once per mounted hook instance. The previous
+  // dep `[state]` made this re-run on every dispatch, leaking listeners
+  // and producing duplicate updates per toast.
   React.useEffect(() => {
     listeners.push(setState);
     return () => {
@@ -178,7 +181,7 @@ function useToast() {
         listeners.splice(index, 1);
       }
     };
-  }, [state]);
+  }, []);
 
   return {
     ...state,

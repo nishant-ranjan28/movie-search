@@ -48,6 +48,11 @@ export function MediaCard({ item, onOpen, className }: Readonly<MediaCardProps>)
         tabIndex={0}
         onClick={() => onOpen?.(item)}
         onKeyDown={(e) => {
+          // Only handle when the card itself has focus — keydown events
+          // bubble, so without this guard pressing Enter/Space on the
+          // nested bookmark button would also navigate to the detail
+          // page (a11y bug for keyboard users).
+          if (e.target !== e.currentTarget) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             onOpen?.(item);
