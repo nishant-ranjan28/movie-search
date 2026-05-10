@@ -29,14 +29,19 @@ const RetryButton = ({ reset, setShouldThrow }: RetryButtonProps) => (
   </button>
 );
 
+// Module-scoped fallback factory so the render prop isn't an inline
+// arrow-returning-JSX inside RetryWrapper (Sonar treats that as a
+// nested component definition, S2486).
+const makeRetryFallback =
+  (setShouldThrow: (next: boolean) => void) =>
+  (_error: unknown, reset: () => void) => (
+    <RetryButton reset={reset} setShouldThrow={setShouldThrow} />
+  );
+
 const RetryWrapper = () => {
   const [shouldThrow, setShouldThrow] = useState(true);
   return (
-    <ErrorBoundary
-      fallback={(_e, reset) => (
-        <RetryButton reset={reset} setShouldThrow={setShouldThrow} />
-      )}
-    >
+    <ErrorBoundary fallback={makeRetryFallback(setShouldThrow)}>
       <ConditionalThrow shouldThrow={shouldThrow} />
     </ErrorBoundary>
   );
