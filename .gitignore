@@ -52,3 +52,5 @@ lerna-debug.log*
 
 # Lighthouse reports
 .lighthouse/
+*.bak
+.env.local.bak
