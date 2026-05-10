@@ -10,7 +10,7 @@ export function RouteErrorFallback() {
         title="Page failed to load"
         description="Try refreshing or going home."
         action={
-          <Button onClick={() => (window.location.href = "/")}>Go home</Button>
+          <Button onClick={() => (globalThis.location.href = "/")}>Go home</Button>
         }
       />
     </div>

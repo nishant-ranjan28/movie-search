@@ -110,11 +110,8 @@ export function WatchlistPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Watchlist</h1>
 
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="group"
-        aria-label="Domain filter"
-      >
+      <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
+        <legend className="sr-only">Domain filter</legend>
         <Chip active={domainFilter === "all"} onClick={() => setDomainFilter("all")}>
           All
         </Chip>
@@ -129,13 +126,10 @@ export function WatchlistPage() {
               {DOMAIN_LABELS[d]}
             </Chip>
           ))}
-      </div>
+      </fieldset>
 
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="group"
-        aria-label="Status filter"
-      >
+      <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
+        <legend className="sr-only">Status filter</legend>
         <Chip active={statusFilter === "all"} onClick={() => setStatusFilter("all")}>
           All
         </Chip>
@@ -148,7 +142,7 @@ export function WatchlistPage() {
             {STATUS_LABELS[s]}
           </Chip>
         ))}
-      </div>
+      </fieldset>
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">
@@ -191,11 +185,11 @@ function Chip({
   active,
   onClick,
   children,
-}: {
+}: Readonly<{
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <button
       type="button"

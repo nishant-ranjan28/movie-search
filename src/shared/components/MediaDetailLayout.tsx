@@ -30,7 +30,7 @@ export function MediaDetailLayout({
   item,
   extras,
   isLoading,
-}: MediaDetailLayoutProps) {
+}: Readonly<MediaDetailLayoutProps>) {
   if (isLoading) {
     return (
       <div className="space-y-4">

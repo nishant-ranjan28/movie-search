@@ -21,8 +21,8 @@ export function InstallButton() {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
     };
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
-    return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+    globalThis.addEventListener("beforeinstallprompt", onBeforeInstall);
+    return () => globalThis.removeEventListener("beforeinstallprompt", onBeforeInstall);
   }, []);
 
   if (dismissed || !deferred) return null;

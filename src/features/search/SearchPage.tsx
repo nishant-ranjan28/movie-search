@@ -28,6 +28,55 @@ export function SearchPage() {
   const tvResults = trimmed ? (tv.data ?? []) : [];
   const totalResults = movieResults.length + tvResults.length;
 
+  const renderResults = () => {
+    if (!trimmed) {
+      return (
+        <EmptyState
+          icon={Search}
+          title="Type to find anything"
+          description="Results across movies and TV shows."
+        />
+      );
+    }
+    if (isLoading) {
+      return (
+        <div className="space-y-6">
+          <SectionSkeleton title="Movies" />
+          <SectionSkeleton title="TV Shows" />
+        </div>
+      );
+    }
+    if (totalResults === 0) {
+      return (
+        <EmptyState
+          icon={Search}
+          title="No results"
+          description={`No matches for "${trimmed}".`}
+        />
+      );
+    }
+    return (
+      <div className="space-y-6">
+        {movieResults.length > 0 ? (
+          <ResultSection
+            title="Movies"
+            count={movieResults.length}
+            items={movieResults}
+            onOpen={open}
+          />
+        ) : null}
+        {tvResults.length > 0 ? (
+          <ResultSection
+            title="TV Shows"
+            count={tvResults.length}
+            items={tvResults}
+            onOpen={open}
+          />
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Search</h1>
@@ -46,43 +95,7 @@ export function SearchPage() {
         />
       </div>
 
-      {!trimmed ? (
-        <EmptyState
-          icon={Search}
-          title="Type to find anything"
-          description="Results across movies and TV shows."
-        />
-      ) : isLoading ? (
-        <div className="space-y-6">
-          <SectionSkeleton title="Movies" />
-          <SectionSkeleton title="TV Shows" />
-        </div>
-      ) : totalResults === 0 ? (
-        <EmptyState
-          icon={Search}
-          title="No results"
-          description={`No matches for "${trimmed}".`}
-        />
-      ) : (
-        <div className="space-y-6">
-          {movieResults.length > 0 ? (
-            <ResultSection
-              title="Movies"
-              count={movieResults.length}
-              items={movieResults}
-              onOpen={open}
-            />
-          ) : null}
-          {tvResults.length > 0 ? (
-            <ResultSection
-              title="TV Shows"
-              count={tvResults.length}
-              items={tvResults}
-              onOpen={open}
-            />
-          ) : null}
-        </div>
-      )}
+      {renderResults()}
     </div>
   );
 }
@@ -92,12 +105,12 @@ function ResultSection({
   count,
   items,
   onOpen,
-}: {
+}: Readonly<{
   title: string;
   count: number;
   items: MediaItem[];
   onOpen: (i: MediaItem) => void;
-}) {
+}>) {
   return (
     <section className="space-y-2">
       <h2 className="text-base font-semibold">
@@ -113,13 +126,13 @@ function ResultSection({
   );
 }
 
-function SectionSkeleton({ title }: { title: string }) {
+function SectionSkeleton({ title }: Readonly<{ title: string }>) {
   return (
     <section className="space-y-2">
       <h2 className="text-base font-semibold">{title}</h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <MediaCardSkeleton key={i} />
+        {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
+          <MediaCardSkeleton key={key} />
         ))}
       </div>
     </section>

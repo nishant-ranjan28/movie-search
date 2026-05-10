@@ -9,7 +9,7 @@ const fireBeforeInstallPrompt = (handlers: {
 }) => {
   const ev = new Event("beforeinstallprompt") as Event & typeof handlers;
   Object.assign(ev, handlers);
-  window.dispatchEvent(ev);
+  globalThis.dispatchEvent(ev);
 };
 
 beforeEach(() => {
@@ -55,7 +55,7 @@ describe("InstallButton", () => {
   });
 
   test("hides if dismissed-until is in the future", () => {
-    localStorage.setItem("install-dismissed-until", String(Date.now() + 1000_000));
+    localStorage.setItem("install-dismissed-until", String(Date.now() + 1_000_000));
     const { container } = render(<InstallButton />);
     act(() => {
       fireBeforeInstallPrompt({

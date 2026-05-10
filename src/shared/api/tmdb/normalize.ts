@@ -59,7 +59,7 @@ export const movieToMediaItem = (m: TmdbMovie): MediaItem => {
     ...(m.original_title && m.original_title !== m.title
       ? { altTitle: m.original_title }
       : {}),
-    ...(year !== undefined ? { year } : {}),
+    ...(year === undefined ? {} : { year }),
     ...(m.poster_path
       ? { poster: { src: `${POSTER_BASE}${m.poster_path}` } }
       : {}),
@@ -74,7 +74,7 @@ export const movieToMediaItem = (m: TmdbMovie): MediaItem => {
         }
       : {}),
     ...(m.release_date ? { releaseDate: m.release_date } : {}),
-    ...(status !== undefined ? { status } : {}),
+    ...(status === undefined ? {} : { status }),
   };
 };
 
@@ -92,7 +92,7 @@ export const tvToMediaItem = (t: TmdbTv): MediaItem => {
     ...(t.original_name && t.original_name !== t.name
       ? { altTitle: t.original_name }
       : {}),
-    ...(year !== undefined ? { year } : {}),
+    ...(year === undefined ? {} : { year }),
     ...(t.poster_path
       ? { poster: { src: `${POSTER_BASE}${t.poster_path}` } }
       : {}),
@@ -107,7 +107,7 @@ export const tvToMediaItem = (t: TmdbTv): MediaItem => {
         }
       : {}),
     ...(t.first_air_date ? { releaseDate: t.first_air_date } : {}),
-    ...(status !== undefined ? { status } : {}),
+    ...(status === undefined ? {} : { status }),
   };
 };
 
@@ -124,7 +124,7 @@ export const movieListItemToMediaItem = (m: TmdbMovieListItem): MediaItem => {
     ...(m.original_title && m.original_title !== m.title
       ? { altTitle: m.original_title }
       : {}),
-    ...(year !== undefined ? { year } : {}),
+    ...(year === undefined ? {} : { year }),
     ...(m.poster_path
       ? { poster: { src: `${POSTER_BASE}${m.poster_path}` } }
       : {}),
@@ -155,7 +155,7 @@ export const tvListItemToMediaItem = (t: TmdbTvListItem): MediaItem => {
     ...(t.original_name && t.original_name !== t.name
       ? { altTitle: t.original_name }
       : {}),
-    ...(year !== undefined ? { year } : {}),
+    ...(year === undefined ? {} : { year }),
     ...(t.poster_path
       ? { poster: { src: `${POSTER_BASE}${t.poster_path}` } }
       : {}),

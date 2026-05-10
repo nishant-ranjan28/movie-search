@@ -17,12 +17,14 @@ import { pickHero } from "./heroPick";
 import type { MediaItem } from "@/shared/schemas/media";
 import { AlertCircle } from "lucide-react";
 
-function TrendingMoviesRail({ onOpen }: { onOpen: (item: MediaItem) => void }) {
+function TrendingMoviesRail({ onOpen }: Readonly<{ onOpen: (item: MediaItem) => void }>) {
   const { data, isLoading } = useMovieTrending("day");
   return (
     <RailCarousel title="Trending Movies">
       {isLoading
-        ? Array.from({ length: 6 }).map((_, i) => <MediaCardSkeleton key={i} />)
+        ? Array.from({ length: 6 }, (_, i) => `movie-skel-${i}`).map((key) => (
+            <MediaCardSkeleton key={key} />
+          ))
         : (data ?? []).slice(0, 12).map((item) => (
             <MediaCard key={item.id} item={item} onOpen={onOpen} />
           ))}
@@ -30,12 +32,14 @@ function TrendingMoviesRail({ onOpen }: { onOpen: (item: MediaItem) => void }) {
   );
 }
 
-function TrendingTvRail({ onOpen }: { onOpen: (item: MediaItem) => void }) {
+function TrendingTvRail({ onOpen }: Readonly<{ onOpen: (item: MediaItem) => void }>) {
   const { data, isLoading } = useTvTrending("day");
   return (
     <RailCarousel title="Trending TV">
       {isLoading
-        ? Array.from({ length: 6 }).map((_, i) => <MediaCardSkeleton key={i} />)
+        ? Array.from({ length: 6 }, (_, i) => `tv-skel-${i}`).map((key) => (
+            <MediaCardSkeleton key={key} />
+          ))
         : (data ?? []).slice(0, 12).map((item) => (
             <MediaCard key={item.id} item={item} onOpen={onOpen} />
           ))}
@@ -43,7 +47,7 @@ function TrendingTvRail({ onOpen }: { onOpen: (item: MediaItem) => void }) {
   );
 }
 
-function HeroBlock({ onOpen }: { onOpen: (item: MediaItem) => void }) {
+function HeroBlock({ onOpen }: Readonly<{ onOpen: (item: MediaItem) => void }>) {
   const { data, isLoading } = useMovieTrending("day");
   if (isLoading) return <div className="h-64 animate-pulse rounded-lg bg-card" />;
   const hero = pickHero(data ?? []);

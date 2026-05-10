@@ -20,7 +20,7 @@ export function RailCarousel({
   children,
   className,
   itemWidthClass = "w-36 sm:w-40 md:w-44",
-}: RailCarouselProps) {
+}: Readonly<RailCarouselProps>) {
   const ref = useRef<HTMLDivElement>(null);
   const headingId = `rail-${slug(title)}`;
 
@@ -58,7 +58,7 @@ export function RailCarousel({
         className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {Children.map(children, (child, i) => (
-          <div key={i} className={cn("shrink-0 snap-start", itemWidthClass)}>
+          <div key={`rail-item-${i}`} className={cn("shrink-0 snap-start", itemWidthClass)}>
             {child}
           </div>
         ))}

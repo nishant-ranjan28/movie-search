@@ -18,7 +18,7 @@ export interface DomainHubProps {
   title: string;
 }
 
-export function DomainHub({ domain, title }: DomainHubProps) {
+export function DomainHub({ domain, title }: Readonly<DomainHubProps>) {
   const [query, setQuery] = useState("");
   const deferred = useDeferredValue(query);
   const trimmed = deferred.trim();
@@ -63,8 +63,8 @@ export function DomainHub({ domain, title }: DomainHubProps) {
       </div>
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <MediaCardSkeleton key={i} />
+          {Array.from({ length: 12 }, (_, i) => `skeleton-${i}`).map((key) => (
+            <MediaCardSkeleton key={key} />
           ))}
         </div>
       ) : items.length === 0 ? (

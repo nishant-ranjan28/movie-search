@@ -5,11 +5,11 @@ import { ThemeToggle } from "./ThemeToggle";
 
 beforeEach(() => {
   localStorage.clear();
-  document.documentElement.removeAttribute("data-theme");
+  delete document.documentElement.dataset["theme"];
 });
 afterEach(() => {
   localStorage.clear();
-  document.documentElement.removeAttribute("data-theme");
+  delete document.documentElement.dataset["theme"];
 });
 
 test("renders Sun icon when theme is dark (so user can switch to light)", () => {

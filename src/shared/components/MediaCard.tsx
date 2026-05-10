@@ -19,7 +19,7 @@ export interface MediaCardProps {
   className?: string;
 }
 
-export function MediaCard({ item, onOpen, className }: MediaCardProps) {
+export function MediaCard({ item, onOpen, className }: Readonly<MediaCardProps>) {
   const isInWatchlist = useWatchlistStore((s) => s.has(item.id));
   const add = useWatchlistStore((s) => s.add);
   const remove = useWatchlistStore((s) => s.remove);

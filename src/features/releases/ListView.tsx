@@ -11,7 +11,7 @@ export interface ListViewProps {
   events: ReleaseEvent[];
 }
 
-export function ListView({ events }: ListViewProps) {
+export function ListView({ events }: Readonly<ListViewProps>) {
   const providers = useReleaseProviders(events);
 
   if (events.length === 0) {

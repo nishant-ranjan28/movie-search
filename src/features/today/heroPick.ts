@@ -2,8 +2,8 @@ import type { MediaItem } from "@/shared/schemas/media";
 
 const fnv1a = (input: string): number => {
   let h = 2166136261;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
+  for (const ch of input) {
+    h ^= ch.codePointAt(0) ?? 0;
     h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
   }
   return h;

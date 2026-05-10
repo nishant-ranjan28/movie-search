@@ -4,12 +4,12 @@ import { useTheme } from "./useTheme";
 
 beforeEach(() => {
   localStorage.clear();
-  document.documentElement.removeAttribute("data-theme");
+  delete document.documentElement.dataset["theme"];
 });
 
 afterEach(() => {
   localStorage.clear();
-  document.documentElement.removeAttribute("data-theme");
+  delete document.documentElement.dataset["theme"];
 });
 
 test("defaults to dark and writes data-theme", () => {
