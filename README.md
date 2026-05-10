@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+# Marquee
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An entertainment hub for movies, TV, anime, games, and books — all in one PWA.
 
-## Available Scripts
+## Status
 
-In the project directory, you can run:
+This is the v2 revamp, currently being built on the `revamp/super-app` branch.
 
-### `yarn start`
+- Design doc: [`docs/plans/2026-05-08-entertainment-super-app-design.md`](docs/plans/2026-05-08-entertainment-super-app-design.md)
+- Implementation plan: [`docs/plans/2026-05-08-phase-0-1-implementation.md`](docs/plans/2026-05-08-phase-0-1-implementation.md)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Tech stack
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Vite + React 19 + TypeScript (strict)
+- Tailwind CSS + shadcn/ui
+- react-router 7
+- TanStack Query
+- Zustand
+- Vitest + React Testing Library + MSW
 
-### `yarn test`
+## Quick start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install --legacy-peer-deps
+npm run dev
+```
 
-### `yarn build`
+`--legacy-peer-deps` is required temporarily because `eslint-plugin-jsx-a11y`'s
+peer-range trails ESLint 10. We will drop the flag when upstream catches up.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Environment variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create a `.env.local` file at the repo root.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Variable         | Required for     | Notes                                                              |
+| ---------------- | ---------------- | ------------------------------------------------------------------ |
+| `VITE_TMDB_KEY`  | Phase 1: Movies/TV | TMDB API key — https://developer.themoviedb.org/                  |
 
-### `yarn eject`
+Phase 2+ adds `VITE_RAWG_KEY` (games). Phase 6 adds VAPID keys for web push.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Scripts
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `npm run dev` — start the Vite dev server
+- `npm run build` — production build
+- `npm run preview` — serve the production build locally
+- `npm run test` — Vitest in watch mode
+- `npm run test:run` — Vitest single-pass (CI mode)
+- `npm run typecheck` — `tsc --noEmit`
+- `npm run lint` / `npm run lint:fix`
+- `npm run format` / `npm run format:check`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Deploy
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Hosted on Vercel. After linking the project, just run:
 
-## Learn More
+```bash
+vercel
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Build command and output directory are configured in `vercel.json`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project layout
 
-### Code Splitting
+See the design doc for the full layout. In short:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- `src/features/<domain>/` — feature code (movies, tv, anime, games, books)
+- `src/shared/` — cross-domain code (UI primitives, hooks, utilities)
+- `src/app/` — app shell, providers, and routing
 
-### Analyzing the Bundle Size
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+See [`LICENSE`](LICENSE).

@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  [data-theme="dark"] {
+    --bg: 9 9 11;
+    --fg: 244 244 245;
+    --muted: 161 161 170;
+    --border: 39 39 42;
+    --card: 24 24 27;
+    --accent-movie: 245 158 11;
+    --accent-tv: 139 92 246;
+    --accent-anime: 236 72 153;
+    --accent-game: 16 185 129;
+    --accent-book: 14 165 233;
+  }
+  [data-theme="light"] {
+    --bg: 255 255 255;
+    --fg: 24 24 27;
+    --muted: 113 113 122;
+    --border: 228 228 231;
+    --card: 244 244 245;
+    --accent-movie: 217 119 6;
+    --accent-tv: 124 58 237;
+    --accent-anime: 219 39 119;
+    --accent-game: 5 150 105;
+    --accent-book: 2 132 199;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+  }
+}

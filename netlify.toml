@@ -1,0 +1,18 @@
+# Netlify build config for the Vite app.
+# Note: Vercel is the planned primary host (see docs/plans/2026-05-08-entertainment-super-app-design.md).
+# Netlify config kept for the existing `imdb-movies-rating` site that's wired to this repo.
+
+[build]
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# SPA fallback — every unmatched path serves index.html so client-side
+# react-router routes resolve.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

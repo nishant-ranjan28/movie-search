@@ -1,0 +1,10 @@
+dist
+node_modules
+coverage
+legacy
+package-lock.json
+docs
+.github
+README.md
+LICENSE
+SECURITY.md
