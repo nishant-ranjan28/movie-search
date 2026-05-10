@@ -8,24 +8,33 @@ const Throw = ({ message = "boom" }: { message?: string }) => {
   throw new Error(message);
 };
 
-const ConditionalThrow = ({ shouldThrow }: { shouldThrow: boolean }) => {
+const ConditionalThrow = ({ shouldThrow }: Readonly<{ shouldThrow: boolean }>) => {
   if (shouldThrow) throw new Error("boom");
   return <p>OK</p>;
 };
+
+type RetryButtonProps = Readonly<{
+  reset: () => void;
+  setShouldThrow: (next: boolean) => void;
+}>;
+
+const RetryButton = ({ reset, setShouldThrow }: RetryButtonProps) => (
+  <button
+    onClick={() => {
+      setShouldThrow(false);
+      reset();
+    }}
+  >
+    Retry
+  </button>
+);
 
 const RetryWrapper = () => {
   const [shouldThrow, setShouldThrow] = useState(true);
   return (
     <ErrorBoundary
       fallback={(_e, reset) => (
-        <button
-          onClick={() => {
-            setShouldThrow(false);
-            reset();
-          }}
-        >
-          Retry
-        </button>
+        <RetryButton reset={reset} setShouldThrow={setShouldThrow} />
       )}
     >
       <ConditionalThrow shouldThrow={shouldThrow} />
