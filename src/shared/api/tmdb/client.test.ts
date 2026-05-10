@@ -57,20 +57,22 @@ describe("tmdb client URL composition", () => {
 
   test("movieDetails appends credits,videos,release_dates", async () => {
     fetchMock.mockResolvedValueOnce(okJson(movieDetailsFixture));
-    const item = await tmdb.movieDetails(603);
+    const { item, raw } = await tmdb.movieDetails(603);
     const url = fetchMock.mock.calls[0]![0] as string;
     expect(url).toContain("/movie/603");
     expect(url).toContain("append_to_response=credits%2Cvideos%2Crelease_dates");
     expect(item.id).toBe("tmdb:movie:603");
+    expect(raw.id).toBe(603);
   });
 
   test("tvDetails appends credits,videos", async () => {
     fetchMock.mockResolvedValueOnce(okJson(tvDetailsFixture));
-    const item = await tmdb.tvDetails(1399);
+    const { item, raw } = await tmdb.tvDetails(1399);
     const url = fetchMock.mock.calls[0]![0] as string;
     expect(url).toContain("/tv/1399");
     expect(url).toContain("append_to_response=credits%2Cvideos");
     expect(item.id).toBe("tmdb:tv:1399");
+    expect(raw.id).toBe(1399);
   });
 
   test("watchProviders extracts flatrate provider names", async () => {

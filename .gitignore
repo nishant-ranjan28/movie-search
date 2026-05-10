@@ -49,3 +49,6 @@ lerna-debug.log*
 # Tests
 /playwright-report
 /test-results
+
+# Lighthouse reports
+.lighthouse/

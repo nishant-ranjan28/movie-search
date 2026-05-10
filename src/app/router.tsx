@@ -2,6 +2,7 @@ import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import { RootLayout } from "./RootLayout";
 import { ComingSoon } from "./ComingSoon";
 import { NotFound } from "./NotFound";
+import { RouteErrorFallback } from "./RouteErrorFallback";
 import { TodayPage } from "@/features/today/TodayPage";
 import { MoviesHub } from "@/features/movies/MoviesHub";
 import { MovieDetail } from "@/features/movies/MovieDetail";
@@ -16,6 +17,7 @@ export const routes: RouteObject[] = [
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <RouteErrorFallback />,
     children: [
       { index: true, element: <TodayPage /> },
       { path: "movies", element: <MoviesHub /> },

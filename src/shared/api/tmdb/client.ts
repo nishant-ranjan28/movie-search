@@ -14,6 +14,8 @@ import {
   TmdbTrendingTvResponseSchema,
   TmdbTvSchema,
   TmdbWatchProvidersResponseSchema,
+  type TmdbMovie,
+  type TmdbTv,
 } from "./schemas";
 
 const BASE = "https://api.themoviedb.org/3";
@@ -138,24 +140,30 @@ export const tmdb = {
     return data.results.map(tvListItemToMediaItem);
   },
 
-  async movieDetails(id: number, signal?: AbortSignal): Promise<MediaItem> {
-    const data = await request(
+  async movieDetails(
+    id: number,
+    signal?: AbortSignal,
+  ): Promise<{ item: MediaItem; raw: TmdbMovie }> {
+    const raw = await request(
       `/movie/${id}`,
       { append_to_response: "credits,videos,release_dates" },
       TmdbMovieSchema,
       signal,
     );
-    return movieToMediaItem(data);
+    return { item: movieToMediaItem(raw), raw };
   },
 
-  async tvDetails(id: number, signal?: AbortSignal): Promise<MediaItem> {
-    const data = await request(
+  async tvDetails(
+    id: number,
+    signal?: AbortSignal,
+  ): Promise<{ item: MediaItem; raw: TmdbTv }> {
+    const raw = await request(
       `/tv/${id}`,
       { append_to_response: "credits,videos" },
       TmdbTvSchema,
       signal,
     );
-    return tvToMediaItem(data);
+    return { item: tvToMediaItem(raw), raw };
   },
 
   async upcomingMovies(

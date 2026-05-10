@@ -1,3 +1,5 @@
+import { DomainHub } from "@/shared/components/DomainHub";
+
 export function MoviesHub() {
-  return <h1 className="text-2xl">Movies</h1>;
+  return <DomainHub domain="movie" title="Movies" />;
 }

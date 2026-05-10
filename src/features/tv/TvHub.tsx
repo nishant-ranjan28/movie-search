@@ -1,3 +1,5 @@
+import { DomainHub } from "@/shared/components/DomainHub";
+
 export function TvHub() {
-  return <h1 className="text-2xl">TV Shows</h1>;
+  return <DomainHub domain="tv" title="TV Shows" />;
 }

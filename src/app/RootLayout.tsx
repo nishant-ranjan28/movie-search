@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/cn";
+import { InstallButton } from "./InstallButton";
 
 const navItems: { to: string; label: string; end?: boolean }[] = [
   { to: "/", label: "Today", end: true },
@@ -17,13 +18,7 @@ export function RootLayout() {
         <div className="text-lg font-semibold tracking-tight">Reel</div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <button
-            type="button"
-            className="hidden text-sm text-muted hover:text-fg sm:inline"
-            aria-label="Install app"
-          >
-            Install
-          </button>
+          <InstallButton />
         </div>
       </header>
 
