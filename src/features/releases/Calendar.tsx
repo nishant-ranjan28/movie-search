@@ -16,7 +16,7 @@ export interface CalendarProps {
   events: ReleaseEvent[];
 }
 
-export function Calendar({ events }: CalendarProps) {
+export function Calendar({ events }: Readonly<CalendarProps>) {
   const providers = useReleaseProviders(events);
   const [cursor, setCursor] = useState(() => new Date());
   const monthStart = startOfMonth(cursor);

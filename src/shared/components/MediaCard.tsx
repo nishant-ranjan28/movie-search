@@ -32,7 +32,7 @@ export function MediaCard({ item, onOpen, className }: Readonly<MediaCardProps>)
       const snapshot: WatchlistEntry["snapshot"] = {
         title: item.title,
         ...(item.poster ? { poster: item.poster } : {}),
-        ...(item.year !== undefined ? { year: item.year } : {}),
+        ...(item.year === undefined ? {} : { year: item.year }),
         genres: item.genres,
         ...(item.releaseDate ? { releaseDate: item.releaseDate } : {}),
         ...(item.status ? { status: item.status } : {}),

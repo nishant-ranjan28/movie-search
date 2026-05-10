@@ -195,8 +195,12 @@ export const tmdb = {
       TmdbSearchMovieResponseSchema,
       signal,
     );
-    const releaseType: ReleaseKind =
-      kind === "theatrical" ? "theatrical" : kind === "digital" ? "digital" : "unknown";
+    const resolveReleaseType = (): ReleaseKind => {
+      if (kind === "theatrical") return "theatrical";
+      if (kind === "digital") return "digital";
+      return "unknown";
+    };
+    const releaseType: ReleaseKind = resolveReleaseType();
     return data.results
       .filter((r) => r.release_date && r.release_date.length > 0)
       .map((r) => ({

@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 type Props = { children: ReactNode };
 
-export function Providers({ children }: Props) {
+export function Providers({ children }: Readonly<Props>) {
   const [queryClient] = useState(
     () =>
       new QueryClient({

@@ -43,7 +43,7 @@ const itemFromEntry = (e: WatchlistEntry): MediaItem => ({
   domain: e.domain,
   title: e.snapshot.title,
   ...(e.snapshot.poster ? { poster: e.snapshot.poster } : {}),
-  ...(e.snapshot.year !== undefined ? { year: e.snapshot.year } : {}),
+  ...(e.snapshot.year === undefined ? {} : { year: e.snapshot.year }),
   genres: e.snapshot.genres,
   ...(e.snapshot.releaseDate ? { releaseDate: e.snapshot.releaseDate } : {}),
   ...(e.snapshot.status ? { status: e.snapshot.status } : {}),

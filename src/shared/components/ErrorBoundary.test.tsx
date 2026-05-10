@@ -13,6 +13,26 @@ const ConditionalThrow = ({ shouldThrow }: { shouldThrow: boolean }) => {
   return <p>OK</p>;
 };
 
+const RetryWrapper = () => {
+  const [shouldThrow, setShouldThrow] = useState(true);
+  return (
+    <ErrorBoundary
+      fallback={(_e, reset) => (
+        <button
+          onClick={() => {
+            setShouldThrow(false);
+            reset();
+          }}
+        >
+          Retry
+        </button>
+      )}
+    >
+      <ConditionalThrow shouldThrow={shouldThrow} />
+    </ErrorBoundary>
+  );
+};
+
 // Suppress React's expected error log noise in these tests
 const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -65,27 +85,8 @@ describe("ErrorBoundary", () => {
   });
 
   test("retry resets the boundary", async () => {
-    const Wrapper = () => {
-      const [shouldThrow, setShouldThrow] = useState(true);
-      return (
-        <ErrorBoundary
-          fallback={(_e, reset) => (
-            <button
-              onClick={() => {
-                setShouldThrow(false);
-                reset();
-              }}
-            >
-              Retry
-            </button>
-          )}
-        >
-          <ConditionalThrow shouldThrow={shouldThrow} />
-        </ErrorBoundary>
-      );
-    };
     const user = userEvent.setup();
-    render(<Wrapper />);
+    render(<RetryWrapper />);
     await user.click(screen.getByRole("button", { name: /retry/i }));
     expect(screen.getByText(/^OK$/)).toBeInTheDocument();
   });

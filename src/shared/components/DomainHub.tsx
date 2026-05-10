@@ -44,6 +44,36 @@ export function DomainHub({ domain, title }: Readonly<DomainHubProps>) {
     else if (item.domain === "tv") navigate(`/tv/${idPart}`);
   };
 
+  const renderGrid = () => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {Array.from({ length: 12 }, (_, i) => `skeleton-${i}`).map((key) => (
+            <MediaCardSkeleton key={key} />
+          ))}
+        </div>
+      );
+    }
+    if (items.length === 0) {
+      return (
+        <EmptyState
+          icon={Search}
+          title={isSearching ? "No results" : "Nothing yet"}
+          description={
+            isSearching ? `No matches for "${trimmed}"` : "Try a search above."
+          }
+        />
+      );
+    }
+    return (
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {items.map((item) => (
+          <MediaCard key={item.id} item={item} onOpen={open} />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">{title}</h1>
@@ -61,27 +91,7 @@ export function DomainHub({ domain, title }: Readonly<DomainHubProps>) {
           className="pl-9"
         />
       </div>
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {Array.from({ length: 12 }, (_, i) => `skeleton-${i}`).map((key) => (
-            <MediaCardSkeleton key={key} />
-          ))}
-        </div>
-      ) : items.length === 0 ? (
-        <EmptyState
-          icon={Search}
-          title={isSearching ? "No results" : "Nothing yet"}
-          description={
-            isSearching ? `No matches for "${trimmed}"` : "Try a search above."
-          }
-        />
-      ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {items.map((item) => (
-            <MediaCard key={item.id} item={item} onOpen={open} />
-          ))}
-        </div>
-      )}
+      {renderGrid()}
     </div>
   );
 }

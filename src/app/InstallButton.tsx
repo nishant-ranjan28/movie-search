@@ -17,12 +17,19 @@ export function InstallButton() {
   });
 
   useEffect(() => {
-    const onBeforeInstall = (e: Event) => {
+    const onBeforeInstall = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
-      setDeferred(e as BeforeInstallPromptEvent);
+      setDeferred(e);
     };
-    globalThis.addEventListener("beforeinstallprompt", onBeforeInstall);
-    return () => globalThis.removeEventListener("beforeinstallprompt", onBeforeInstall);
+    globalThis.addEventListener(
+      "beforeinstallprompt",
+      onBeforeInstall as EventListener,
+    );
+    return () =>
+      globalThis.removeEventListener(
+        "beforeinstallprompt",
+        onBeforeInstall as EventListener,
+      );
   }, []);
 
   if (dismissed || !deferred) return null;

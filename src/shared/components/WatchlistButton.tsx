@@ -34,7 +34,7 @@ export function WatchlistButton({
   item,
   variant = "default",
   className,
-}: WatchlistButtonProps) {
+}: Readonly<WatchlistButtonProps>) {
   const entry = useWatchlistStore((s) => s.entries[item.id]);
   const add = useWatchlistStore((s) => s.add);
   const remove = useWatchlistStore((s) => s.remove);
@@ -43,7 +43,7 @@ export function WatchlistButton({
   const buildSnapshot = (): WatchlistEntry["snapshot"] => ({
     title: item.title,
     ...(item.poster ? { poster: item.poster } : {}),
-    ...(item.year !== undefined ? { year: item.year } : {}),
+    ...(item.year === undefined ? {} : { year: item.year }),
     genres: item.genres,
     ...(item.releaseDate ? { releaseDate: item.releaseDate } : {}),
     ...(item.status ? { status: item.status } : {}),

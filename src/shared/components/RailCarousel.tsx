@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Children, useRef, type ReactNode } from "react";
+import { Children, useRef, type ReactElement, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export interface RailCarouselProps {
@@ -57,11 +57,14 @@ export function RailCarousel({
         ref={ref}
         className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {Children.map(children, (child, i) => (
-          <div key={`rail-item-${i}`} className={cn("shrink-0 snap-start", itemWidthClass)}>
-            {child}
-          </div>
-        ))}
+        {Children.map(children, (child, i) => {
+          const k = (child as ReactElement).key ?? `rail-item-${i}`;
+          return (
+            <div key={k} className={cn("shrink-0 snap-start", itemWidthClass)}>
+              {child}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
