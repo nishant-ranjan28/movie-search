@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { useQueries, useQuery, type UseQueryResult } from "@tanstack/react-query";
 import type { MediaItem } from "@/shared/schemas/media";
 import { tmdb, type ReleaseEvent } from "./client";
 import type { TmdbMovie, TmdbTv } from "./schemas";
@@ -64,18 +64,49 @@ export const useTvSearch = (query: string): UseQueryResult<MediaItem[]> =>
 export const useUpcomingMovies = (
   from: Date,
   to: Date,
+  kind: "theatrical" | "digital" | "all" = "all",
 ): UseQueryResult<ReleaseEvent[]> =>
   useQuery({
     queryKey: [
       "tmdb",
       "upcoming",
       "movie",
+      kind,
       from.toISOString().slice(0, 10),
       to.toISOString().slice(0, 10),
     ],
-    queryFn: ({ signal }) => tmdb.upcomingMovies(from, to, signal),
+    queryFn: ({ signal }) => tmdb.upcomingMovies(from, to, signal, kind),
     staleTime: HOUR,
   });
+
+/**
+ * Combined theatrical + digital upcoming releases. Each event carries its
+ * `releaseType` so the UI can label theatrical releases ("In theaters") and
+ * digital releases (provider name when known, else "OTT"). Sorted by date
+ * ascending; deduped by `${itemId}@${date}`.
+ */
+export const useUpcomingReleases = (
+  from: Date,
+  to: Date,
+): { data: ReleaseEvent[]; isLoading: boolean } => {
+  const theatrical = useUpcomingMovies(from, to, "theatrical");
+  const digital = useUpcomingMovies(from, to, "digital");
+  const merged: ReleaseEvent[] = [];
+  const seen = new Set<string>();
+  for (const list of [digital.data ?? [], theatrical.data ?? []]) {
+    for (const e of list) {
+      const key = `${e.itemId}@${e.date}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(e);
+    }
+  }
+  merged.sort((a, b) => a.date.localeCompare(b.date));
+  return {
+    data: merged,
+    isLoading: theatrical.isLoading || digital.isLoading,
+  };
+};
 
 export const useWatchProviders = (
   domain: "movie" | "tv",
@@ -88,3 +119,28 @@ export const useWatchProviders = (
     staleTime: DAY,
     enabled: id !== undefined,
   });
+
+export const useReleaseProviders = (
+  events: ReleaseEvent[],
+  region: string = "IN",
+): Record<string, string[]> => {
+  const queries = useQueries({
+    queries: events.map((e) => {
+      const idPart = e.itemId.split(":").pop();
+      const id = idPart ? Number(idPart) : undefined;
+      return {
+        queryKey: ["tmdb", "watch-providers", e.domain, id, region],
+        queryFn: ({ signal }: { signal: AbortSignal }) =>
+          tmdb.watchProviders(e.domain, id as number, region, signal),
+        staleTime: DAY,
+        enabled: id !== undefined && Number.isFinite(id),
+      };
+    }),
+  });
+  const map: Record<string, string[]> = {};
+  events.forEach((e, i) => {
+    const data = queries[i]?.data;
+    if (data && data.length > 0) map[e.itemId] = data;
+  });
+  return map;
+};

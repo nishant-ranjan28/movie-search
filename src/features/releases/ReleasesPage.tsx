@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useUpcomingMovies } from "@/shared/api/tmdb/hooks";
+import { useUpcomingReleases } from "@/shared/api/tmdb/hooks";
 import { Calendar } from "./Calendar";
 import { ListView } from "./ListView";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,8 +11,8 @@ export function ReleasesPage() {
     const t = new Date(f.getTime() + 30 * 24 * 60 * 60 * 1000);
     return { from: f, to: t };
   }, []);
-  const { data, isLoading } = useUpcomingMovies(from, to);
-  const events = data ?? [];
+  const { data, isLoading } = useUpcomingReleases(from, to);
+  const events = data;
 
   return (
     <div className="space-y-4">

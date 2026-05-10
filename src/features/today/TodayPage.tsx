@@ -1,15 +1,18 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useMovieTrending,
+  useReleaseProviders,
   useTvTrending,
-  useUpcomingMovies,
+  useUpcomingReleases,
 } from "@/shared/api/tmdb/hooks";
 import { MediaCard } from "@/shared/components/MediaCard";
 import { MediaCardSkeleton } from "@/shared/components/MediaCardSkeleton";
 import { RailCarousel } from "@/shared/components/RailCarousel";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { labelForRelease } from "@/features/releases/labelForRelease";
+import { releaseRoute } from "@/features/releases/releaseRoute";
 import { pickHero } from "./heroPick";
 import type { MediaItem } from "@/shared/schemas/media";
 import { AlertCircle } from "lucide-react";
@@ -75,24 +78,42 @@ function ComingThisWeekRail() {
     const t = new Date(f.getTime() + 7 * 24 * 60 * 60 * 1000);
     return { from: f, to: t };
   }, []);
-  const { data, isLoading } = useUpcomingMovies(from, to);
+  const { data, isLoading } = useUpcomingReleases(from, to);
+  const visible = data.slice(0, 12);
+  const providers = useReleaseProviders(visible);
   if (isLoading) return null;
-  if (!data || data.length === 0) return null;
+  if (visible.length === 0) return null;
   return (
     <section className="space-y-2">
       <h2 className="text-base font-semibold">Coming this week</h2>
       <ul className="space-y-1 text-sm">
-        {data.slice(0, 8).map((evt) => (
-          <li key={evt.itemId}>
-            <span className="text-muted">{evt.date}</span>
-            {" — "}
-            <span>{evt.title}</span>
-          </li>
-        ))}
+        {visible.map((evt) => {
+          const where = providers[evt.itemId]?.slice(0, 2).join(", ");
+          const label = labelForRelease(evt.releaseType, where);
+          const route = releaseRoute(evt);
+          return (
+            <li key={`${evt.itemId}@${evt.date}`}>
+              <span className="text-muted">{evt.date}</span>
+              {" — "}
+              {route ? (
+                <Link
+                  to={route}
+                  className="rounded hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+                >
+                  {evt.title}
+                </Link>
+              ) : (
+                <span>{evt.title}</span>
+              )}
+              {label ? <span className="text-muted"> · {label}</span> : null}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
 }
+
 
 export function TodayPage() {
   const navigate = useNavigate();

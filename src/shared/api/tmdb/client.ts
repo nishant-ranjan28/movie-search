@@ -39,12 +39,15 @@ export class ApiError extends Error {
   }
 }
 
+export type ReleaseKind = "theatrical" | "digital" | "tv" | "unknown";
+
 export interface ReleaseEvent {
   itemId: string;
   domain: "movie" | "tv";
   date: string;
   kind: "release" | "season";
   title: string;
+  releaseType?: ReleaseKind;
 }
 
 async function request<T>(
@@ -166,20 +169,34 @@ export const tmdb = {
     return { item: tvToMediaItem(raw), raw };
   },
 
+  /**
+   * `kind` filters by TMDB release type:
+   *  - "theatrical" → with_release_type=2|3 (limited + theatrical)
+   *  - "digital" → with_release_type=4|6 (OTT + TV)
+   *  - "all" → no filter
+   * Each returned event carries `releaseType` so the UI can label it.
+   */
   async upcomingMovies(
     from: Date,
     to: Date,
     signal?: AbortSignal,
+    kind: "theatrical" | "digital" | "all" = "all",
   ): Promise<ReleaseEvent[]> {
+    const params: Record<string, string> = {
+      "primary_release_date.gte": toIsoDate(from),
+      "primary_release_date.lte": toIsoDate(to),
+      sort_by: "popularity.desc",
+    };
+    if (kind === "theatrical") params["with_release_type"] = "2|3";
+    else if (kind === "digital") params["with_release_type"] = "4|6";
     const data = await request(
       "/discover/movie",
-      {
-        "primary_release_date.gte": toIsoDate(from),
-        "primary_release_date.lte": toIsoDate(to),
-      },
+      params,
       TmdbSearchMovieResponseSchema,
       signal,
     );
+    const releaseType: ReleaseKind =
+      kind === "theatrical" ? "theatrical" : kind === "digital" ? "digital" : "unknown";
     return data.results
       .filter((r) => r.release_date && r.release_date.length > 0)
       .map((r) => ({
@@ -188,6 +205,7 @@ export const tmdb = {
         date: r.release_date as string,
         kind: "release" as const,
         title: r.title,
+        releaseType,
       }));
   },
 
@@ -204,6 +222,20 @@ export const tmdb = {
       signal,
     );
     const country = data.results[region];
-    return country?.flatrate?.map((p) => p.provider_name) ?? [];
+    if (!country) return [];
+    // Union of subscription, rent, and buy providers — gives us a platform
+    // name even for upcoming movies that aren't on flatrate yet.
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const list of [country.flatrate, country.rent, country.buy]) {
+      if (!list) continue;
+      for (const p of list) {
+        if (!seen.has(p.provider_name)) {
+          seen.add(p.provider_name);
+          out.push(p.provider_name);
+        }
+      }
+    }
+    return out;
   },
 };

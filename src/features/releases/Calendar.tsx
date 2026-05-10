@@ -3,16 +3,21 @@ import {
   startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay,
   startOfWeek, endOfWeek, addMonths, subMonths,
 } from "date-fns";
+import { Link } from "react-router-dom";
 import type { ReleaseEvent } from "@/shared/api/tmdb/client";
+import { useReleaseProviders } from "@/shared/api/tmdb/hooks";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { labelForRelease } from "./labelForRelease";
+import { releaseRoute } from "./releaseRoute";
 
 export interface CalendarProps {
   events: ReleaseEvent[];
 }
 
 export function Calendar({ events }: CalendarProps) {
+  const providers = useReleaseProviders(events);
   const [cursor, setCursor] = useState(() => new Date());
   const monthStart = startOfMonth(cursor);
   const monthEnd = endOfMonth(cursor);
@@ -79,9 +84,26 @@ export function Calendar({ events }: CalendarProps) {
         <div className="space-y-1">
           <h3 className="text-sm font-semibold">{format(selectedDay, "MMMM d, yyyy")}</h3>
           <ul className="space-y-1 text-sm">
-            {selectedEvents.map((e) => (
-              <li key={e.itemId}>{e.title}</li>
-            ))}
+            {selectedEvents.map((e) => {
+              const where = providers[e.itemId]?.slice(0, 2).join(", ");
+              const label = labelForRelease(e.releaseType, where);
+              const route = releaseRoute(e);
+              return (
+                <li key={`${e.itemId}@${e.date}`}>
+                  {route ? (
+                    <Link
+                      to={route}
+                      className="rounded hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+                    >
+                      {e.title}
+                    </Link>
+                  ) : (
+                    <span>{e.title}</span>
+                  )}
+                  {label ? <span className="text-muted"> · {label}</span> : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}
