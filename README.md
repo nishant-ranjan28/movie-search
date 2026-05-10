@@ -1,4 +1,4 @@
-# Movie Search
+# Marquee
 
 An entertainment hub for movies, TV, anime, games, and books — all in one PWA.
 

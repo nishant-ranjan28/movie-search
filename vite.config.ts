@@ -15,8 +15,8 @@ export default defineConfig({
         "icons/maskable-512.png",
       ],
       manifest: {
-        name: "Movie Search",
-        short_name: "Movies",
+        name: "Marquee",
+        short_name: "Marquee",
         description:
           "Search movies, TV, anime, games, and books in one place.",
         start_url: "/",

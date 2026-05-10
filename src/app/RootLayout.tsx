@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/cn";
 import { InstallButton } from "./InstallButton";
@@ -15,7 +15,13 @@ export function RootLayout() {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-bg/80 px-4 backdrop-blur">
-        <div className="text-lg font-semibold tracking-tight">Reel</div>
+        <Link
+          to="/"
+          aria-label="Marquee — go to home"
+          className="rounded text-lg font-semibold tracking-tight hover:text-fg/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+        >
+          Marquee
+        </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <InstallButton />
