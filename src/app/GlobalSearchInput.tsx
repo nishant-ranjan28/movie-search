@@ -7,9 +7,11 @@ import {
   type KeyboardEvent,
 } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useMovieSearch, useTvSearch } from "@/shared/api/tmdb/hooks";
+import { useGenres, useMovieSearch, useTvSearch } from "@/shared/api/tmdb/hooks";
+import { useAiTranslate } from "@/shared/api/ai/translate";
+import { filtersToParams } from "@/shared/components/discoverFiltersFromUrl";
 import type { MediaItem } from "@/shared/schemas/media";
 import { cn } from "@/lib/cn";
 
@@ -45,6 +47,9 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
 
   const movies = useMovieSearch(trimmed);
   const tv = useTvSearch(trimmed);
+
+  const movieGenres = useGenres("movie");
+  const aiTranslate = useAiTranslate();
 
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLFormElement>(null);
@@ -84,6 +89,21 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
     else if (item.domain === "tv") navigate(`/tv/${id}`);
   };
 
+  const runSmartSearch = () => {
+    const q = value.trim();
+    if (q.length === 0 || !movieGenres.data) return;
+    aiTranslate.mutate(
+      { query: q, domain: "movie", genres: movieGenres.data },
+      {
+        onSuccess: (filters) => {
+          const target = filtersToParams(filters, new URLSearchParams());
+          setOpen(false);
+          navigate(`/movies?${target.toString()}`);
+        },
+      },
+    );
+  };
+
   const movieHits = (movies.data ?? []).slice(0, DROPDOWN_LIMIT);
   const tvHits = (tv.data ?? []).slice(0, DROPDOWN_LIMIT);
   const hasQuery = trimmed.length > 0;
@@ -121,11 +141,12 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
           role="listbox"
           className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[480px] overflow-y-auto rounded-md border border-border bg-bg shadow-lg"
         >
+          {/* Title-search section: status line OR result groups */}
           {isLoading && !hasHits ? (
             <div className="px-3 py-3 text-sm text-muted">Searching…</div>
           ) : !hasHits ? (
             <div className="px-3 py-3 text-sm text-muted">
-              No matches for &ldquo;{trimmed}&rdquo;
+              No title matches for &ldquo;{trimmed}&rdquo; — try Smart search below.
             </div>
           ) : (
             <>
@@ -151,6 +172,31 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
               </button>
             </>
           )}
+          {/* Smart search action — always present when there is a query so the
+              user can escape "no title match" via AI-translated filters. */}
+          <button
+            type="button"
+            onClick={runSmartSearch}
+            disabled={aiTranslate.isPending || !movieGenres.data}
+            className="flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left text-sm text-fg hover:bg-card/60 disabled:opacity-60"
+          >
+            {aiTranslate.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+            ) : (
+              <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            )}
+            <span>
+              Smart search{" "}
+              <span className="text-muted">
+                — use AI to find &ldquo;{trimmed}&rdquo;
+              </span>
+            </span>
+          </button>
+          {aiTranslate.isError ? (
+            <p className="border-t border-border px-3 py-2 text-xs text-muted">
+              Smart search failed. Try again later.
+            </p>
+          ) : null}
         </div>
       ) : null}
     </form>
