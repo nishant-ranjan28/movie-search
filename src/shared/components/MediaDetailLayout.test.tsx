@@ -1,8 +1,12 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { MediaDetailLayout } from "./MediaDetailLayout";
 import { useWatchlistStore } from "@/shared/store/watchlist";
 import type { MediaItem } from "@/shared/schemas/media";
+
+const renderWithRouter = (ui: React.ReactElement) =>
+  render(<MemoryRouter>{ui}</MemoryRouter>);
 
 const item: MediaItem = {
   id: "tmdb:movie:603",
@@ -23,7 +27,7 @@ afterEach(() => localStorage.clear());
 
 describe("MediaDetailLayout", () => {
   test("renders title, year, synopsis", () => {
-    render(<MediaDetailLayout item={item} />);
+    renderWithRouter(<MediaDetailLayout item={item} />);
     expect(
       screen.getByRole("heading", { level: 1, name: /matrix/i }),
     ).toBeInTheDocument();
@@ -32,14 +36,14 @@ describe("MediaDetailLayout", () => {
   });
 
   test("shows watchlist toggle button", () => {
-    render(<MediaDetailLayout item={item} />);
+    renderWithRouter(<MediaDetailLayout item={item} />);
     expect(
       screen.getByRole("button", { name: /add to watchlist/i }),
     ).toBeInTheDocument();
   });
 
   test("renders cast and trailer when extras provided", () => {
-    render(
+    renderWithRouter(
       <MediaDetailLayout
         item={item}
         extras={{
@@ -54,7 +58,7 @@ describe("MediaDetailLayout", () => {
   });
 
   test("renders watch providers", () => {
-    render(
+    renderWithRouter(
       <MediaDetailLayout
         item={item}
         extras={{ watchProviders: ["Netflix", "HBO Max"] }}
@@ -64,7 +68,7 @@ describe("MediaDetailLayout", () => {
   });
 
   test("loading state shows skeletons", () => {
-    render(<MediaDetailLayout item={item} isLoading />);
+    renderWithRouter(<MediaDetailLayout item={item} isLoading />);
     expect(screen.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
   });
 
@@ -83,7 +87,7 @@ describe("MediaDetailLayout", () => {
       genres: [],
       external: [],
     };
-    render(
+    renderWithRouter(
       <MediaDetailLayout item={item} extras={{ similar: [a], recommendations: [b] }} />,
     );
     expect(
@@ -99,7 +103,7 @@ describe("MediaDetailLayout", () => {
   });
 
   test("omits a rail when its items array is empty", () => {
-    render(<MediaDetailLayout item={item} extras={{ similar: [] }} />);
+    renderWithRouter(<MediaDetailLayout item={item} extras={{ similar: [] }} />);
     expect(
       screen.queryByRole("heading", { name: /more like this/i }),
     ).not.toBeInTheDocument();
