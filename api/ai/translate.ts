@@ -164,19 +164,27 @@ export default async function handler(req: Request): Promise<Response> {
       }),
     });
   } catch (err) {
-    return json({ error: "groq network error", detail: String(err) }, 500);
+    // Log internally (Vercel function logs) — never expose stack/error
+    // details to clients (CodeQL: js/stack-trace-exposure).
+    console.error("[/api/ai/translate] groq fetch failed:", err);
+    return json({ error: "upstream unavailable" }, 502);
   }
 
   if (!groqRes.ok) {
     const text = await groqRes.text().catch(() => "");
-    return json({ error: "groq request failed", status: groqRes.status, detail: text }, 500);
+    console.error(
+      `[/api/ai/translate] groq returned ${groqRes.status}:`,
+      text.slice(0, 500),
+    );
+    return json({ error: "upstream error" }, 502);
   }
 
   let completion: unknown;
   try {
     completion = await groqRes.json();
-  } catch {
-    return json({ error: "groq returned non-json" }, 500);
+  } catch (err) {
+    console.error("[/api/ai/translate] groq returned non-json:", err);
+    return json({ error: "upstream parse error" }, 502);
   }
 
   const content = (
@@ -186,21 +194,29 @@ export default async function handler(req: Request): Promise<Response> {
   )?.choices?.[0]?.message?.content;
 
   if (typeof content !== "string") {
-    return json({ error: "groq response missing content" }, 500);
+    console.error("[/api/ai/translate] groq response missing content");
+    return json({ error: "upstream malformed" }, 502);
   }
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
-  } catch {
-    return json({ error: "model returned invalid json", content }, 500);
+  } catch (err) {
+    console.error(
+      "[/api/ai/translate] model returned invalid json:",
+      err,
+      "content:",
+      content.slice(0, 500),
+    );
+    return json({ error: "model output invalid" }, 502);
   }
 
   let result: TranslateResponse;
   try {
     result = sanitize(parsed, genreIds);
   } catch (err) {
-    return json({ error: "sanitize failed", detail: String(err) }, 500);
+    console.error("[/api/ai/translate] sanitize failed:", err);
+    return json({ error: "model output invalid" }, 502);
   }
 
   return json(result);
