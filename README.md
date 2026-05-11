@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nishant-ranjan28_movie-search&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=nishant-ranjan28_movie-search)
+
 # Marquee
 
 An entertainment hub for movies, TV, anime, games, and books — all in one PWA.
