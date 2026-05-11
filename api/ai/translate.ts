@@ -11,17 +11,18 @@
  *
  * Errors:
  *   400 — invalid input
- *   500 — Groq API failure or model returned malformed JSON
+ *   502 — Groq upstream / malformed output
  *   503 — GROQ_API_KEY env var missing
  *
  * Key handling: GROQ_API_KEY is a server-only env var (NOT prefixed VITE_),
  * never reaches the client bundle.
  */
 
+import { allowedIds, callGroqJson, clampInRange, json } from "../_lib/groq";
+
 export const config = { runtime: "edge" };
 
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.1-8b-instant";
+const TAG = "/api/ai/translate";
 
 interface GenreRef {
   id: number;
@@ -79,58 +80,28 @@ Rules:
 - Map "scary" to Horror; "mind-bending"/"sci-fi" to Science Fiction; "thrilling" to Thriller; "epic" → Adventure or Action.
 `.trim();
 
-const isResponseShape = (data: unknown): data is {
-  genres: unknown;
-  yearGte?: unknown;
-  yearLte?: unknown;
-  ratingGte?: unknown;
-} => typeof data === "object" && data !== null;
-
 const sanitize = (
   raw: unknown,
   genreIds: Set<number>,
 ): TranslateResponse => {
-  if (!isResponseShape(raw)) {
-    throw new Error("model returned non-object");
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("non-object");
   }
-  const out: TranslateResponse = { genres: [] };
-
-  if (Array.isArray(raw.genres)) {
-    out.genres = raw.genres
-      .filter((id): id is number => typeof id === "number" && genreIds.has(id))
-      .slice(0, 5);
-  }
-
-  const num = (v: unknown): number | undefined => {
-    if (typeof v !== "number" || !Number.isFinite(v)) return undefined;
-    return v;
+  const r = raw as Record<string, unknown>;
+  const out: TranslateResponse = {
+    genres: allowedIds(r["genres"], genreIds, 5),
   };
-
-  const yg = num(raw.yearGte);
-  if (yg !== undefined && yg >= 1900 && yg <= 2100) out.yearGte = Math.round(yg);
-  const yl = num(raw.yearLte);
-  if (yl !== undefined && yl >= 1900 && yl <= 2100) out.yearLte = Math.round(yl);
-  const rg = num(raw.ratingGte);
-  if (rg !== undefined && rg >= 0 && rg <= 10) out.ratingGte = rg;
-
+  const yg = clampInRange(r["yearGte"], 1900, 2100);
+  if (yg !== undefined) out.yearGte = Math.round(yg);
+  const yl = clampInRange(r["yearLte"], 1900, 2100);
+  if (yl !== undefined) out.yearLte = Math.round(yl);
+  const rg = clampInRange(r["ratingGte"], 0, 10);
+  if (rg !== undefined) out.ratingGte = rg;
   return out;
 };
 
-const json = (data: unknown, status = 200): Response =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { "content-type": "application/json" },
-  });
-
 export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== "POST") {
-    return json({ error: "method not allowed" }, 405);
-  }
-
-  const apiKey = process.env["GROQ_API_KEY"];
-  if (!apiKey) {
-    return json({ error: "GROQ_API_KEY not configured" }, 503);
-  }
+  if (req.method !== "POST") return json({ error: "method not allowed" }, 405);
 
   let body: unknown;
   try {
@@ -145,77 +116,18 @@ export default async function handler(req: Request): Promise<Response> {
 
   const genreIds = new Set(body.genres.map((g) => g.id));
 
-  let groqRes: Response;
-  try {
-    groqRes = await fetch(GROQ_URL, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.2,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT(body.domain, body.genres) },
-          { role: "user", content: body.query },
-        ],
-      }),
-    });
-  } catch (err) {
-    // Log internally (Vercel function logs) — never expose stack/error
-    // details to clients (CodeQL: js/stack-trace-exposure).
-    console.error("[/api/ai/translate] groq fetch failed:", err);
-    return json({ error: "upstream unavailable" }, 502);
-  }
-
-  if (!groqRes.ok) {
-    const text = await groqRes.text().catch(() => "");
-    console.error(
-      `[/api/ai/translate] groq returned ${groqRes.status}:`,
-      text.slice(0, 500),
-    );
-    return json({ error: "upstream error" }, 502);
-  }
-
-  let completion: unknown;
-  try {
-    completion = await groqRes.json();
-  } catch (err) {
-    console.error("[/api/ai/translate] groq returned non-json:", err);
-    return json({ error: "upstream parse error" }, 502);
-  }
-
-  const content = (
-    completion as {
-      choices?: { message?: { content?: string } }[];
-    }
-  )?.choices?.[0]?.message?.content;
-
-  if (typeof content !== "string") {
-    console.error("[/api/ai/translate] groq response missing content");
-    return json({ error: "upstream malformed" }, 502);
-  }
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch (err) {
-    console.error(
-      "[/api/ai/translate] model returned invalid json:",
-      err,
-      "content:",
-      content.slice(0, 500),
-    );
-    return json({ error: "model output invalid" }, 502);
-  }
+  const groqResult = await callGroqJson({
+    tag: TAG,
+    systemPrompt: SYSTEM_PROMPT(body.domain, body.genres),
+    userPrompt: body.query,
+  });
+  if (groqResult.kind === "error") return groqResult.response;
 
   let result: TranslateResponse;
   try {
-    result = sanitize(parsed, genreIds);
+    result = sanitize(groqResult.parsed, genreIds);
   } catch (err) {
-    console.error("[/api/ai/translate] sanitize failed:", err);
+    console.error(`[${TAG}] sanitize failed:`, err);
     return json({ error: "model output invalid" }, 502);
   }
 

@@ -14,21 +14,19 @@
  *   Body: {
  *     domain: "movie" | "tv",
  *     genres: { id: number, name: string }[],
- *     watchlist: { title: string; genres: string[]; year?: number;
- *                  status: "want"|"in_progress"|"done"|"dropped";
- *                  rating?: number }[],
- *     recents: string[]   // titles only
+ *     watchlist: { title, genres, year?, status, rating? }[],
+ *     recents: string[]
  *   }
  *
  * Response (200):
- *   { filters: { genres: number[], yearGte?: number, yearLte?: number,
- *                ratingGte?: number }, reason: string }
+ *   { filters: { genres, yearGte?, yearLte?, ratingGte? }, reason: string }
  */
+
+import { allowedIds, callGroqJson, clampInRange, json } from "../_lib/groq";
 
 export const config = { runtime: "edge" };
 
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.1-8b-instant";
+const TAG = "/api/ai/recommend";
 
 interface GenreRef {
   id: number;
@@ -66,7 +64,6 @@ const isValidBody = (data: unknown): data is RecommendRequest => {
   if (d["domain"] !== "movie" && d["domain"] !== "tv") return false;
   if (!Array.isArray(d["genres"]) || !Array.isArray(d["watchlist"])) return false;
   if (!Array.isArray(d["recents"])) return false;
-  // Loose validation — heavy duck-typing would just be ceremony.
   return true;
 };
 
@@ -106,9 +103,9 @@ ${req.recents.length === 0 ? "  (none)" : req.recents.slice(0, 20).map((t) => ` 
 Output ONLY a JSON object. No prose, no markdown fences:
 {
   "filters": {
-    "genres": [<id>, ...],          // 1–3 IDs from the list above
-    "yearGte": <integer or null>,    // earliest year to consider
-    "yearLte": <integer or null>,    // latest year to consider
+    "genres": [<id>, ...],
+    "yearGte": <integer or null>,
+    "yearLte": <integer or null>,
     "ratingGte": <number 0-10 or null>
   },
   "reason": "<one short sentence — what about their profile drove the picks>"
@@ -116,11 +113,10 @@ Output ONLY a JSON object. No prose, no markdown fences:
 
 Guidance:
 - Bias toward the dominant genres / decades / rating bands in their watchlist.
-- If they've rated things ≥4, the ratingGte floor should be ≥7.
+- If they've rated things >=4, the ratingGte floor should be >=7.
 - Don't repeat genres that appear in EVERY watchlist item — pick adjacent ones to broaden discovery.
 - yearGte/yearLte should cover a window of 5–15 years that fits their taste; null = no constraint.
-- Cold start (empty watchlist + empty recents): pick popular, broadly appealing filters
-  (e.g. ratingGte: 7, sort by popularity — but you don't output sort; the client defaults it).
+- Cold start (empty watchlist + empty recents): pick popular, broadly appealing filters.
 - The "reason" should reference specifics (a title, a genre cluster, a decade) — don't be generic.
 `.trim();
 
@@ -128,62 +124,27 @@ const sanitize = (
   raw: unknown,
   allowedGenreIds: Set<number>,
 ): RecommendResponse => {
-  if (typeof raw !== "object" || raw === null) {
-    throw new Error("non-object");
-  }
+  if (typeof raw !== "object" || raw === null) throw new Error("non-object");
   const r = raw as Record<string, unknown>;
   const f =
     typeof r["filters"] === "object" && r["filters"] !== null
       ? (r["filters"] as Record<string, unknown>)
       : {};
-
   const out: RecommendResponse = {
-    filters: { genres: [] },
+    filters: { genres: allowedIds(f["genres"], allowedGenreIds, 5) },
     reason: typeof r["reason"] === "string" ? r["reason"].slice(0, 240) : "",
   };
-
-  if (Array.isArray(f["genres"])) {
-    out.filters.genres = (f["genres"] as unknown[])
-      .filter(
-        (id): id is number => typeof id === "number" && allowedGenreIds.has(id),
-      )
-      .slice(0, 5);
-  }
-
-  const num = (v: unknown): number | undefined =>
-    typeof v === "number" && Number.isFinite(v) ? v : undefined;
-
-  const yg = num(f["yearGte"]);
-  if (yg !== undefined && yg >= 1900 && yg <= 2100) {
-    out.filters.yearGte = Math.round(yg);
-  }
-  const yl = num(f["yearLte"]);
-  if (yl !== undefined && yl >= 1900 && yl <= 2100) {
-    out.filters.yearLte = Math.round(yl);
-  }
-  const rg = num(f["ratingGte"]);
-  if (rg !== undefined && rg >= 0 && rg <= 10) {
-    out.filters.ratingGte = rg;
-  }
-
+  const yg = clampInRange(f["yearGte"], 1900, 2100);
+  if (yg !== undefined) out.filters.yearGte = Math.round(yg);
+  const yl = clampInRange(f["yearLte"], 1900, 2100);
+  if (yl !== undefined) out.filters.yearLte = Math.round(yl);
+  const rg = clampInRange(f["ratingGte"], 0, 10);
+  if (rg !== undefined) out.filters.ratingGte = rg;
   return out;
 };
 
-const json = (data: unknown, status = 200): Response =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { "content-type": "application/json" },
-  });
-
 export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== "POST") {
-    return json({ error: "method not allowed" }, 405);
-  }
-
-  const apiKey = process.env["GROQ_API_KEY"];
-  if (!apiKey) {
-    return json({ error: "GROQ_API_KEY not configured" }, 503);
-  }
+  if (req.method !== "POST") return json({ error: "method not allowed" }, 405);
 
   let body: unknown;
   try {
@@ -198,72 +159,19 @@ export default async function handler(req: Request): Promise<Response> {
 
   const allowedGenreIds = new Set(body.genres.map((g) => g.id));
 
-  let groqRes: Response;
-  try {
-    groqRes = await fetch(GROQ_URL, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.4,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT(body.domain, body.genres, body) },
-          { role: "user", content: "Pick a filter and explain." },
-        ],
-      }),
-    });
-  } catch (err) {
-    console.error("[/api/ai/recommend] groq fetch failed:", err);
-    return json({ error: "upstream unavailable" }, 502);
-  }
-
-  if (!groqRes.ok) {
-    const text = await groqRes.text().catch(() => "");
-    console.error(
-      `[/api/ai/recommend] groq returned ${groqRes.status}:`,
-      text.slice(0, 500),
-    );
-    return json({ error: "upstream error" }, 502);
-  }
-
-  let completion: unknown;
-  try {
-    completion = await groqRes.json();
-  } catch (err) {
-    console.error("[/api/ai/recommend] groq returned non-json:", err);
-    return json({ error: "upstream parse error" }, 502);
-  }
-
-  const content = (
-    completion as { choices?: { message?: { content?: string } }[] }
-  )?.choices?.[0]?.message?.content;
-
-  if (typeof content !== "string") {
-    console.error("[/api/ai/recommend] groq response missing content");
-    return json({ error: "upstream malformed" }, 502);
-  }
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch (err) {
-    console.error(
-      "[/api/ai/recommend] model returned invalid json:",
-      err,
-      content.slice(0, 500),
-    );
-    return json({ error: "model output invalid" }, 502);
-  }
+  const groqResult = await callGroqJson({
+    tag: TAG,
+    systemPrompt: SYSTEM_PROMPT(body.domain, body.genres, body),
+    userPrompt: "Pick a filter and explain.",
+    temperature: 0.4,
+  });
+  if (groqResult.kind === "error") return groqResult.response;
 
   let result: RecommendResponse;
   try {
-    result = sanitize(parsed, allowedGenreIds);
+    result = sanitize(groqResult.parsed, allowedGenreIds);
   } catch (err) {
-    console.error("[/api/ai/recommend] sanitize failed:", err);
+    console.error(`[${TAG}] sanitize failed:`, err);
     return json({ error: "model output invalid" }, 502);
   }
 
