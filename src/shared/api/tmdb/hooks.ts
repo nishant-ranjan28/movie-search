@@ -148,6 +148,22 @@ export const useReleaseProviders = (
   return map;
 };
 
+/**
+ * "Similar" or "recommendations" for a movie/TV item. Idle when `id` is
+ * undefined. Cached 24h — the lists are stable relative to a single title.
+ */
+export const useRelated = (
+  domain: "movie" | "tv",
+  id: number | undefined,
+  kind: "similar" | "recommendations",
+): UseQueryResult<MediaItem[]> =>
+  useQuery({
+    queryKey: ["tmdb", "related", domain, id, kind],
+    queryFn: ({ signal }) => tmdb.related(domain, id as number, kind, signal),
+    staleTime: DAY,
+    enabled: id !== undefined,
+  });
+
 /** TMDB genre list. Effectively static — staleTime 7 days. */
 export const useGenres = (
   domain: "movie" | "tv",

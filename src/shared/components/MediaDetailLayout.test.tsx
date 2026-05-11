@@ -67,4 +67,41 @@ describe("MediaDetailLayout", () => {
     render(<MediaDetailLayout item={item} isLoading />);
     expect(screen.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
   });
+
+  test("renders 'More like this' and 'You might also like' rails", () => {
+    const a: MediaItem = {
+      id: "tmdb:movie:1",
+      domain: "movie",
+      title: "Alpha",
+      genres: [],
+      external: [],
+    };
+    const b: MediaItem = {
+      id: "tmdb:movie:2",
+      domain: "movie",
+      title: "Beta",
+      genres: [],
+      external: [],
+    };
+    render(
+      <MediaDetailLayout item={item} extras={{ similar: [a], recommendations: [b] }} />,
+    );
+    expect(
+      screen.getByRole("heading", { name: /more like this/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /you might also like/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /alpha/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /beta/i })).toBeInTheDocument();
+  });
+
+  test("omits a rail when its items array is empty", () => {
+    render(<MediaDetailLayout item={item} extras={{ similar: [] }} />);
+    expect(
+      screen.queryByRole("heading", { name: /more like this/i }),
+    ).not.toBeInTheDocument();
+  });
 });

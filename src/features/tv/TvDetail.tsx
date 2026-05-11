@@ -1,5 +1,9 @@
 import { useParams } from "react-router-dom";
-import { useTvDetails, useWatchProviders } from "@/shared/api/tmdb/hooks";
+import {
+  useRelated,
+  useTvDetails,
+  useWatchProviders,
+} from "@/shared/api/tmdb/hooks";
 import {
   MediaDetailLayout,
   type CastMember,
@@ -13,6 +17,8 @@ export function TvDetail() {
   const numericId = id ? Number(id) : undefined;
   const details = useTvDetails(numericId);
   const providers = useWatchProviders("tv", numericId, "US");
+  const similar = useRelated("tv", numericId, "similar");
+  const recommendations = useRelated("tv", numericId, "recommendations");
 
   if (details.isLoading || !details.data) {
     return (
@@ -58,6 +64,12 @@ export function TvDetail() {
           ? { trailerUrl: `https://www.youtube.com/embed/${trailer.key}` }
           : {}),
         ...(providers.data ? { watchProviders: providers.data } : {}),
+        ...(similar.data && similar.data.length > 0
+          ? { similar: similar.data }
+          : {}),
+        ...(recommendations.data && recommendations.data.length > 0
+          ? { recommendations: recommendations.data }
+          : {}),
       }}
     />
   );

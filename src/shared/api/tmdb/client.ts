@@ -261,6 +261,35 @@ export const tmdb = {
     return out;
   },
 
+  /**
+   * Fetches TMDB's "similar" or "recommendations" list for a movie/TV item.
+   *  - "similar"        — content-based similarity (genres, keywords).
+   *  - "recommendations" — TMDB's user-behavior-driven picks.
+   */
+  async related(
+    domain: "movie" | "tv",
+    id: number,
+    kind: "similar" | "recommendations",
+    signal?: AbortSignal,
+  ): Promise<MediaItem[]> {
+    if (domain === "movie") {
+      const data = await request(
+        `/movie/${id}/${kind}`,
+        {},
+        TmdbSearchMovieResponseSchema,
+        signal,
+      );
+      return data.results.map(movieListItemToMediaItem);
+    }
+    const data = await request(
+      `/tv/${id}/${kind}`,
+      {},
+      TmdbSearchTvResponseSchema,
+      signal,
+    );
+    return data.results.map(tvListItemToMediaItem);
+  },
+
   async genres(
     domain: "movie" | "tv",
     signal?: AbortSignal,

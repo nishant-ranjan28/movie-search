@@ -1,0 +1,429 @@
+{
+    "page": 1,
+    "results": [
+        {
+            "adult": false,
+            "backdrop_path": "/2EfbAWLq8s2f1LxTAIuLGYpKETV.jpg",
+            "genre_ids": [
+                12,
+                28,
+                14
+            ],
+            "id": 8009,
+            "title": "Highlander",
+            "original_language": "en",
+            "original_title": "Highlander",
+            "overview": "He fought his first battle on the Scottish Highlands in 1536. He will fight his greatest battle on the streets of New York City in 1986. His name is Connor MacLeod. He is immortal.",
+            "popularity": 9.8011,
+            "poster_path": "/8Z8dptJEypuLoOQro1WugD855YE.jpg",
+            "release_date": "1986-03-07",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.861,
+            "vote_count": 2893
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/5GszfyuRYWBptoxI14fKgfHiTZK.jpg",
+            "genre_ids": [
+                14,
+                28,
+                12
+            ],
+            "id": 8010,
+            "title": "Highlander II: The Quickening",
+            "original_language": "en",
+            "original_title": "Highlander II: The Quickening",
+            "overview": "The Prize has been won. Connor MacLeod is mortal... Now an old man on the verge of death, memories of his past on the planet Zeist resurface, where a vengeful enemy, General Katana, plots to destroy him once and for all.",
+            "popularity": 2.0898,
+            "poster_path": "/qxKeykPNGbKAK0DJijMUaZ5cVPo.jpg",
+            "release_date": "1991-01-13",
+            "softcore": false,
+            "video": false,
+            "vote_average": 4.696,
+            "vote_count": 950
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/1ulygMNAaR6KINjI6Fqcx1N82ag.jpg",
+            "genre_ids": [
+                14,
+                28,
+                12
+            ],
+            "id": 8011,
+            "title": "Highlander III: The Sorcerer",
+            "original_language": "en",
+            "original_title": "Highlander III: The Sorcerer",
+            "overview": "Deceived that he had won the Prize, Connor MacLeod wanders through the world; however, he is awakened from his peaceful life when an entombed immortal magician, Kane, escapes and comes seeking the Highlander.",
+            "popularity": 2.5196,
+            "poster_path": "/9OwpKEb4kR3s3tgfJUMX7yficcm.jpg",
+            "release_date": "1994-11-29",
+            "softcore": false,
+            "video": false,
+            "vote_average": 4.761,
+            "vote_count": 547
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/uTqxyztRGHSq96JYhByyNFuqqld.jpg",
+            "genre_ids": [
+                878,
+                28,
+                53
+            ],
+            "id": 8202,
+            "title": "\u00c6on Flux",
+            "original_language": "en",
+            "original_title": "\u00c6on Flux",
+            "overview": "400 years into the future, disease has wiped out the majority of the world's population, except one walled city, Bregna, ruled by a congress of scientists. When \u00c6on Flux, the top operative in the underground 'Monican' rebellion, is sent on a mission to kill a government leader, she uncovers a world of secrets.",
+            "popularity": 4.5932,
+            "poster_path": "/5958Nt4QX6aRSUdQnvNw8wqjTJQ.jpg",
+            "release_date": "2005-11-30",
+            "softcore": false,
+            "video": false,
+            "vote_average": 5.638,
+            "vote_count": 2445
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/ybQY0GgRrSx8hvH97MxOydQlfp1.jpg",
+            "genre_ids": [
+                878,
+                28,
+                53
+            ],
+            "id": 8337,
+            "title": "They Live",
+            "original_language": "en",
+            "original_title": "They Live",
+            "overview": "A lone drifter stumbles upon a unique pair of sunglasses that reveal aliens are systematically gaining control of the Earth by masquerading as humans and lulling the public into submission.",
+            "popularity": 5.8893,
+            "poster_path": "/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg",
+            "release_date": "1988-11-04",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.297,
+            "vote_count": 3443
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/sN0czEtCT1jEFQVajWBsKwdFBKm.jpg",
+            "genre_ids": [
+                18,
+                9648,
+                878,
+                53
+            ],
+            "id": 8338,
+            "title": "Blindness",
+            "original_language": "en",
+            "original_title": "Blindness",
+            "overview": "When a sudden plague of blindness devastates a city, a small group of the afflicted band together to triumphantly overcome the horrific conditions of their imposed quarantine.",
+            "popularity": 2.4691,
+            "poster_path": "/deBsx5IxyqCC217j3VY24TkkE0Z.jpg",
+            "release_date": "2008-05-14",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.528,
+            "vote_count": 1369
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/9XpbzvX38LUi21QYvBlVyp3yBMv.jpg",
+            "genre_ids": [
+                28,
+                80,
+                12,
+                53
+            ],
+            "id": 8382,
+            "title": "Today You Die",
+            "original_language": "en",
+            "original_title": "Today You Die",
+            "overview": "A former thief who is trying to go straight seeks vengeance on those who framed him.",
+            "popularity": 1.6258,
+            "poster_path": "/fSL56vXRp4Qh23vXPiAhJMFKZgB.jpg",
+            "release_date": "2005-09-13",
+            "softcore": false,
+            "video": false,
+            "vote_average": 4.381,
+            "vote_count": 122
+        },
+        {
+            "adult": false,
+            "backdrop_path": null,
+            "genre_ids": [
+                878,
+                18
+            ],
+            "id": 791194,
+            "title": "Sympatico",
+            "original_language": "en",
+            "original_title": "Sympatico",
+            "overview": "In the dystopian 2040, a performance artist shots himself dead in front of a live audience. While the extreme act shocks the society, his friend is kidnapped and interrogated as a murder suspect; he has to prove his innocence to survive.",
+            "popularity": 0.1481,
+            "poster_path": "/kJd7WiBtNsTvNU69y2tl0XwLCp1.jpg",
+            "release_date": "2020-11-16",
+            "softcore": false,
+            "video": false,
+            "vote_average": 0.0,
+            "vote_count": 0
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/pf5xJlqKLPSCXnyn3KlbAuxcklZ.jpg",
+            "genre_ids": [
+                878,
+                28,
+                9648,
+                18,
+                53
+            ],
+            "id": 8452,
+            "title": "The 6th Day",
+            "original_language": "en",
+            "original_title": "The 6th Day",
+            "overview": "A world of the very near future in which cattle, fish, and even the family pet can be cloned. But cloning humans is illegal - that is until family man Adam Gibson comes home from work one day to find a clone has replaced him. Taken from his family and plunged into a sinister world he doesn't understand, Gibson must not only save himself from the assassins who must destroy him to protect their secret, but uncover who and what is behind the horrible things happening to him.",
+            "popularity": 3.3889,
+            "poster_path": "/rODFJOFiPk1UVCe4pmBza8T6feO.jpg",
+            "release_date": "2000-11-17",
+            "softcore": false,
+            "video": false,
+            "vote_average": 5.998,
+            "vote_count": 2251
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/h71xyiurUscD6uIPbECyso1Lwb9.jpg",
+            "genre_ids": [
+                18,
+                28
+            ],
+            "id": 8456,
+            "title": "Never Back Down",
+            "original_language": "en",
+            "original_title": "Never Back Down",
+            "overview": "Jake, full of anger after his father's death, is just starting to find a place for himself at his new Orlando high school - until Ryan, head of an underground MMA fight club, picks Jake out as a prime opponent. After being trounced by Ryan in front of the entire school, Jake begins training under the firm, moral guidance of a MMA master, where he learns how to fight... and how to avoid a fight. But it becomes obvious that a rematch will be inevitable if Jake wants to stop Ryan and his bullying, once and for all.",
+            "popularity": 5.4756,
+            "poster_path": "/8oRUTyP1QAtGDMvRpKZyuyFPG0U.jpg",
+            "release_date": "2008-03-04",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.768,
+            "vote_count": 2477
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/tbzWgnaqhFwN5mCIiwbgN5oiw0V.jpg",
+            "genre_ids": [
+                28,
+                12,
+                35,
+                878,
+                37
+            ],
+            "id": 8487,
+            "title": "Wild Wild West",
+            "original_language": "en",
+            "original_title": "Wild Wild West",
+            "overview": "Legless Southern inventor Dr. Arliss Loveless plans to rekindle the Civil War by assassinating President Ulysses S. Grant. Only two men can stop him: gunfighter James West and master-of-disguise and inventor Artemus Gordon. The two must team up to thwart Loveless' plans.",
+            "popularity": 4.1556,
+            "poster_path": "/mCdo7nykEVCa25bjnkwgyX35fjm.jpg",
+            "release_date": "1999-06-30",
+            "softcore": false,
+            "video": false,
+            "vote_average": 5.322,
+            "vote_count": 3567
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/ubIn0u79glPmmgbL4qfrpBNI21X.jpg",
+            "genre_ids": [
+                878,
+                28
+            ],
+            "id": 8415,
+            "title": "Gunhed",
+            "original_language": "ja",
+            "original_title": "\u30ac\u30f3\u30d8\u30c3\u30c9",
+            "overview": "High-concept Sci-Fi adventure about an island that actually is a computer called Kyron 5, itself created to design and manufacture super-advanced robots to be used as slaves for the rest of the world. One day Kyron decides that human beings are unnecessary, so it declares war on the world. But Kyron cannot be tamed, and after many lives are lost in the attempt, mankind decides to leave Kyron to its own devices.",
+            "popularity": 1.5031,
+            "poster_path": "/ySNPwAzfLwrUz2Yar3HCWK3huLx.jpg",
+            "release_date": "1989-07-22",
+            "softcore": false,
+            "video": false,
+            "vote_average": 4.8,
+            "vote_count": 33
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/e77VeVcrXhxfCdJWD9rameYn7Qn.jpg",
+            "genre_ids": [
+                878,
+                28,
+                12
+            ],
+            "id": 8536,
+            "title": "Superman II",
+            "original_language": "en",
+            "original_title": "Superman II",
+            "overview": "Three Kryptonian criminals led by General Zod team up with Lex Luthor to conquer Earth, forcing a depowered Superman to regain his strength and stop them.",
+            "popularity": 4.075,
+            "poster_path": "/3xk5cno9BHcnwc97XO9k21aI1Zi.jpg",
+            "release_date": "1980-12-12",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.751,
+            "vote_count": 2508
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/x4dH86KvLTGlIBMQb7kNTB0svy5.jpg",
+            "genre_ids": [
+                12,
+                28,
+                35,
+                37
+            ],
+            "id": 8584,
+            "title": "Shanghai Noon",
+            "original_language": "en",
+            "original_title": "Shanghai Noon",
+            "overview": "Chon Wang, a clumsy imperial guard, trails Princess Pei Pei when she's kidnapped from the Forbidden City and transported to America. Wang follows her captors to Nevada, where he teams up with an unlikely partner, outcast outlaw Roy O'Bannon, and tries to spring the princess from her imprisonment.",
+            "popularity": 3.2153,
+            "poster_path": "/b0WwWRcDiDahkah5vZ0KjB4N9ZZ.jpg",
+            "release_date": "2000-05-26",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.415,
+            "vote_count": 2750
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/iOUhnp01rP9Xr5QG66LMAKSDkYv.jpg",
+            "genre_ids": [
+                18,
+                878,
+                9648
+            ],
+            "id": 8072,
+            "title": "Alphaville",
+            "original_language": "fr",
+            "original_title": "Alphaville, une \u00e9trange aventure de Lemmy Caution",
+            "overview": "Lemmy Caution is on a mission to eliminate Professor Von Braun, the creator of a malevolent computer that rules the city of Alphaville. Befriended by the scientist\u2019s daughter Natasha, Lemmy must unravel the mysteries of the strictly logical Alpha 60 and teach Natasha the meaning of the word \u201clove.\u201d",
+            "popularity": 1.5647,
+            "poster_path": "/fFJP3D5fJDFxN7ChqSye1DZ0fTL.jpg",
+            "release_date": "1965-05-05",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.911,
+            "vote_count": 614
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/lU0zVj8KcQVkPczdGGraYGiRC72.jpg",
+            "genre_ids": [
+                878,
+                28,
+                27
+            ],
+            "id": 8077,
+            "title": "Alien\u00b3",
+            "original_language": "en",
+            "original_title": "Alien\u00b3",
+            "overview": "After escaping with Newt and Hicks from the alien planet, Ripley crash lands on Fiorina 161, a prison planet and host to a correctional facility. Unfortunately, although Newt and Hicks do not survive the crash, a more unwelcome visitor does. The prison does not allow weapons of any kind, and with aid being a long time away, the prisoners must simply survive in any way they can.",
+            "popularity": 6.1738,
+            "poster_path": "/xh5wI0UoW7DfS1IyLy3d2CgrCEP.jpg",
+            "release_date": "1992-05-22",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.383,
+            "vote_count": 6332
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/ikr0UILfvRerzMNoBTtJtyuWAEV.jpg",
+            "genre_ids": [
+                878,
+                27,
+                28
+            ],
+            "id": 8078,
+            "title": "Alien Resurrection",
+            "original_language": "en",
+            "original_title": "Alien Resurrection",
+            "overview": "Two hundred years after Lt. Ripley died, a group of scientists clone her, hoping to breed the ultimate weapon. But the new Ripley is full of surprises \u2026 as are the new aliens. Ripley must team with a band of smugglers to keep the creatures from reaching Earth.",
+            "popularity": 6.1843,
+            "poster_path": "/9aRDMlU5Zwpysilm0WCWzU2PCFv.jpg",
+            "release_date": "1997-11-12",
+            "softcore": false,
+            "video": false,
+            "vote_average": 6.167,
+            "vote_count": 5521
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/oMpOTrLdbVj54gLgOmNgX9zTJi.jpg",
+            "genre_ids": [
+                28
+            ],
+            "id": 610133,
+            "title": "The World of Dragon Ball Z",
+            "original_language": "en",
+            "original_title": "The World of Dragon Ball Z",
+            "overview": "A review of Dragon Ball Z from the Saiyan Saga all the way to the Trunks Saga.",
+            "popularity": 0.5212,
+            "poster_path": "/1J1e8Uslw8MAE7mIVFh6TU9mPt8.jpg",
+            "release_date": "2000-01-21",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.7,
+            "vote_count": 43
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/uR0FopHrAjDlG5q6PZB07a1JOva.jpg",
+            "genre_ids": [
+                16,
+                878,
+                28
+            ],
+            "id": 610150,
+            "title": "Dragon Ball Super: Super Hero",
+            "original_language": "ja",
+            "original_title": "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb\u8d85 \u30b9\u30fc\u30d1\u30fc\u30d2\u30fc\u30ed\u30fc",
+            "overview": "The Red Ribbon Army, an evil organization that was once destroyed by Goku in the past, has been reformed by a group of people who have created new and mightier Androids, Gamma 1 and Gamma 2, and seek vengeance against Goku and his family.",
+            "popularity": 5.9954,
+            "poster_path": "/pi0iZOEHeA3ih4p1IwAG4x2DZNH.jpg",
+            "release_date": "2022-06-11",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.879,
+            "vote_count": 3007
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/kwXycPsLA6SV3KUOagn343TtMOf.jpg",
+            "genre_ids": [
+                878,
+                28,
+                53
+            ],
+            "id": 791042,
+            "title": "Levels",
+            "original_language": "en",
+            "original_title": "Levels",
+            "overview": "After witnessing his girlfriend's murder, a man risks everything - including reality itself - to discover the truth.",
+            "popularity": 1.7299,
+            "poster_path": "/y1xm0jMIlx9Oo2a3jWNyLGm43sJ.jpg",
+            "release_date": "2024-11-01",
+            "softcore": false,
+            "video": false,
+            "vote_average": 5.688,
+            "vote_count": 93
+        }
+    ],
+    "total_pages": 3826,
+    "total_results": 76505
+}
