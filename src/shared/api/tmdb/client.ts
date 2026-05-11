@@ -7,6 +7,9 @@ import {
   tvToMediaItem,
 } from "./normalize";
 import {
+  TmdbDiscoverMovieResponseSchema,
+  TmdbDiscoverTvResponseSchema,
+  TmdbGenreListResponseSchema,
   TmdbMovieSchema,
   TmdbSearchMovieResponseSchema,
   TmdbSearchTvResponseSchema,
@@ -14,6 +17,7 @@ import {
   TmdbTrendingTvResponseSchema,
   TmdbTvSchema,
   TmdbWatchProvidersResponseSchema,
+  type TmdbGenre,
   type TmdbMovie,
   type TmdbTv,
 } from "./schemas";
@@ -48,6 +52,20 @@ export interface ReleaseEvent {
   kind: "release" | "season";
   title: string;
   releaseType?: ReleaseKind;
+}
+
+/**
+ * Filter inputs for discover queries (shared shape across movies and TV).
+ *
+ * `sort` is domain-agnostic — the client translates "date.desc" to TMDB's
+ * `primary_release_date.desc` for movies and `first_air_date.desc` for TV.
+ */
+export interface DiscoverFilters {
+  genres?: number[];
+  yearGte?: number;
+  yearLte?: number;
+  ratingGte?: number;
+  sort?: "popularity.desc" | "vote_average.desc" | "date.desc";
 }
 
 async function request<T>(
@@ -242,4 +260,70 @@ export const tmdb = {
     }
     return out;
   },
+
+  async genres(
+    domain: "movie" | "tv",
+    signal?: AbortSignal,
+  ): Promise<TmdbGenre[]> {
+    const data = await request(
+      `/genre/${domain}/list`,
+      {},
+      TmdbGenreListResponseSchema,
+      signal,
+    );
+    return data.genres;
+  },
+
+  async discover(
+    domain: "movie" | "tv",
+    filters: DiscoverFilters,
+    signal?: AbortSignal,
+  ): Promise<MediaItem[]> {
+    const params: Record<string, string> = {
+      sort_by: discoverSortFor(domain, filters.sort ?? "popularity.desc"),
+    };
+    if (filters.genres && filters.genres.length > 0) {
+      params["with_genres"] = filters.genres.join(",");
+    }
+    if (filters.yearGte !== undefined) {
+      params[domain === "movie" ? "primary_release_date.gte" : "first_air_date.gte"] =
+        `${filters.yearGte}-01-01`;
+    }
+    if (filters.yearLte !== undefined) {
+      params[domain === "movie" ? "primary_release_date.lte" : "first_air_date.lte"] =
+        `${filters.yearLte}-12-31`;
+    }
+    if (filters.ratingGte !== undefined) {
+      params["vote_average.gte"] = String(filters.ratingGte);
+      // Without a minimum vote count, low-vote outliers dominate. 50 is a
+      // sensible floor for "audience signal exists".
+      params["vote_count.gte"] = "50";
+    }
+    if (domain === "movie") {
+      const data = await request(
+        "/discover/movie",
+        params,
+        TmdbDiscoverMovieResponseSchema,
+        signal,
+      );
+      return data.results.map(movieListItemToMediaItem);
+    }
+    const data = await request(
+      "/discover/tv",
+      params,
+      TmdbDiscoverTvResponseSchema,
+      signal,
+    );
+    return data.results.map(tvListItemToMediaItem);
+  },
 };
+
+function discoverSortFor(
+  domain: "movie" | "tv",
+  sort: NonNullable<DiscoverFilters["sort"]>,
+): string {
+  if (sort === "date.desc") {
+    return domain === "movie" ? "primary_release_date.desc" : "first_air_date.desc";
+  }
+  return sort;
+}

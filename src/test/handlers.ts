@@ -1,4 +1,7 @@
 import { http, HttpResponse, type HttpHandler } from "msw";
+import discoverMovieSample from "@/shared/api/tmdb/fixtures/discover-movie-sample.json";
+import genreMovieList from "@/shared/api/tmdb/fixtures/genre-movie-list.json";
+import genreTvList from "@/shared/api/tmdb/fixtures/genre-tv-list.json";
 import movie603 from "@/shared/api/tmdb/fixtures/movie-603.json";
 import tv1399 from "@/shared/api/tmdb/fixtures/tv-1399.json";
 import trendingMovieDay from "@/shared/api/tmdb/fixtures/trending-movie-day.json";
@@ -42,10 +45,23 @@ export const handlers: HttpHandler[] = [
   http.get(`${TMDB}/movie/:id/watch/providers`, () => HttpResponse.json(watchProvidersMovie603)),
   http.get(`${TMDB}/tv/:id/watch/providers`, () => HttpResponse.json(watchProvidersMovie603)),
 
-  // Discover (used by upcomingMovies)
-  http.get(`${TMDB}/discover/movie`, () => {
-    // Synthesize a small upcoming-discover-movie response; reuse search-movie-matrix
-    // shape (same TmdbSearchMovieResponseSchema) so tests don't need a separate fixture.
+  // Discover — used by both upcomingMovies (date-window) and the filter-driven
+  // hub queries. Returns the real filtered-discover fixture when filter params
+  // are present; otherwise falls back to the search-movie-matrix shape so
+  // upcomingMovies tests keep their previous behavior.
+  http.get(`${TMDB}/discover/movie`, ({ request }) => {
+    const url = new URL(request.url);
+    if (
+      url.searchParams.has("with_genres") ||
+      url.searchParams.has("vote_average.gte")
+    ) {
+      return HttpResponse.json(discoverMovieSample);
+    }
     return HttpResponse.json(searchMovieMatrix);
   }),
+  http.get(`${TMDB}/discover/tv`, () => HttpResponse.json(trendingTvDay)),
+
+  // Genre lists
+  http.get(`${TMDB}/genre/movie/list`, () => HttpResponse.json(genreMovieList)),
+  http.get(`${TMDB}/genre/tv/list`, () => HttpResponse.json(genreTvList)),
 ];

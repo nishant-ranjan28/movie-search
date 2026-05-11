@@ -89,7 +89,15 @@ function ComingThisWeekRail() {
   if (visible.length === 0) return null;
   return (
     <section className="space-y-2">
-      <h2 className="text-base font-semibold">Coming this week</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-base font-semibold">Coming this week</h2>
+        <Link
+          to="/releases"
+          className="rounded text-xs text-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+        >
+          See all releases →
+        </Link>
+      </div>
       <ul className="space-y-1 text-sm">
         {visible.map((evt) => {
           const where = providers[evt.itemId]?.slice(0, 2).join(", ");

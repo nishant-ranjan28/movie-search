@@ -201,3 +201,26 @@ export const TmdbWatchProvidersResponseSchema = z.object({
   results: z.record(z.string(), TmdbWatchProvidersCountrySchema),
 });
 export type TmdbWatchProvidersResponse = z.infer<typeof TmdbWatchProvidersResponseSchema>;
+
+// ---------------------------------------------------------------------------
+// Genre list (/genre/{movie,tv}/list)
+// ---------------------------------------------------------------------------
+
+export const TmdbGenreListResponseSchema = z.object({
+  genres: z.array(TmdbGenreSchema),
+});
+export type TmdbGenreListResponse = z.infer<typeof TmdbGenreListResponseSchema>;
+export type TmdbGenre = z.infer<typeof TmdbGenreSchema>;
+
+// ---------------------------------------------------------------------------
+// Discover (/discover/{movie,tv})
+//
+// Same response shape as search/trending paginated list endpoints. Aliased
+// here so call sites read more naturally.
+// ---------------------------------------------------------------------------
+
+export const TmdbDiscoverMovieResponseSchema = TmdbSearchMovieResponseSchema;
+export type TmdbDiscoverMovieResponse = z.infer<typeof TmdbDiscoverMovieResponseSchema>;
+
+export const TmdbDiscoverTvResponseSchema = TmdbSearchTvResponseSchema;
+export type TmdbDiscoverTvResponse = z.infer<typeof TmdbDiscoverTvResponseSchema>;
