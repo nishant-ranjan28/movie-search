@@ -1,0 +1,431 @@
+{
+    "page": 1,
+    "results": [
+        {
+            "adult": false,
+            "backdrop_path": "/zD5v1E4joAzFvmAEytt7fM3ivyT.jpg",
+            "genre_ids": [
+                28,
+                12,
+                878
+            ],
+            "id": 634649,
+            "title": "Spider-Man: No Way Home",
+            "original_language": "en",
+            "original_title": "Spider-Man: No Way Home",
+            "overview": "Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a super-hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man.",
+            "popularity": 33.5008,
+            "poster_path": "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+            "release_date": "2021-12-15",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.9,
+            "vote_count": 21903
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/ufpeVEM64uZHPpzzeiDNIAdaeOD.jpg",
+            "genre_ids": [
+                28,
+                35,
+                878
+            ],
+            "id": 533535,
+            "title": "Deadpool & Wolverine",
+            "original_language": "en",
+            "original_title": "Deadpool & Wolverine",
+            "overview": "A listless Wade Wilson toils away in civilian life with his days as the morally flexible mercenary, Deadpool, behind him. But when his homeworld faces an existential threat, Wade must reluctantly suit-up again with an even more reluctant Wolverine.",
+            "popularity": 32.3151,
+            "poster_path": "/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
+            "release_date": "2024-07-24",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.558,
+            "vote_count": 8564
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/AaV1YIdWKnjAIAOe8UUKBFm327v.jpg",
+            "genre_ids": [
+                28,
+                18
+            ],
+            "id": 361743,
+            "title": "Top Gun: Maverick",
+            "original_language": "en",
+            "original_title": "Top Gun: Maverick",
+            "overview": "After more than thirty years of service as one of the Navy\u2019s top aviators, and dodging the advancement in rank that would ground him, Pete \u201cMaverick\u201d Mitchell finds himself training a detachment of TOP GUN graduates for a specialized mission the likes of which no living pilot has ever seen.",
+            "popularity": 31.0092,
+            "poster_path": "/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg",
+            "release_date": "2022-05-21",
+            "softcore": false,
+            "video": false,
+            "vote_average": 8.154,
+            "vote_count": 10852
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/3ffPx9jqg0yj9y1KWeagT7D20CB.jpg",
+            "genre_ids": [
+                28,
+                12,
+                16,
+                35,
+                10751,
+                14
+            ],
+            "id": 1011985,
+            "title": "Kung Fu Panda 4",
+            "original_language": "en",
+            "original_title": "Kung Fu Panda 4",
+            "overview": "Po is gearing up to become the spiritual leader of his Valley of Peace, but also needs someone to take his place as Dragon Warrior. As such, he will train a new kung fu practitioner for the spot and will encounter a villain called the Chameleon who conjures villains from the past.",
+            "popularity": 28.5897,
+            "poster_path": "/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg",
+            "release_date": "2024-03-02",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.0,
+            "vote_count": 3468
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/4MCKNAc6AbWjEsM2h9Xc29owo4z.jpg",
+            "genre_ids": [
+                28,
+                80,
+                53
+            ],
+            "id": 866398,
+            "title": "The Beekeeper",
+            "original_language": "en",
+            "original_title": "The Beekeeper",
+            "overview": "One man's campaign for vengeance takes on national stakes after he is revealed to be a former operative of a powerful and clandestine organization known as Beekeepers.",
+            "popularity": 27.0869,
+            "poster_path": "/A7EByudX0eOzlkQ2FIbogzyazm2.jpg",
+            "release_date": "2024-01-08",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.242,
+            "vote_count": 4162
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/kJsPVzdyBrYHLomuNv5SJDXUQ2f.jpg",
+            "genre_ids": [
+                28,
+                12,
+                878
+            ],
+            "id": 76600,
+            "title": "Avatar: The Way of Water",
+            "original_language": "en",
+            "original_title": "Avatar: The Way of Water",
+            "overview": "Set more than a decade after the events of the first film, learn the story of the Sully family (Jake, Neytiri, and their kids), the trouble that follows them, the lengths they go to keep each other safe, the battles they fight to stay alive, and the tragedies they endure.",
+            "popularity": 25.1152,
+            "poster_path": "/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+            "release_date": "2022-12-14",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.591,
+            "vote_count": 14053
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/vw3zNfzvnVNF7nIjpiEgcdznfeC.jpg",
+            "genre_ids": [
+                16,
+                28,
+                14
+            ],
+            "id": 664767,
+            "title": "Mortal Kombat Legends: Scorpion's Revenge",
+            "original_language": "en",
+            "original_title": "Mortal Kombat Legends: Scorpion's Revenge",
+            "overview": "After the vicious slaughter of his family by stone-cold mercenary Sub-Zero, Hanzo Hasashi is exiled to the torturous Netherrealm. There, in exchange for his servitude to the sinister Quan Chi, he\u2019s given a chance to avenge his family \u2013 and is resurrected as Scorpion, a lost soul bent on revenge. Back on Earthrealm, Lord Raiden gathers a team of elite warriors \u2013 Shaolin monk Liu Kang, Special Forces officer Sonya Blade, and action star Johnny Cage \u2013 an unlikely band of heroes with one chance to save humanity. To do this, they must defeat Shang Tsung's horde of Outworld gladiators and reign over the Mortal Kombat tournament.",
+            "popularity": 23.9869,
+            "poster_path": "/iBvo3qOPcmhlqAaJcXcQHtx2qLk.jpg",
+            "release_date": "2020-04-12",
+            "softcore": false,
+            "video": false,
+            "vote_average": 8.1,
+            "vote_count": 1459
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/9xfDWXAUbFXQK585JvByT5pEAhe.jpg",
+            "genre_ids": [
+                16,
+                28,
+                12,
+                878
+            ],
+            "id": 569094,
+            "title": "Spider-Man: Across the Spider-Verse",
+            "original_language": "en",
+            "original_title": "Spider-Man: Across the Spider-Verse",
+            "overview": "After reuniting with Gwen Stacy, Brooklyn\u2019s full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse, where he encounters the Spider Society, a team of Spider-People charged with protecting the Multiverse's very existence. But when the heroes clash on how to handle a new threat, Miles finds himself pitted against the other Spiders and must set out on his own to save those he loves most.",
+            "popularity": 22.1853,
+            "poster_path": "/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
+            "release_date": "2023-05-31",
+            "softcore": false,
+            "video": false,
+            "vote_average": 8.333,
+            "vote_count": 8530
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/zOpe0eHsq0A2NvNyBbtT6sj53qV.jpg",
+            "genre_ids": [
+                28,
+                878,
+                35,
+                10751
+            ],
+            "id": 939243,
+            "title": "Sonic the Hedgehog 3",
+            "original_language": "en",
+            "original_title": "Sonic the Hedgehog 3",
+            "overview": "Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow, a mysterious villain with powers unlike anything they have faced before. With their abilities outmatched in every way, Team Sonic must seek out an unlikely alliance in hopes of stopping Shadow and protecting the planet.",
+            "popularity": 23.0579,
+            "poster_path": "/d8Ryb8AunYAuycVKDp5HpdWPKgC.jpg",
+            "release_date": "2024-12-19",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.612,
+            "vote_count": 3248
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/7I6VUdPj6tQECNHdviJkUHD2u89.jpg",
+            "genre_ids": [
+                28,
+                53,
+                80
+            ],
+            "id": 603692,
+            "title": "John Wick: Chapter 4",
+            "original_language": "en",
+            "original_title": "John Wick: Chapter 4",
+            "overview": "With the price on his head ever increasing, John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe and forces that turn old friends into foes.",
+            "popularity": 18.5866,
+            "poster_path": "/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg",
+            "release_date": "2023-03-21",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.707,
+            "vote_count": 7871
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/AdyJH8kDm8xT8IKTlgpEC15ny4u.jpg",
+            "genre_ids": [
+                14,
+                28,
+                12
+            ],
+            "id": 453395,
+            "title": "Doctor Strange in the Multiverse of Madness",
+            "original_language": "en",
+            "original_title": "Doctor Strange in the Multiverse of Madness",
+            "overview": "Doctor Strange, with the help of mystical allies both old and new, traverses the mind-bending and dangerous alternate realities of the Multiverse to confront a mysterious new adversary.",
+            "popularity": 18.4609,
+            "poster_path": "/ddJcSKbcp4rKZTmuyWaMhuwcfMz.jpg",
+            "release_date": "2022-05-04",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.227,
+            "vote_count": 10271
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/hlfu6g0h0D65SjkVhQBU20zePTl.jpg",
+            "genre_ids": [
+                28,
+                12,
+                14,
+                16
+            ],
+            "id": 1357633,
+            "title": "Solo Leveling -ReAwakening-",
+            "original_language": "ja",
+            "original_title": "\u4ffa\u3060\u3051\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7\u306a\u4ef6 -ReAwakening-",
+            "overview": "Over a decade after 'gates' connecting worlds appeared, awakening 'hunters' with superpowers, weakest hunter Sung Jinwoo encounters a double dungeon and accepts a mysterious quest, becoming the only one able to level up, changing his fate. A catch-up recap of the first season coupled with an exclusive sneak peek of the first two episodes of the highly anticipated second season in one momentous theatrical fan experience.",
+            "popularity": 18.2106,
+            "poster_path": "/dblIFen0bNZAq8icJXHwrjfymDW.jpg",
+            "release_date": "2024-11-26",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.144,
+            "vote_count": 268
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/gvLG3Fnznkxl4SmYfcK8gUuqxM8.jpg",
+            "genre_ids": [
+                28,
+                12,
+                878
+            ],
+            "id": 823464,
+            "title": "Godzilla x Kong: The New Empire",
+            "original_language": "en",
+            "original_title": "Godzilla x Kong: The New Empire",
+            "overview": "Following their explosive showdown, Godzilla and Kong must reunite against a colossal undiscovered threat hidden within our world, challenging their very existence \u2013 and our own.",
+            "popularity": 18.2022,
+            "poster_path": "/z1p34vh7dEOnLDmyCrlUVLuoDzd.jpg",
+            "release_date": "2024-03-27",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.046,
+            "vote_count": 4631
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/r7K6Xt0RX4Mw0cAbZVw5cyb1Tux.jpg",
+            "genre_ids": [
+                28,
+                12,
+                14
+            ],
+            "id": 566525,
+            "title": "Shang-Chi and the Legend of the Ten Rings",
+            "original_language": "en",
+            "original_title": "Shang-Chi and the Legend of the Ten Rings",
+            "overview": "Shang-Chi must confront the past he thought he left behind when he is drawn into the web of the mysterious Ten Rings organization.",
+            "popularity": 15.727,
+            "poster_path": "/9f2Q0U3IOsLgrI2HkvldwSABZy5.jpg",
+            "release_date": "2021-09-01",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.494,
+            "vote_count": 10334
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/jlGmlFOcfo8n5tURmhC7YVd4Iyy.jpg",
+            "genre_ids": [
+                28,
+                35,
+                12
+            ],
+            "id": 436969,
+            "title": "The Suicide Squad",
+            "original_language": "en",
+            "original_title": "The Suicide Squad",
+            "overview": "Supervillains Harley Quinn, Bloodsport, Peacemaker and a collection of nutty cons at Belle Reve prison join the super-secret, super-shady Task Force X as they are dropped off at the remote, enemy-infused island of Corto Maltese.",
+            "popularity": 14.9858,
+            "poster_path": "/q61qEyssk2ku3okWICKArlAdhBn.jpg",
+            "release_date": "2021-07-28",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.461,
+            "vote_count": 9544
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/5YZbUmjbMa3ClvSW1Wj3D6XGolb.jpg",
+            "genre_ids": [
+                878,
+                12,
+                28
+            ],
+            "id": 447365,
+            "title": "Guardians of the Galaxy Vol. 3",
+            "original_language": "en",
+            "original_title": "Guardians of the Galaxy Vol. 3",
+            "overview": "Peter Quill, still reeling from the loss of Gamora, must rally his team around him to defend the universe along with protecting one of their own. A mission that, if not completed successfully, could quite possibly lead to the end of the Guardians as we know them.",
+            "popularity": 15.9858,
+            "poster_path": "/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg",
+            "release_date": "2023-05-03",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.926,
+            "vote_count": 8247
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/83H0C66AcvkwpG2738VCTHMY9uv.jpg",
+            "genre_ids": [
+                28,
+                12,
+                878
+            ],
+            "id": 505642,
+            "title": "Black Panther: Wakanda Forever",
+            "original_language": "en",
+            "original_title": "Black Panther: Wakanda Forever",
+            "overview": "Queen Ramonda, Shuri, M\u2019Baku, Okoye and the Dora Milaje fight to protect their nation from intervening world powers in the wake of King T\u2019Challa\u2019s death.  As the Wakandans strive to embrace their next chapter, the heroes must band together with the help of War Dog Nakia and Everett Ross and forge a new path for the kingdom of Wakanda.",
+            "popularity": 15.0457,
+            "poster_path": "/sv1xJUazXeYqALzczSZ3O6nkH75.jpg",
+            "release_date": "2022-11-09",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.005,
+            "vote_count": 7428
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/13Nz8EchKRdCgJcKdEoJAnpiVn2.jpg",
+            "genre_ids": [
+                28,
+                12,
+                14
+            ],
+            "id": 791373,
+            "title": "Zack Snyder's Justice League",
+            "original_language": "en",
+            "original_title": "Zack Snyder's Justice League",
+            "overview": "Determined to ensure Superman's ultimate sacrifice was not in vain, Bruce Wayne aligns forces with Diana Prince with plans to recruit a team of metahumans to protect the world from an approaching threat of catastrophic proportions.",
+            "popularity": 15.0018,
+            "poster_path": "/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg",
+            "release_date": "2021-03-18",
+            "softcore": false,
+            "video": false,
+            "vote_average": 8.089,
+            "vote_count": 10771
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/61MrK5U4w4MVL1vfwoG12zYPJ8B.jpg",
+            "genre_ids": [
+                28,
+                53
+            ],
+            "id": 615457,
+            "title": "Nobody",
+            "original_language": "en",
+            "original_title": "Nobody",
+            "overview": "Hutch Mansell, a suburban dad, overlooked husband, nothing neighbor \u2014 a \"nobody.\" When two thieves break into his home one night, Hutch's unknown long-simmering rage is ignited and propels him on a brutal path that will uncover dark secrets he fought to leave behind.",
+            "popularity": 14.9131,
+            "poster_path": "/oBgWY00bEFeZ9N25wWVyuQddbAo.jpg",
+            "release_date": "2021-03-18",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.88,
+            "vote_count": 8275
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/dssCw0mUmD4EriUmkwB3PnsGu4q.jpg",
+            "genre_ids": [
+                16,
+                28,
+                14
+            ],
+            "id": 841755,
+            "title": "Mortal Kombat Legends: Battle of the Realms",
+            "original_language": "en",
+            "original_title": "Mortal Kombat Legends: Battle of the Realms",
+            "overview": "When Shao Kahn's Outworld barbarians terrorize Earthrealm, Lord Raiden is determined to put an end to the carnage once and for all. This leaves one option: a final Mortal Kombat tournament for the future of Earthrealm \u2013 win it or lose everything. Raiden's elite fighters Liu Kang, Johnny Cage, Sonya Blade, and a few new faces kick the action into overdrive as they go head-to-head with Outworld's most bloodthirsty warriors. But deep in the Netherrealm, an unspeakable scheme by the malevolent Shinnok unfolds, threatening to obliterate existence.",
+            "popularity": 14.9659,
+            "poster_path": "/ablrE8IbWcIrAxMmm4gnPn75AMS.jpg",
+            "release_date": "2021-08-30",
+            "softcore": false,
+            "video": false,
+            "vote_average": 7.6,
+            "vote_count": 491
+        }
+    ],
+    "total_pages": 69,
+    "total_results": 1380
+}

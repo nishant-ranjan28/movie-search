@@ -1,7 +1,7 @@
 import { useQueries, useQuery, type UseQueryResult } from "@tanstack/react-query";
 import type { MediaItem } from "@/shared/schemas/media";
-import { tmdb, type ReleaseEvent } from "./client";
-import type { TmdbMovie, TmdbTv } from "./schemas";
+import { tmdb, type DiscoverFilters, type ReleaseEvent } from "./client";
+import type { TmdbGenre, TmdbMovie, TmdbTv } from "./schemas";
 
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
@@ -146,4 +146,37 @@ export const useReleaseProviders = (
     if (data && data.length > 0) map[e.itemId] = data;
   });
   return map;
+};
+
+/** TMDB genre list. Effectively static — staleTime 7 days. */
+export const useGenres = (
+  domain: "movie" | "tv",
+): UseQueryResult<TmdbGenre[]> =>
+  useQuery({
+    queryKey: ["tmdb", "genres", domain],
+    queryFn: ({ signal }) => tmdb.genres(domain, signal),
+    staleTime: 7 * DAY,
+  });
+
+/**
+ * /discover/{movie,tv} with structured filter inputs. Returns normalized
+ * MediaItems. Enabled only when at least one filter is set (otherwise the
+ * caller should fall back to /trending).
+ */
+export const useDiscover = (
+  domain: "movie" | "tv",
+  filters: DiscoverFilters,
+): UseQueryResult<MediaItem[]> => {
+  const hasFilter =
+    (filters.genres && filters.genres.length > 0) ||
+    filters.yearGte !== undefined ||
+    filters.yearLte !== undefined ||
+    filters.ratingGte !== undefined ||
+    filters.sort !== undefined;
+  return useQuery({
+    queryKey: ["tmdb", "discover", domain, filters],
+    queryFn: ({ signal }) => tmdb.discover(domain, filters, signal),
+    staleTime: HOUR,
+    enabled: hasFilter,
+  });
 };
