@@ -1,41 +1,55 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Bookmark,
-  CalendarDays,
+  Film,
   Search,
   Settings as SettingsIcon,
   Sparkles,
+  Tv,
   type LucideIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { cn } from "@/lib/cn";
 import { GlobalSearchInput } from "./GlobalSearchInput";
 import { InstallButton } from "./InstallButton";
 
-interface NavItem {
+interface MobileNavItem {
   to: string;
   label: string;
   icon: LucideIcon;
   end?: boolean;
 }
 
-// All 5 nav items used by the mobile bottom tab bar.
-const mobileNavItems: readonly NavItem[] = [
+interface DesktopNavItem {
+  to: string;
+  label: string;
+  end?: boolean;
+}
+
+// Mobile bottom tab bar — 5 tabs max for ergonomics. Search is reachable
+// via the search icon in the mobile top bar; Releases is reachable from
+// the "Coming this week" link on /today.
+const mobileNavItems: readonly MobileNavItem[] = [
   { to: "/", label: "Today", icon: Sparkles, end: true },
-  { to: "/search", label: "Search", icon: Search },
+  { to: "/movies", label: "Movies", icon: Film },
+  { to: "/tv", label: "TV", icon: Tv },
   { to: "/watchlist", label: "Watchlist", icon: Bookmark },
-  { to: "/releases", label: "Releases", icon: CalendarDays },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
 ];
 
-// Desktop top nav drops "Search" — the inline search box in the top bar
-// replaces it.
-const desktopNavItems: readonly NavItem[] = [
-  { to: "/", label: "Today", icon: Sparkles, end: true },
-  { to: "/watchlist", label: "Watchlist", icon: Bookmark },
-  { to: "/releases", label: "Releases", icon: CalendarDays },
-  { to: "/settings", label: "Settings", icon: SettingsIcon },
+// Desktop top nav — no width constraint, all primary destinations get a
+// link. Labels only (no icons) — labels read clearly horizontally and
+// match common desktop web nav conventions. "Search" is omitted: the
+// inline GlobalSearchInput in the top bar replaces it.
+const desktopNavItems: readonly DesktopNavItem[] = [
+  { to: "/", label: "Today", end: true },
+  { to: "/movies", label: "Movies" },
+  { to: "/tv", label: "TV" },
+  { to: "/watchlist", label: "Watchlist" },
+  { to: "/releases", label: "Releases" },
+  { to: "/settings", label: "Settings" },
 ];
 
 function HomeLink() {
@@ -47,6 +61,22 @@ function HomeLink() {
     >
       Marquee
     </Link>
+  );
+}
+
+function MobileSearchButton() {
+  const navigate = useNavigate();
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label="Search"
+      onClick={() => {
+        navigate("/search");
+      }}
+    >
+      <Search className="h-5 w-5" aria-hidden />
+    </Button>
   );
 }
 
@@ -109,7 +139,8 @@ export function RootLayout() {
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-bg/80 px-4 backdrop-blur">
         <HomeLink />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <MobileSearchButton />
           <Actions />
         </div>
       </header>
