@@ -3,6 +3,8 @@ import discoverMovieSample from "@/shared/api/tmdb/fixtures/discover-movie-sampl
 import genreMovieList from "@/shared/api/tmdb/fixtures/genre-movie-list.json";
 import genreTvList from "@/shared/api/tmdb/fixtures/genre-tv-list.json";
 import movie603 from "@/shared/api/tmdb/fixtures/movie-603.json";
+import recommendationsMovie603 from "@/shared/api/tmdb/fixtures/recommendations-movie-603.json";
+import similarMovie603 from "@/shared/api/tmdb/fixtures/similar-movie-603.json";
 import tv1399 from "@/shared/api/tmdb/fixtures/tv-1399.json";
 import trendingMovieDay from "@/shared/api/tmdb/fixtures/trending-movie-day.json";
 import trendingTvDay from "@/shared/api/tmdb/fixtures/trending-tv-day.json";
@@ -44,6 +46,12 @@ export const handlers: HttpHandler[] = [
   // Watch providers
   http.get(`${TMDB}/movie/:id/watch/providers`, () => HttpResponse.json(watchProvidersMovie603)),
   http.get(`${TMDB}/tv/:id/watch/providers`, () => HttpResponse.json(watchProvidersMovie603)),
+
+  // Similar / recommendations — share movie 603 fixture across any id in tests.
+  http.get(`${TMDB}/movie/:id/similar`, () => HttpResponse.json(similarMovie603)),
+  http.get(`${TMDB}/movie/:id/recommendations`, () => HttpResponse.json(recommendationsMovie603)),
+  http.get(`${TMDB}/tv/:id/similar`, () => HttpResponse.json(trendingTvDay)),
+  http.get(`${TMDB}/tv/:id/recommendations`, () => HttpResponse.json(trendingTvDay)),
 
   // Discover — used by both upcomingMovies (date-window) and the filter-driven
   // hub queries. Returns the real filtered-discover fixture when filter params

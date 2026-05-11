@@ -1,8 +1,18 @@
 import { Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { MediaItem } from "@/shared/schemas/media";
 import { MediaCard } from "./MediaCard";
 import { WatchlistButton } from "./WatchlistButton";
+
+/** Navigate to a MediaItem's detail page. Used by the rails below. */
+const detailRoute = (item: MediaItem): string | undefined => {
+  const idPart = item.id.split(":").pop();
+  if (!idPart) return undefined;
+  if (item.domain === "movie") return `/movies/${idPart}`;
+  if (item.domain === "tv") return `/tv/${idPart}`;
+  return undefined;
+};
 
 export interface CastMember {
   name: string;
@@ -17,7 +27,10 @@ export interface MediaDetailExtras {
   /** Embeddable trailer URL (e.g. https://www.youtube.com/embed/<key>). */
   trailerUrl?: string;
   watchProviders?: string[];
-  related?: MediaItem[];
+  /** TMDB "similar" — content-based matches (genres, keywords). */
+  similar?: MediaItem[];
+  /** TMDB "recommendations" — user-behavior-driven picks. */
+  recommendations?: MediaItem[];
 }
 
 export interface MediaDetailLayoutProps {
@@ -143,17 +156,33 @@ export function MediaDetailLayout({
         </section>
       ) : null}
 
-      {/* Related */}
-      {extras?.related && extras.related.length > 0 ? (
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold">Related</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {extras.related.slice(0, 10).map((rel) => (
-              <MediaCard key={rel.id} item={rel} />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      {/* More like this (TMDB /similar) */}
+      <RelatedRail title="More like this" items={extras?.similar} />
+
+      {/* You might also like (TMDB /recommendations) */}
+      <RelatedRail title="You might also like" items={extras?.recommendations} />
     </article>
+  );
+}
+
+function RelatedRail({
+  title,
+  items,
+}: Readonly<{ title: string; items: MediaItem[] | undefined }>) {
+  const navigate = useNavigate();
+  if (!items || items.length === 0) return null;
+  const open = (item: MediaItem) => {
+    const route = detailRoute(item);
+    if (route) navigate(route);
+  };
+  return (
+    <section className="space-y-2">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {items.slice(0, 10).map((rel) => (
+          <MediaCard key={rel.id} item={rel} onOpen={open} />
+        ))}
+      </div>
+    </section>
   );
 }
