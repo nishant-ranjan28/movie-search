@@ -1,8 +1,11 @@
 import { useDeferredValue } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Loader2, Search, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useMovieSearch, useTvSearch } from "@/shared/api/tmdb/hooks";
+import { useGenres, useMovieSearch, useTvSearch } from "@/shared/api/tmdb/hooks";
+import { useAiTranslate } from "@/shared/api/ai/translate";
+import { filtersToParams } from "@/shared/components/discoverFiltersFromUrl";
 import { MediaCard } from "@/shared/components/MediaCard";
 import { MediaCardSkeleton } from "@/shared/components/MediaCardSkeleton";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -26,6 +29,8 @@ export function SearchPage() {
 
   const movies = useMovieSearch(trimmed);
   const tv = useTvSearch(trimmed);
+  const movieGenres = useGenres("movie");
+  const aiTranslate = useAiTranslate();
 
   const isLoading = trimmed.length > 0 && (movies.isLoading || tv.isLoading);
   const navigate = useNavigate();
@@ -33,6 +38,19 @@ export function SearchPage() {
     const id = item.id.split(":").pop();
     if (item.domain === "movie") navigate(`/movies/${id}`);
     else if (item.domain === "tv") navigate(`/tv/${id}`);
+  };
+
+  const runSmartSearch = () => {
+    if (!movieGenres.data || trimmed.length === 0) return;
+    aiTranslate.mutate(
+      { query: trimmed, domain: "movie", genres: movieGenres.data },
+      {
+        onSuccess: (filters) => {
+          const target = filtersToParams(filters, new URLSearchParams());
+          navigate(`/movies?${target.toString()}`);
+        },
+      },
+    );
   };
 
   const movieResults = trimmed ? (movies.data ?? []) : [];
@@ -61,8 +79,23 @@ export function SearchPage() {
       return (
         <EmptyState
           icon={Search}
-          title="No results"
-          description={`No matches for "${trimmed}".`}
+          title="No title matches"
+          description={`Nothing matches "${trimmed}" by title. Try Smart search to find by mood, decade, genre, or rating.`}
+          action={
+            <Button
+              type="button"
+              onClick={runSmartSearch}
+              disabled={aiTranslate.isPending || !movieGenres.data}
+              className="gap-2"
+            >
+              {aiTranslate.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              ) : (
+                <Sparkles className="h-4 w-4" aria-hidden />
+              )}
+              Smart search
+            </Button>
+          }
         />
       );
     }

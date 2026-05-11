@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "node:path";
@@ -15,6 +15,18 @@ const apiHandlers = (): Plugin => ({
   name: "vercel-api-dev",
   apply: "serve",
   configureServer(server) {
+    // Vite only exposes VITE_-prefixed vars to client `import.meta.env`.
+    // For server-side handlers (the Edge functions in api/**), we load the
+    // .env files explicitly here and inject any non-VITE vars (e.g.
+    // GROQ_API_KEY) into process.env so handlers can read them the same
+    // way they will on Vercel.
+    const envDir = __dirname;
+    const env = loadEnv("development", envDir, "");
+    for (const [key, value] of Object.entries(env)) {
+      if (key.startsWith("VITE_")) continue;
+      if (process.env[key] === undefined) process.env[key] = value;
+    }
+
     server.middlewares.use(async (req, res, next) => {
       const url = req.url ?? "";
       if (!url.startsWith("/api/")) return next();
