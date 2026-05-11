@@ -13,6 +13,7 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { labelForRelease } from "@/features/releases/labelForRelease";
 import { releaseRoute } from "@/features/releases/releaseRoute";
+import { ForYouRail } from "./ForYouRail";
 import { pickHero } from "./heroPick";
 import type { MediaItem } from "@/shared/schemas/media";
 import { AlertCircle } from "lucide-react";
@@ -147,6 +148,9 @@ export function TodayPage() {
         }
       >
         <HeroBlock onOpen={open} />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <ForYouRail />
       </ErrorBoundary>
       <ErrorBoundary
         fallback={
