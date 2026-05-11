@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import "./styles/globals.css";
 import { Providers } from "./app/Providers";
 import { router } from "./app/router";
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
     <Providers>
       <SwUpdateToast />
       <RouterProvider router={router} />
+      <Analytics />
     </Providers>
   </StrictMode>,
 );
