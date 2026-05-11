@@ -1,5 +1,5 @@
-import { useState, useDeferredValue } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDeferredValue } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMovieSearch, useTvSearch } from "@/shared/api/tmdb/hooks";
@@ -9,9 +9,20 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import type { MediaItem } from "@/shared/schemas/media";
 
 export function SearchPage() {
-  const [query, setQuery] = useState("");
+  // URL is the source of truth — keeps the page input, the top-bar
+  // global search input, and back/forward navigation all in sync
+  // without any useEffect plumbing.
+  const [params, setParams] = useSearchParams();
+  const query = params.get("q") ?? "";
   const deferred = useDeferredValue(query);
   const trimmed = deferred.trim();
+
+  const setQuery = (next: string) => {
+    const nextParams = new URLSearchParams(params);
+    if (next.length === 0) nextParams.delete("q");
+    else nextParams.set("q", next);
+    setParams(nextParams, { replace: true });
+  };
 
   const movies = useMovieSearch(trimmed);
   const tv = useTvSearch(trimmed);

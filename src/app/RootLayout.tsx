@@ -10,6 +10,7 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { cn } from "@/lib/cn";
+import { GlobalSearchInput } from "./GlobalSearchInput";
 import { InstallButton } from "./InstallButton";
 
 interface NavItem {
@@ -19,9 +20,19 @@ interface NavItem {
   end?: boolean;
 }
 
-const navItems: readonly NavItem[] = [
+// All 5 nav items used by the mobile bottom tab bar.
+const mobileNavItems: readonly NavItem[] = [
   { to: "/", label: "Today", icon: Sparkles, end: true },
   { to: "/search", label: "Search", icon: Search },
+  { to: "/watchlist", label: "Watchlist", icon: Bookmark },
+  { to: "/releases", label: "Releases", icon: CalendarDays },
+  { to: "/settings", label: "Settings", icon: SettingsIcon },
+];
+
+// Desktop top nav drops "Search" — the inline search box in the top bar
+// replaces it.
+const desktopNavItems: readonly NavItem[] = [
+  { to: "/", label: "Today", icon: Sparkles, end: true },
   { to: "/watchlist", label: "Watchlist", icon: Bookmark },
   { to: "/releases", label: "Releases", icon: CalendarDays },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
@@ -41,9 +52,8 @@ function HomeLink() {
 
 function Actions() {
   // Single mount point for ThemeToggle + InstallButton. Switched in/out of
-  // the sidebar vs. mobile header by the viewport-conditional render in
-  // RootLayout, so InstallButton's `beforeinstallprompt` listener and
-  // useTheme's localStorage writes only happen once.
+  // the desktop top bar vs. mobile header by the viewport-conditional
+  // render in RootLayout, so side-effecting components only mount once.
   return (
     <>
       <ThemeToggle />
@@ -57,44 +67,39 @@ export function RootLayout() {
 
   if (isDesktop) {
     return (
-      <div className="flex min-h-dvh">
-        <aside
-          aria-label="App"
-          className="sticky top-0 flex h-dvh w-60 shrink-0 flex-col border-r border-border bg-bg/80 backdrop-blur"
-        >
-          <div className="flex h-14 items-center px-4">
-            <HomeLink />
-          </div>
-          <nav aria-label="Primary" className="flex-1 space-y-1 px-2">
-            {navItems.map(({ to, label, icon: Icon, end }) => (
+      <div className="flex min-h-dvh flex-col">
+        <header className="sticky top-0 z-40 flex h-14 items-center gap-6 border-b border-border bg-bg/80 px-6 backdrop-blur">
+          <HomeLink />
+          <nav aria-label="Primary" className="flex items-center gap-1">
+            {desktopNavItems.map(({ to, label, end }) => (
               <NavLink
                 key={to}
                 to={to}
                 end={end ?? false}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                    "rounded-md px-3 py-1.5 text-sm font-medium",
                     isActive
                       ? "bg-card text-fg"
                       : "text-muted hover:bg-card/60 hover:text-fg",
                   )
                 }
               >
-                <Icon className="h-4 w-4" aria-hidden />
-                <span>{label}</span>
+                {label}
               </NavLink>
             ))}
           </nav>
-          <div className="flex items-center gap-2 border-t border-border px-3 py-3">
+          <div className="flex flex-1 justify-center px-4">
+            <GlobalSearchInput />
+          </div>
+          <div className="flex items-center gap-2">
             <Actions />
           </div>
-        </aside>
+        </header>
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <main className="flex-1 px-8 py-6">
-            <Outlet />
-          </main>
-        </div>
+        <main className="flex-1 px-8 py-6">
+          <Outlet />
+        </main>
       </div>
     );
   }
@@ -117,7 +122,7 @@ export function RootLayout() {
         aria-label="Primary"
         className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-border bg-bg/95 backdrop-blur"
       >
-        {navItems.map(({ to, label, icon: Icon, end }) => (
+        {mobileNavItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
