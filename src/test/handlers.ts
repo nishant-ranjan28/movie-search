@@ -72,4 +72,14 @@ export const handlers: HttpHandler[] = [
   // Genre lists
   http.get(`${TMDB}/genre/movie/list`, () => HttpResponse.json(genreMovieList)),
   http.get(`${TMDB}/genre/tv/list`, () => HttpResponse.json(genreTvList)),
+
+  // AI natural-language translate (Vercel Edge function) — synthesize a
+  // deterministic response so tests don't depend on Groq.
+  http.post("/api/ai/translate", () =>
+    HttpResponse.json({
+      genres: [35],
+      yearGte: 1990,
+      yearLte: 1999,
+    }),
+  ),
 ];
