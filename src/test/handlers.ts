@@ -82,4 +82,13 @@ export const handlers: HttpHandler[] = [
       yearLte: 1999,
     }),
   ),
+
+  // AI personalized recommend — deterministic stub mirroring translate's
+  // shape (filters + reason).
+  http.post("/api/ai/recommend", () =>
+    HttpResponse.json({
+      filters: { genres: [878, 28], yearGte: 2015, ratingGte: 7 },
+      reason: "Lean into the cerebral sci-fi action vibe from your watchlist.",
+    }),
+  ),
 ];
