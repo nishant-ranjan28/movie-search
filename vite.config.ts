@@ -128,6 +128,23 @@ export default defineConfig({
             options: {
               cacheName: "tmdb-trending",
               expiration: { maxAgeSeconds: 60 * 60 },
+              // Without this, a cache-miss + network failure leaves the
+              // background revalidate as an unhandled rejection and the
+              // FetchEvent as a "network error response". Returning a
+              // synthetic 503 lets the app's error UI take over cleanly.
+              plugins: [
+                {
+                  handlerDidError: async () =>
+                    new Response(
+                      JSON.stringify({ error: "offline", results: [] }),
+                      {
+                        status: 503,
+                        statusText: "Offline",
+                        headers: { "Content-Type": "application/json" },
+                      },
+                    ),
+                },
+              ],
             },
           },
           {
@@ -137,6 +154,19 @@ export default defineConfig({
               cacheName: "tmdb-details",
               expiration: { maxAgeSeconds: 24 * 60 * 60 },
               networkTimeoutSeconds: 5,
+              plugins: [
+                {
+                  handlerDidError: async () =>
+                    new Response(
+                      JSON.stringify({ error: "offline", results: [] }),
+                      {
+                        status: 503,
+                        statusText: "Offline",
+                        headers: { "Content-Type": "application/json" },
+                      },
+                    ),
+                },
+              ],
             },
           },
         ],
