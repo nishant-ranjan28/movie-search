@@ -22,8 +22,13 @@ const MIN_WATCHLIST_FOR_PERSONALIZATION = 2;
  */
 export function ForYouRail() {
   const navigate = useNavigate();
-  const entries = useWatchlistStore((s) =>
-    Object.values(s.entries).filter((e) => e.domain === "movie"),
+  // Select the stable map reference — deriving a new array inside the
+  // selector returns a fresh reference each call, which under Zustand v5 +
+  // React 19's useSyncExternalStore triggers a re-render loop (React #185).
+  const entriesMap = useWatchlistStore((s) => s.entries);
+  const entries = useMemo(
+    () => Object.values(entriesMap).filter((e) => e.domain === "movie"),
+    [entriesMap],
   );
 
   const genres = useGenres("movie");
