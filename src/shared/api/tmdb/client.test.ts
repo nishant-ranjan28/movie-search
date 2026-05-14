@@ -12,12 +12,10 @@ const fetchMock = vi.fn();
 beforeEach(() => {
   fetchMock.mockReset();
   vi.stubGlobal("fetch", fetchMock);
-  vi.stubEnv("VITE_TMDB_KEY", "TEST_KEY");
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  vi.unstubAllEnvs();
 });
 
 const okJson = (data: unknown): Response =>
@@ -28,9 +26,11 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(searchMovieFixture));
     const results = await tmdb.searchMovies("matrix");
     const calledUrl = fetchMock.mock.calls[0]![0] as string;
-    expect(calledUrl).toContain("/search/movie");
+    expect(calledUrl).toContain("/api/tmdb/search/movie");
     expect(calledUrl).toContain("query=matrix");
-    expect(calledUrl).toContain("api_key=TEST_KEY");
+    // No api_key in client requests — that's attached server-side by the
+    // /api/tmdb proxy.
+    expect(calledUrl).not.toContain("api_key=");
     expect(results.length).toBeGreaterThan(0);
     expect(results[0]!.domain).toBe("movie");
   });
@@ -51,7 +51,7 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(trendingMovieFixture));
     const results = await tmdb.trendingMovies("day");
     const url = fetchMock.mock.calls[0]![0] as string;
-    expect(url).toContain("/trending/movie/day");
+    expect(url).toContain("/api/tmdb/trending/movie/day");
     expect(results[0]!.id.startsWith("tmdb:movie:")).toBe(true);
   });
 
@@ -59,7 +59,7 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(movieDetailsFixture));
     const { item, raw } = await tmdb.movieDetails(603);
     const url = fetchMock.mock.calls[0]![0] as string;
-    expect(url).toContain("/movie/603");
+    expect(url).toContain("/api/tmdb/movie/603");
     expect(url).toContain("append_to_response=credits%2Cvideos%2Crelease_dates");
     expect(item.id).toBe("tmdb:movie:603");
     expect(raw.id).toBe(603);
@@ -69,7 +69,7 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(tvDetailsFixture));
     const { item, raw } = await tmdb.tvDetails(1399);
     const url = fetchMock.mock.calls[0]![0] as string;
-    expect(url).toContain("/tv/1399");
+    expect(url).toContain("/api/tmdb/tv/1399");
     expect(url).toContain("append_to_response=credits%2Cvideos");
     expect(item.id).toBe("tmdb:tv:1399");
     expect(raw.id).toBe(1399);
@@ -79,7 +79,7 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(watchProvidersFixture));
     const names = await tmdb.watchProviders("movie", 603, "US");
     const url = fetchMock.mock.calls[0]![0] as string;
-    expect(url).toContain("/movie/603/watch/providers");
+    expect(url).toContain("/api/tmdb/movie/603/watch/providers");
     expect(Array.isArray(names)).toBe(true);
     // names may be empty if US has no flatrate, but should never throw
   });
@@ -88,12 +88,6 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(watchProvidersFixture));
     const names = await tmdb.watchProviders("movie", 603, "ZZ");
     expect(names).toEqual([]);
-  });
-
-  test("missing key throws ApiError", async () => {
-    vi.stubEnv("VITE_TMDB_KEY", "");
-    await expect(tmdb.searchMovies("matrix")).rejects.toBeInstanceOf(ApiError);
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   test("non-2xx throws ApiError with status", async () => {
@@ -122,7 +116,7 @@ describe("tmdb client URL composition", () => {
     fetchMock.mockResolvedValueOnce(okJson(trendingTvFixture));
     const results = await tmdb.trendingTv("week");
     const url = fetchMock.mock.calls[0]![0] as string;
-    expect(url).toContain("/trending/tv/week");
+    expect(url).toContain("/api/tmdb/trending/tv/week");
     expect(results.every((r) => r.domain === "tv")).toBe(true);
   });
 
@@ -132,7 +126,7 @@ describe("tmdb client URL composition", () => {
     const to = new Date("2026-12-31T00:00:00Z");
     const events = await tmdb.upcomingMovies(from, to);
     const url = fetchMock.mock.calls[0]![0] as string;
-    expect(url).toContain("/discover/movie");
+    expect(url).toContain("/api/tmdb/discover/movie");
     expect(url).toContain("primary_release_date.gte=2026-01-01");
     expect(url).toContain("primary_release_date.lte=2026-12-31");
     // every event has the expected shape; items with empty release_date are skipped

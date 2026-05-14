@@ -22,7 +22,9 @@ import {
   type TmdbTv,
 } from "./schemas";
 
-const BASE = "https://api.themoviedb.org/3";
+// All TMDB requests go through our Vercel Edge proxy at /api/tmdb/* so the
+// TMDB_KEY stays server-side. See api/tmdb/[...path].ts.
+const BASE = "/api/tmdb";
 
 /**
  * Typed error for any TMDB request failure: missing key, non-2xx, network
@@ -74,13 +76,9 @@ async function request<T>(
   schema: z.ZodType<T>,
   signal?: AbortSignal,
 ): Promise<T> {
-  const key = import.meta.env.VITE_TMDB_KEY;
-  if (!key) {
-    throw new ApiError(0, endpoint, "VITE_TMDB_KEY missing");
-  }
-
-  const search = new URLSearchParams({ api_key: key, ...params });
-  const url = `${BASE}${endpoint}?${search.toString()}`;
+  const search = new URLSearchParams(params);
+  const qs = search.toString();
+  const url = `${BASE}${endpoint}${qs.length > 0 ? `?${qs}` : ""}`;
 
   let res: Response;
   try {

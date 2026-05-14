@@ -13,11 +13,5 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", "dist", "legacy/**"],
     coverage: { provider: "v8", reporter: ["text", "lcov"] },
-    // Stub VITE_TMDB_KEY for tests so client.request() doesn't short-circuit
-    // when .env.local is missing (e.g., on CI). MSW intercepts the actual
-    // network call regardless of key value.
-    env: {
-      VITE_TMDB_KEY: "TEST_KEY",
-    },
   },
 });

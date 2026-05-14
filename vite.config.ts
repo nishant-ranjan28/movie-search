@@ -31,8 +31,27 @@ const apiHandlers = (): Plugin => ({
       const url = req.url ?? "";
       if (!url.startsWith("/api/")) return next();
       const [pathOnly, queryString] = url.split("?");
-      const filePath = path.join(__dirname, `${pathOnly}.ts`);
-      if (!fs.existsSync(filePath)) return next();
+      // First try exact match: /api/foo/bar → api/foo/bar.ts
+      let filePath = path.join(__dirname, `${pathOnly}.ts`);
+      if (!fs.existsSync(filePath)) {
+        // Fall back to Vercel-style catch-all routing: walk up the path
+        // looking for a `[...name].ts` file (matches the rest of the path).
+        // Example: /api/tmdb/trending/movie/day → api/tmdb/[...path].ts
+        filePath = "";
+        const segments = (pathOnly ?? "").split("/").filter(Boolean);
+        for (let i = segments.length; i > 0; i--) {
+          const dir = path.join(__dirname, ...segments.slice(0, i - 1));
+          if (!fs.existsSync(dir)) continue;
+          const match = fs
+            .readdirSync(dir)
+            .find((f) => /^\[\.\.\..+\]\.ts$/.test(f));
+          if (match) {
+            filePath = path.join(dir, match);
+            break;
+          }
+        }
+        if (!filePath) return next();
+      }
 
       try {
         const mod = await server.ssrLoadModule(filePath);
@@ -122,8 +141,9 @@ export default defineConfig({
             },
           },
           {
-            urlPattern:
-              /^https:\/\/api\.themoviedb\.org\/3\/(trending|discover)/,
+            // Trending + discover via our /api/tmdb proxy. Pattern matches
+            // same-origin absolute URLs (the SW sees the full URL).
+            urlPattern: /\/api\/tmdb\/(trending|discover)/,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "tmdb-trending",
@@ -148,7 +168,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/api\.themoviedb\.org\/3\/(movie|tv)\/\d+/,
+            urlPattern: /\/api\/tmdb\/(movie|tv)\/\d+/,
             handler: "NetworkFirst",
             options: {
               cacheName: "tmdb-details",

@@ -1,13 +1,5 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_TMDB_KEY: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
-
 declare module "virtual:pwa-register/react" {
   import type { Dispatch, SetStateAction } from "react";
   export interface RegisterSWOptions {

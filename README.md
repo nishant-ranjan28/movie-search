@@ -36,7 +36,7 @@ Create a `.env.local` file at the repo root.
 
 | Variable         | Required for                | Notes                                                                                          |
 | ---------------- | --------------------------- | ---------------------------------------------------------------------------------------------- |
-| `VITE_TMDB_KEY`  | Movies/TV                   | TMDB API key — https://developer.themoviedb.org/                                              |
+| `TMDB_KEY`       | Movies/TV                   | TMDB API key. Server-only (NOT prefixed `VITE_`). Proxied via `/api/tmdb/[...path]`. https://developer.themoviedb.org/ |
 | `GROQ_API_KEY`   | Natural-language search     | Server-only (NOT prefixed `VITE_`). Used by the `/api/ai/translate` Vercel Edge Function. Free, no card — https://console.groq.com |
 
 Phase 2+ adds `VITE_RAWG_KEY` (games). Phase 6 adds VAPID keys for web push.

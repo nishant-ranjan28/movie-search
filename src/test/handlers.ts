@@ -11,7 +11,9 @@ import trendingTvDay from "@/shared/api/tmdb/fixtures/trending-tv-day.json";
 import searchMovieMatrix from "@/shared/api/tmdb/fixtures/search-movie-matrix.json";
 import watchProvidersMovie603 from "@/shared/api/tmdb/fixtures/watch-providers-movie-603.json";
 
-const TMDB = "https://api.themoviedb.org/3";
+// Match the /api/tmdb proxy URLs the client now uses. MSW handles relative
+// paths and resolves them against the test's document origin.
+const TMDB = "/api/tmdb";
 
 export const handlers: HttpHandler[] = [
   // Movie details

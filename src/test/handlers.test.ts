@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 
-const TMDB = "https://api.themoviedb.org/3";
+const TMDB = "/api/tmdb";
 
 test("MSW serves /movie/603", async () => {
   const res = await fetch(`${TMDB}/movie/603?api_key=anything`);
