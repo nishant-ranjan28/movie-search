@@ -76,14 +76,25 @@ export const handlers: HttpHandler[] = [
   http.get(`${TMDB}/genre/tv/list`, () => HttpResponse.json(genreTvList)),
 
   // AI natural-language translate (Vercel Edge function) — synthesize a
-  // deterministic response so tests don't depend on Groq.
-  http.post("/api/ai/translate", () =>
-    HttpResponse.json({
+  // deterministic response so tests don't depend on Groq. Picks the TV
+  // domain when the user query mentions a TV cue ("show"/"series"/"sitcom"),
+  // matching the production prompt's domain-choice rules.
+  http.post("/api/ai/translate", async ({ request }) => {
+    let query = "";
+    try {
+      const body = (await request.clone().json()) as { query?: unknown };
+      if (typeof body.query === "string") query = body.query.toLowerCase();
+    } catch {
+      /* ignore — fall through to default movie response */
+    }
+    const isTv = /\b(show|series|sitcom|season|episode|miniseries|anime)\b/.test(query);
+    return HttpResponse.json({
+      domain: isTv ? "tv" : "movie",
       genres: [35],
       yearGte: 1990,
       yearLte: 1999,
-    }),
-  ),
+    });
+  }),
 
   // AI personalized recommend — deterministic stub mirroring translate's
   // shape (filters + reason).

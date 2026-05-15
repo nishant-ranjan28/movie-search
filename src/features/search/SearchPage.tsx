@@ -30,6 +30,7 @@ export function SearchPage() {
   const movies = useMovieSearch(trimmed);
   const tv = useTvSearch(trimmed);
   const movieGenres = useGenres("movie");
+  const tvGenres = useGenres("tv");
   const aiTranslate = useAiTranslate();
 
   const isLoading = trimmed.length > 0 && (movies.isLoading || tv.isLoading);
@@ -41,13 +42,13 @@ export function SearchPage() {
   };
 
   const runSmartSearch = () => {
-    if (!movieGenres.data || trimmed.length === 0) return;
+    if (!movieGenres.data || !tvGenres.data || trimmed.length === 0) return;
     aiTranslate.mutate(
-      { query: trimmed, domain: "movie", genres: movieGenres.data },
+      { query: trimmed, movieGenres: movieGenres.data, tvGenres: tvGenres.data },
       {
-        onSuccess: (filters) => {
+        onSuccess: ({ domain, filters }) => {
           const target = filtersToParams(filters, new URLSearchParams());
-          navigate(`/movies?${target.toString()}`);
+          navigate(`/${domain === "tv" ? "tv" : "movies"}?${target.toString()}`);
         },
       },
     );
@@ -85,7 +86,7 @@ export function SearchPage() {
             <Button
               type="button"
               onClick={runSmartSearch}
-              disabled={aiTranslate.isPending || !movieGenres.data}
+              disabled={aiTranslate.isPending || !movieGenres.data || !tvGenres.data}
               className="gap-2"
             >
               {aiTranslate.isPending ? (

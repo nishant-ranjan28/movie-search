@@ -11,13 +11,21 @@ export class AiTranslateError extends Error {
   }
 }
 
-interface TranslateRequest {
+export interface TranslateRequest {
   query: string;
-  domain: "movie" | "tv";
-  genres: TmdbGenre[];
+  movieGenres: TmdbGenre[];
+  tvGenres: TmdbGenre[];
 }
 
-const isTranslateResponse = (data: unknown): data is {
+export interface TranslateResult {
+  domain: "movie" | "tv";
+  filters: DiscoverFilters;
+}
+
+const isTranslateResponse = (
+  data: unknown,
+): data is {
+  domain?: unknown;
   genres: number[];
   yearGte?: number;
   yearLte?: number;
@@ -31,13 +39,13 @@ const isTranslateResponse = (data: unknown): data is {
 
 /**
  * POST /api/ai/translate — server-side Groq call. Returns the structured
- * DiscoverFilters shape (genres + optional year/rating bounds) that the
- * /movies and /tv hubs already consume.
+ * DiscoverFilters shape alongside the AI-inferred destination domain so the
+ * caller can route to /movies or /tv based on cues in the query.
  */
 export const aiTranslate = async (
   req: TranslateRequest,
   signal?: AbortSignal,
-): Promise<DiscoverFilters> => {
+): Promise<TranslateResult> => {
   const res = await fetch("/api/ai/translate", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -57,15 +65,16 @@ export const aiTranslate = async (
   if (!isTranslateResponse(data)) {
     throw new AiTranslateError(0, "invalid response shape");
   }
-  const out: DiscoverFilters = { genres: data.genres };
-  if (data.yearGte !== undefined) out.yearGte = data.yearGte;
-  if (data.yearLte !== undefined) out.yearLte = data.yearLte;
-  if (data.ratingGte !== undefined) out.ratingGte = data.ratingGte;
-  return out;
+  const filters: DiscoverFilters = { genres: data.genres };
+  if (data.yearGte !== undefined) filters.yearGte = data.yearGte;
+  if (data.yearLte !== undefined) filters.yearLte = data.yearLte;
+  if (data.ratingGte !== undefined) filters.ratingGte = data.ratingGte;
+  const domain: "movie" | "tv" = data.domain === "tv" ? "tv" : "movie";
+  return { domain, filters };
 };
 
 export const useAiTranslate = (): UseMutationResult<
-  DiscoverFilters,
+  TranslateResult,
   AiTranslateError,
   TranslateRequest
 > =>

@@ -49,6 +49,7 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
   const tv = useTvSearch(trimmed);
 
   const movieGenres = useGenres("movie");
+  const tvGenres = useGenres("tv");
   const aiTranslate = useAiTranslate();
 
   const [open, setOpen] = useState(false);
@@ -91,14 +92,14 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
 
   const runSmartSearch = () => {
     const q = value.trim();
-    if (q.length === 0 || !movieGenres.data) return;
+    if (q.length === 0 || !movieGenres.data || !tvGenres.data) return;
     aiTranslate.mutate(
-      { query: q, domain: "movie", genres: movieGenres.data },
+      { query: q, movieGenres: movieGenres.data, tvGenres: tvGenres.data },
       {
-        onSuccess: (filters) => {
+        onSuccess: ({ domain, filters }) => {
           const target = filtersToParams(filters, new URLSearchParams());
           setOpen(false);
-          navigate(`/movies?${target.toString()}`);
+          navigate(`/${domain === "tv" ? "tv" : "movies"}?${target.toString()}`);
         },
       },
     );
@@ -177,7 +178,7 @@ export function GlobalSearchInput({ className }: Readonly<Props>) {
           <button
             type="button"
             onClick={runSmartSearch}
-            disabled={aiTranslate.isPending || !movieGenres.data}
+            disabled={aiTranslate.isPending || !movieGenres.data || !tvGenres.data}
             className="flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left text-sm text-fg hover:bg-card/60 disabled:opacity-60"
           >
             {aiTranslate.isPending ? (
