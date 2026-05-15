@@ -40,10 +40,53 @@ const ALLOWED_PREFIXES = [
   "genre/tv/list",
 ] as const;
 
+// Per-endpoint Vercel CDN cache TTLs. `s-maxage` is the CDN cache lifetime
+// (Vercel's shared cache); `stale-while-revalidate` is how long the CDN can
+// keep serving the stale response while it refreshes in the background. The
+// values mirror the client-side TanStack Query `staleTime` from hooks.ts so
+// the two layers don't fight.
+//
+// IMPORTANT: `max-age` is intentionally omitted. We want the CDN to cache
+// (s-maxage) without locking the browser's private cache; TanStack Query
+// owns client-side invalidation.
+interface CachePolicy {
+  sMaxage: number;
+  staleWhileRevalidate: number;
+}
+
+const MINUTE = 60;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+const POLICIES: { match: (p: string) => boolean; policy: CachePolicy }[] = [
+  // Effectively static: genre lists rarely change.
+  { match: (p) => p === "genre/movie/list" || p === "genre/tv/list", policy: { sMaxage: 7 * DAY, staleWhileRevalidate: 30 * DAY } },
+  // Search depends on user input — short cache so typos roll off quickly.
+  { match: (p) => p.startsWith("search/movie") || p.startsWith("search/tv"), policy: { sMaxage: 5 * MINUTE, staleWhileRevalidate: 1 * HOUR } },
+  // Trending refreshes hourly.
+  { match: (p) => p.startsWith("trending/movie/") || p.startsWith("trending/tv/"), policy: { sMaxage: 1 * HOUR, staleWhileRevalidate: 6 * HOUR } },
+  // Discover (filter-driven lists) — same as trending.
+  { match: (p) => p.startsWith("discover/"), policy: { sMaxage: 1 * HOUR, staleWhileRevalidate: 6 * HOUR } },
+  // Details / similar / recommendations / watch providers — stable per title.
+  { match: (p) => p.startsWith("movie/") || p.startsWith("tv/"), policy: { sMaxage: 1 * DAY, staleWhileRevalidate: 7 * DAY } },
+];
+
+// Conservative fallback for anything not explicitly mapped.
+const FALLBACK_POLICY: CachePolicy = { sMaxage: 5 * MINUTE, staleWhileRevalidate: 1 * HOUR };
+
+const cachePolicyFor = (path: string): CachePolicy =>
+  POLICIES.find((p) => p.match(path))?.policy ?? FALLBACK_POLICY;
+
+const cacheHeaderFor = (path: string): string => {
+  const { sMaxage, staleWhileRevalidate } = cachePolicyFor(path);
+  return `public, s-maxage=${sMaxage}, stale-while-revalidate=${staleWhileRevalidate}`;
+};
+
 const json = (data: unknown, status: number): Response =>
   new Response(JSON.stringify(data), {
     status,
-    headers: { "content-type": "application/json" },
+    // Errors must never be cached — a transient 502 shouldn't poison the CDN.
+    headers: { "content-type": "application/json", "cache-control": "no-store" },
   });
 
 const isAllowed = (path: string): boolean =>
@@ -86,14 +129,16 @@ export default async function handler(req: Request): Promise<Response> {
     return json({ error: "upstream unavailable" }, 502);
   }
 
-  // Forward the body and status. Strip the upstream's set-cookie just in
-  // case (TMDB doesn't set any, but defensive). Preserve content-type and
-  // add a short shared cache TTL so Vercel's edge can collapse repeated
-  // requests from different users.
+  // Forward the body verbatim. Preserve content-type. For 2xx responses,
+  // apply the per-endpoint Vercel CDN cache policy; for non-2xx, set
+  // `no-store` so transient failures don't pollute the shared cache.
   const headers = new Headers();
   const contentType = upstream.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
-  headers.set("cache-control", "public, s-maxage=60, stale-while-revalidate=300");
+  headers.set(
+    "cache-control",
+    upstream.ok ? cacheHeaderFor(path) : "no-store",
+  );
 
   return new Response(upstream.body, { status: upstream.status, headers });
 }
