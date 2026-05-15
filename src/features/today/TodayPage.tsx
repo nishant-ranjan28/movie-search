@@ -150,7 +150,10 @@ export function TodayPage() {
         <HeroBlock onOpen={open} />
       </ErrorBoundary>
       <ErrorBoundary fallback={null}>
-        <ForYouRail />
+        <ForYouRail domain="movie" />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <ForYouRail domain="tv" />
       </ErrorBoundary>
       <ErrorBoundary
         fallback={
