@@ -1,6 +1,23 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Check, GripVertical, Trash2 } from "lucide-react";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useWatchlistStore, type WatchlistEntry } from "@/shared/store/watchlist";
 import type { MediaItem, MediaDomain } from "@/shared/schemas/media";
 import { MediaCard } from "@/shared/components/MediaCard";
@@ -12,9 +29,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/cn";
+import { useWatchlistRefresh } from "./useWatchlistRefresh";
 
-type SortKey = "recent" | "title" | "year" | "rating";
+type SortKey = "custom" | "recent" | "title" | "year" | "rating";
 
 const DOMAIN_LABELS: Record<MediaDomain, string> = {
   movie: "Movies",
@@ -32,6 +58,7 @@ const STATUS_LABELS: Record<WatchlistEntry["status"], string> = {
 };
 
 const SORT_LABELS: Record<SortKey, string> = {
+  custom: "Custom (drag to reorder)",
   recent: "Recently added",
   title: "Title",
   year: "Year",
@@ -53,10 +80,44 @@ const itemFromEntry = (e: WatchlistEntry): MediaItem => ({
 export function WatchlistPage() {
   const navigate = useNavigate();
   const entriesMap = useWatchlistStore((s) => s.entries);
+  const order = useWatchlistStore((s) => s.order);
+  const reorder = useWatchlistStore((s) => s.reorder);
+  const setStatusMany = useWatchlistStore((s) => s.setStatusMany);
+  const removeMany = useWatchlistStore((s) => s.removeMany);
   const entries = useMemo(() => Object.values(entriesMap), [entriesMap]);
   const [domainFilter, setDomainFilter] = useState<MediaDomain | "all">("all");
   const [statusFilter, setStatusFilter] = useState<WatchlistEntry["status"] | "all">("all");
   const [sortKey, setSortKey] = useState<SortKey>("recent");
+  const [selecting, setSelecting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
+  const { isSyncing } = useWatchlistRefresh();
+
+  // Exit selection mode on Escape. Also clear selection if filters change so
+  // hidden cards don't stay selected invisibly.
+  useEffect(() => {
+    if (!selecting) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelecting(false);
+        setSelectedIds(new Set());
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [selecting]);
+
+  // Clear selection when filters change (selected-but-hidden items are
+  // confusing — the action toolbar count would include cards the user can't
+  // see).
+  const filterFingerprint = `${domainFilter}|${statusFilter}`;
+  const [lastFilterFingerprint, setLastFilterFingerprint] = useState(filterFingerprint);
+  if (filterFingerprint !== lastFilterFingerprint) {
+    setLastFilterFingerprint(filterFingerprint);
+    if (selectedIds.size > 0) setSelectedIds(new Set());
+  }
 
   const presentDomains = useMemo(() => {
     const set = new Set<MediaDomain>();
@@ -71,6 +132,14 @@ export function WatchlistPage() {
   }, [entries, domainFilter, statusFilter]);
 
   const sorted = useMemo(() => {
+    if (sortKey === "custom") {
+      // Render in user-defined order. Entries are looked up from the order
+      // array (so the sequence matches the store) and then filtered.
+      const filterSet = new Set(filtered.map((e) => e.itemId));
+      return order
+        .map((id) => entriesMap[id])
+        .filter((e): e is WatchlistEntry => e !== undefined && filterSet.has(e.itemId));
+    }
     const arr = [...filtered];
     switch (sortKey) {
       case "recent":
@@ -87,7 +156,7 @@ export function WatchlistPage() {
         break;
     }
     return arr;
-  }, [filtered, sortKey]);
+  }, [filtered, sortKey, order, entriesMap]);
 
   if (entries.length === 0) {
     return (
@@ -106,9 +175,23 @@ export function WatchlistPage() {
     else if (item.domain === "tv") navigate(`/tv/${numericId}`);
   };
 
+  // Drag reorder only makes sense in "Custom" sort, and only when filters
+  // are at defaults — otherwise translating a filtered-view reorder to a
+  // global-order reorder has surprising edge cases. We show a hint instead.
+  const filtersAtDefaults = domainFilter === "all" && statusFilter === "all";
+  const dragEnabled = sortKey === "custom" && filtersAtDefaults;
+
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Watchlist</h1>
+      <div className="flex items-center gap-3">
+        <h1 className="text-2xl font-semibold">Watchlist</h1>
+        {isSyncing ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-2 py-0.5 text-xs text-muted">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fg/60" aria-hidden />
+            Syncing…
+          </span>
+        ) : null}
+      </div>
 
       <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
         <legend className="sr-only">Domain filter</legend>
@@ -144,28 +227,169 @@ export function WatchlistPage() {
         ))}
       </fieldset>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">
-          {sorted.length} item{sorted.length === 1 ? "" : "s"}
-        </p>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Sort: {SORT_LABELS[sortKey]}
+      {selecting ? (
+        <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/40 p-2">
+          <p className="text-sm font-medium">
+            {selectedIds.size} selected
+          </p>
+          <button
+            type="button"
+            onClick={() => setSelectedIds(new Set(sorted.map((e) => e.itemId)))}
+            disabled={selectedIds.size === sorted.length}
+            className="text-xs text-muted hover:text-fg disabled:opacity-50"
+          >
+            Select all visible
+          </button>
+          <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={selectedIds.size === 0}
+              onClick={() => {
+                setStatusMany([...selectedIds], "done");
+                setSelectedIds(new Set());
+                setSelecting(false);
+              }}
+            >
+              <Check className="mr-1 h-3.5 w-3.5" aria-hidden /> Mark watched
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
-              <DropdownMenuItem key={k} onSelect={() => setSortKey(k)}>
-                {SORT_LABELS[k]}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={selectedIds.size === 0}
+              onClick={() => {
+                setStatusMany([...selectedIds], "want");
+                setSelectedIds(new Set());
+                setSelecting(false);
+              }}
+            >
+              <Bookmark className="mr-1 h-3.5 w-3.5" aria-hidden /> Mark want
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={selectedIds.size === 0}
+              onClick={() => setConfirmRemoveOpen(true)}
+            >
+              <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden /> Remove
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setSelecting(false);
+                setSelectedIds(new Set());
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted">
+            {sorted.length} item{sorted.length === 1 ? "" : "s"}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelecting(true)}
+            >
+              Select
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Sort: {SORT_LABELS[sortKey]}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
+                  <DropdownMenuItem key={k} onSelect={() => setSortKey(k)}>
+                    {SORT_LABELS[k]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      )}
+
+      {sortKey === "custom" && !filtersAtDefaults && !selecting ? (
+        <p className="text-xs text-muted">
+          Clear filters to drag items in Custom order.
+        </p>
+      ) : null}
+
+      <Dialog open={confirmRemoveOpen} onOpenChange={setConfirmRemoveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Remove {selectedIds.size} item{selectedIds.size === 1 ? "" : "s"}?
+            </DialogTitle>
+            <DialogDescription>
+              These entries will be deleted from your watchlist. This can't be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmRemoveOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                removeMany([...selectedIds]);
+                setSelectedIds(new Set());
+                setSelecting(false);
+                setConfirmRemoveOpen(false);
+              }}
+            >
+              Remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {sorted.length === 0 ? (
         <EmptyState title="No matches" description="Try a different filter." />
+      ) : selecting ? (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {sorted.map((entry) => {
+            const checked = selectedIds.has(entry.itemId);
+            return (
+              <SelectableCard
+                key={entry.itemId}
+                entry={entry}
+                checked={checked}
+                onToggle={() => {
+                  const next = new Set(selectedIds);
+                  if (checked) next.delete(entry.itemId);
+                  else next.add(entry.itemId);
+                  setSelectedIds(next);
+                }}
+              />
+            );
+          })}
+        </div>
+      ) : dragEnabled ? (
+        <SortableGrid
+          items={sorted}
+          onOpen={open}
+          onReorder={(activeId, overId) => {
+            // arrayMove operates on the filtered view; since filters are at
+            // defaults here, the view equals the global order — so overId's
+            // index in the visible list equals its global index.
+            const oldIdx = sorted.findIndex((e) => e.itemId === activeId);
+            const newIdx = sorted.findIndex((e) => e.itemId === overId);
+            if (oldIdx === -1 || newIdx === -1) return;
+            reorder(activeId, newIdx);
+          }}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {sorted.map((entry) => (
@@ -178,6 +402,133 @@ export function WatchlistPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function SelectableCard({
+  entry,
+  checked,
+  onToggle,
+}: Readonly<{
+  entry: WatchlistEntry;
+  checked: boolean;
+  onToggle: () => void;
+}>) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      aria-label={`Select ${entry.snapshot.title}`}
+      onClick={onToggle}
+      className={cn(
+        "relative rounded-md text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg",
+        checked && "ring-2 ring-fg",
+      )}
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "absolute left-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded border border-border bg-bg/90 text-fg",
+          checked && "bg-fg text-bg",
+        )}
+      >
+        {checked ? <Check className="h-3.5 w-3.5" aria-hidden /> : null}
+      </span>
+      <div className="pointer-events-none">
+        <MediaCard item={itemFromEntry(entry)} />
+      </div>
+    </button>
+  );
+}
+
+function SortableGrid({
+  items,
+  onOpen,
+  onReorder,
+}: Readonly<{
+  items: WatchlistEntry[];
+  onOpen: (item: MediaItem) => void;
+  onReorder: (activeId: string, overId: string) => void;
+}>) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  // Local optimistic order; reset whenever the prop changes.
+  const [localItems, setLocalItems] = useState(items);
+  // Sync if upstream changes (add/remove etc.) without dragging.
+  const upstreamIds = items.map((e) => e.itemId).join("|");
+  const [lastUpstream, setLastUpstream] = useState(upstreamIds);
+  if (upstreamIds !== lastUpstream) {
+    setLastUpstream(upstreamIds);
+    setLocalItems(items);
+  }
+
+  const onDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIdx = localItems.findIndex((i) => i.itemId === active.id);
+    const newIdx = localItems.findIndex((i) => i.itemId === over.id);
+    if (oldIdx === -1 || newIdx === -1) return;
+    setLocalItems(arrayMove(localItems, oldIdx, newIdx));
+    onReorder(String(active.id), String(over.id));
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+    >
+      <SortableContext
+        items={localItems.map((i) => i.itemId)}
+        strategy={rectSortingStrategy}
+      >
+        <ul className="grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {localItems.map((entry) => (
+            <SortableCard
+              key={entry.itemId}
+              entry={entry}
+              onOpen={onOpen}
+            />
+          ))}
+        </ul>
+      </SortableContext>
+    </DndContext>
+  );
+}
+
+function SortableCard({
+  entry,
+  onOpen,
+}: Readonly<{
+  entry: WatchlistEntry;
+  onOpen: (item: MediaItem) => void;
+}>) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: entry.itemId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <li ref={setNodeRef} style={style} className="relative">
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        aria-label={`Reorder ${entry.snapshot.title}`}
+        className="absolute right-1 top-1 z-10 rounded bg-bg/80 p-1 text-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+      >
+        <GripVertical className="h-4 w-4" aria-hidden />
+      </button>
+      <MediaCard item={itemFromEntry(entry)} onOpen={onOpen} />
+    </li>
   );
 }
 

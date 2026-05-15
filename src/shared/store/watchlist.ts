@@ -19,10 +19,22 @@ export interface WatchlistEntry {
     achievement?: string;
   };
   snapshot: Snapshot;
+  /** ISO timestamp of the last successful TMDB snapshot refresh. Unset for
+   *  never-refreshed entries; `useWatchlistRefresh` re-fetches anything
+   *  older than 24h. */
+  lastRefreshedAt?: string;
 }
 
 export interface WatchlistState {
   entries: Record<string, WatchlistEntry>;
+  /**
+   * User-defined ordering of itemIds. Maintained independently of the
+   * entries map so reorder operations don't have to renumber per-entry
+   * fields. The existing computed sorts (Recently added / Title / Year /
+   * Rating) keep deriving from entries; this array is only the source for
+   * the new "Custom" sort option.
+   */
+  order: string[];
   add: (input: {
     itemId: string;
     domain: MediaDomain;
@@ -33,33 +45,64 @@ export interface WatchlistState {
   setStatus: (itemId: string, status: WatchlistEntry["status"]) => void;
   setRating: (itemId: string, rating: 1 | 2 | 3 | 4 | 5) => void;
   setNotes: (itemId: string, notes: string) => void;
+  /** Bulk status update — single set() call so persist writes once. */
+  setStatusMany: (itemIds: string[], status: WatchlistEntry["status"]) => void;
+  /** Bulk remove — single set() call so persist writes once. */
+  removeMany: (itemIds: string[]) => void;
+  /** Replace an entry's snapshot (used by background refresh after a
+   *  successful TMDB detail fetch). No-op if the id is missing. */
+  updateSnapshot: (itemId: string, snapshot: Snapshot) => void;
+  /** Stamp the lastRefreshedAt on an entry. No-op if id is missing. */
+  markRefreshed: (itemId: string, isoTimestamp: string) => void;
+  /** Move itemId to a new position in the user-defined order. Clamps to
+   *  valid range and is a no-op if the itemId isn't in the order. */
+  reorder: (itemId: string, toIndex: number) => void;
   has: (itemId: string) => boolean;
   list: () => WatchlistEntry[];
 }
+
+/** Seed an order array from entries when one is missing (migration from
+ *  pre-order watchlist). Most-recently-added first. */
+const seedOrderFromEntries = (
+  entries: Record<string, WatchlistEntry>,
+): string[] =>
+  Object.values(entries)
+    .sort((a, b) => b.addedAt.localeCompare(a.addedAt))
+    .map((e) => e.itemId);
 
 export const useWatchlistStore = create<WatchlistState>()(
   persist(
     (set, get) => ({
       entries: {},
+      order: [],
       add: ({ itemId, domain, snapshot, status }) =>
-        set((state) => ({
-          entries: {
-            ...state.entries,
-            [itemId]: {
-              itemId,
-              domain,
-              snapshot,
-              status: status ?? "want",
-              addedAt: new Date().toISOString(),
+        set((state) => {
+          // Re-adding an existing item is treated as a status update; keep
+          // its place in the order array unchanged.
+          const alreadyOrdered = state.order.includes(itemId);
+          return {
+            entries: {
+              ...state.entries,
+              [itemId]: {
+                itemId,
+                domain,
+                snapshot,
+                status: status ?? "want",
+                addedAt: new Date().toISOString(),
+              },
             },
-          },
-        })),
+            order: alreadyOrdered ? state.order : [...state.order, itemId],
+          };
+        }),
       remove: (itemId) =>
         set((state) => {
           if (!(itemId in state.entries)) return state;
           const next = { ...state.entries };
           delete next[itemId];
-          return { entries: next };
+          return {
+            entries: next,
+            order: state.order.filter((id) => id !== itemId),
+          };
         }),
       setStatus: (itemId, status) =>
         set((state) => {
@@ -79,9 +122,74 @@ export const useWatchlistStore = create<WatchlistState>()(
           if (!existing) return state;
           return { entries: { ...state.entries, [itemId]: { ...existing, notes } } };
         }),
+      setStatusMany: (itemIds, status) =>
+        set((state) => {
+          const next = { ...state.entries };
+          let touched = false;
+          for (const id of itemIds) {
+            const existing = next[id];
+            if (!existing) continue;
+            next[id] = { ...existing, status };
+            touched = true;
+          }
+          return touched ? { entries: next } : state;
+        }),
+      removeMany: (itemIds) =>
+        set((state) => {
+          const toRemove = new Set(itemIds.filter((id) => id in state.entries));
+          if (toRemove.size === 0) return state;
+          const nextEntries = { ...state.entries };
+          for (const id of toRemove) delete nextEntries[id];
+          return {
+            entries: nextEntries,
+            order: state.order.filter((id) => !toRemove.has(id)),
+          };
+        }),
+      updateSnapshot: (itemId, snapshot) =>
+        set((state) => {
+          const existing = state.entries[itemId];
+          if (!existing) return state;
+          return {
+            entries: { ...state.entries, [itemId]: { ...existing, snapshot } },
+          };
+        }),
+      markRefreshed: (itemId, isoTimestamp) =>
+        set((state) => {
+          const existing = state.entries[itemId];
+          if (!existing) return state;
+          return {
+            entries: {
+              ...state.entries,
+              [itemId]: { ...existing, lastRefreshedAt: isoTimestamp },
+            },
+          };
+        }),
+      reorder: (itemId, toIndex) =>
+        set((state) => {
+          const from = state.order.indexOf(itemId);
+          if (from === -1) return state;
+          const clamped = Math.max(0, Math.min(toIndex, state.order.length - 1));
+          if (clamped === from) return state;
+          const next = state.order.slice();
+          next.splice(from, 1);
+          next.splice(clamped, 0, itemId);
+          return { order: next };
+        }),
       has: (itemId) => itemId in get().entries,
       list: () => Object.values(get().entries),
     }),
-    { name: "watchlist" },
+    {
+      name: "watchlist",
+      // Migration from pre-order persisted state: when a stored snapshot
+      // has entries but no order, seed the order from entries.addedAt desc.
+      // Idempotent — once `order` is set, subsequent rehydrations leave it
+      // alone.
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        if (state.order.length === 0 && Object.keys(state.entries).length > 0) {
+          state.order = seedOrderFromEntries(state.entries);
+        }
+      },
+    },
   ),
 );
