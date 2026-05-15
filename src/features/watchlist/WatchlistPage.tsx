@@ -1,6 +1,23 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bookmark } from "lucide-react";
+import { Bookmark, GripVertical } from "lucide-react";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useWatchlistStore, type WatchlistEntry } from "@/shared/store/watchlist";
 import type { MediaItem, MediaDomain } from "@/shared/schemas/media";
 import { MediaCard } from "@/shared/components/MediaCard";
@@ -14,7 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cn";
 
-type SortKey = "recent" | "title" | "year" | "rating";
+type SortKey = "custom" | "recent" | "title" | "year" | "rating";
 
 const DOMAIN_LABELS: Record<MediaDomain, string> = {
   movie: "Movies",
@@ -32,6 +49,7 @@ const STATUS_LABELS: Record<WatchlistEntry["status"], string> = {
 };
 
 const SORT_LABELS: Record<SortKey, string> = {
+  custom: "Custom (drag to reorder)",
   recent: "Recently added",
   title: "Title",
   year: "Year",
@@ -53,6 +71,8 @@ const itemFromEntry = (e: WatchlistEntry): MediaItem => ({
 export function WatchlistPage() {
   const navigate = useNavigate();
   const entriesMap = useWatchlistStore((s) => s.entries);
+  const order = useWatchlistStore((s) => s.order);
+  const reorder = useWatchlistStore((s) => s.reorder);
   const entries = useMemo(() => Object.values(entriesMap), [entriesMap]);
   const [domainFilter, setDomainFilter] = useState<MediaDomain | "all">("all");
   const [statusFilter, setStatusFilter] = useState<WatchlistEntry["status"] | "all">("all");
@@ -71,6 +91,14 @@ export function WatchlistPage() {
   }, [entries, domainFilter, statusFilter]);
 
   const sorted = useMemo(() => {
+    if (sortKey === "custom") {
+      // Render in user-defined order. Entries are looked up from the order
+      // array (so the sequence matches the store) and then filtered.
+      const filterSet = new Set(filtered.map((e) => e.itemId));
+      return order
+        .map((id) => entriesMap[id])
+        .filter((e): e is WatchlistEntry => e !== undefined && filterSet.has(e.itemId));
+    }
     const arr = [...filtered];
     switch (sortKey) {
       case "recent":
@@ -87,7 +115,7 @@ export function WatchlistPage() {
         break;
     }
     return arr;
-  }, [filtered, sortKey]);
+  }, [filtered, sortKey, order, entriesMap]);
 
   if (entries.length === 0) {
     return (
@@ -105,6 +133,12 @@ export function WatchlistPage() {
     if (item.domain === "movie") navigate(`/movies/${numericId}`);
     else if (item.domain === "tv") navigate(`/tv/${numericId}`);
   };
+
+  // Drag reorder only makes sense in "Custom" sort, and only when filters
+  // are at defaults — otherwise translating a filtered-view reorder to a
+  // global-order reorder has surprising edge cases. We show a hint instead.
+  const filtersAtDefaults = domainFilter === "all" && statusFilter === "all";
+  const dragEnabled = sortKey === "custom" && filtersAtDefaults;
 
   return (
     <div className="space-y-4">
@@ -164,8 +198,28 @@ export function WatchlistPage() {
         </DropdownMenu>
       </div>
 
+      {sortKey === "custom" && !filtersAtDefaults ? (
+        <p className="text-xs text-muted">
+          Clear filters to drag items in Custom order.
+        </p>
+      ) : null}
+
       {sorted.length === 0 ? (
         <EmptyState title="No matches" description="Try a different filter." />
+      ) : dragEnabled ? (
+        <SortableGrid
+          items={sorted}
+          onOpen={open}
+          onReorder={(activeId, overId) => {
+            // arrayMove operates on the filtered view; since filters are at
+            // defaults here, the view equals the global order — so overId's
+            // index in the visible list equals its global index.
+            const oldIdx = sorted.findIndex((e) => e.itemId === activeId);
+            const newIdx = sorted.findIndex((e) => e.itemId === overId);
+            if (oldIdx === -1 || newIdx === -1) return;
+            reorder(activeId, newIdx);
+          }}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {sorted.map((entry) => (
@@ -178,6 +232,96 @@ export function WatchlistPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function SortableGrid({
+  items,
+  onOpen,
+  onReorder,
+}: Readonly<{
+  items: WatchlistEntry[];
+  onOpen: (item: MediaItem) => void;
+  onReorder: (activeId: string, overId: string) => void;
+}>) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  // Local optimistic order; reset whenever the prop changes.
+  const [localItems, setLocalItems] = useState(items);
+  // Sync if upstream changes (add/remove etc.) without dragging.
+  const upstreamIds = items.map((e) => e.itemId).join("|");
+  const [lastUpstream, setLastUpstream] = useState(upstreamIds);
+  if (upstreamIds !== lastUpstream) {
+    setLastUpstream(upstreamIds);
+    setLocalItems(items);
+  }
+
+  const onDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIdx = localItems.findIndex((i) => i.itemId === active.id);
+    const newIdx = localItems.findIndex((i) => i.itemId === over.id);
+    if (oldIdx === -1 || newIdx === -1) return;
+    setLocalItems(arrayMove(localItems, oldIdx, newIdx));
+    onReorder(String(active.id), String(over.id));
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+    >
+      <SortableContext
+        items={localItems.map((i) => i.itemId)}
+        strategy={rectSortingStrategy}
+      >
+        <ul className="grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {localItems.map((entry) => (
+            <SortableCard
+              key={entry.itemId}
+              entry={entry}
+              onOpen={onOpen}
+            />
+          ))}
+        </ul>
+      </SortableContext>
+    </DndContext>
+  );
+}
+
+function SortableCard({
+  entry,
+  onOpen,
+}: Readonly<{
+  entry: WatchlistEntry;
+  onOpen: (item: MediaItem) => void;
+}>) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: entry.itemId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <li ref={setNodeRef} style={style} className="relative">
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        aria-label={`Reorder ${entry.snapshot.title}`}
+        className="absolute right-1 top-1 z-10 rounded bg-bg/80 p-1 text-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+      >
+        <GripVertical className="h-4 w-4" aria-hidden />
+      </button>
+      <MediaCard item={itemFromEntry(entry)} onOpen={onOpen} />
+    </li>
   );
 }
 

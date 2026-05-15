@@ -5,7 +5,7 @@ const SAMPLE_SNAPSHOT = { title: "The Matrix", year: 1999, genres: ["sci-fi"] };
 
 beforeEach(() => {
   localStorage.clear();
-  useWatchlistStore.setState({ entries: {} });
+  useWatchlistStore.setState({ entries: {}, order: [] });
 });
 
 afterEach(() => {
@@ -70,5 +70,118 @@ describe("watchlist store", () => {
   test("setStatus on missing id is a no-op (does not create entry)", () => {
     useWatchlistStore.getState().setStatus("tmdb:movie:doesnotexist", "done");
     expect(useWatchlistStore.getState().has("tmdb:movie:doesnotexist")).toBe(false);
+  });
+
+  describe("order", () => {
+    test("add appends to order in insertion sequence", () => {
+      const { add } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:3", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      expect(useWatchlistStore.getState().order).toEqual([
+        "tmdb:movie:1",
+        "tmdb:movie:2",
+        "tmdb:movie:3",
+      ]);
+    });
+
+    test("remove also drops the id from order", () => {
+      const { add, remove } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      remove("tmdb:movie:1");
+      expect(useWatchlistStore.getState().order).toEqual(["tmdb:movie:2"]);
+    });
+
+    test("re-adding an existing item does not duplicate order", () => {
+      const { add } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT, status: "done" });
+      expect(useWatchlistStore.getState().order).toEqual([
+        "tmdb:movie:1",
+        "tmdb:movie:2",
+      ]);
+    });
+
+    test("reorder moves an item to a new index", () => {
+      const { add, reorder } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:3", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      reorder("tmdb:movie:3", 0);
+      expect(useWatchlistStore.getState().order).toEqual([
+        "tmdb:movie:3",
+        "tmdb:movie:1",
+        "tmdb:movie:2",
+      ]);
+    });
+
+    test("reorder clamps toIndex to valid range", () => {
+      const { add, reorder } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      // Beyond end → clamps to last position.
+      reorder("tmdb:movie:1", 99);
+      expect(useWatchlistStore.getState().order).toEqual([
+        "tmdb:movie:2",
+        "tmdb:movie:1",
+      ]);
+      // Negative → clamps to 0.
+      reorder("tmdb:movie:1", -5);
+      expect(useWatchlistStore.getState().order).toEqual([
+        "tmdb:movie:1",
+        "tmdb:movie:2",
+      ]);
+    });
+
+    test("reorder of unknown itemId is a no-op", () => {
+      const { add, reorder } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      reorder("tmdb:movie:doesnotexist", 0);
+      expect(useWatchlistStore.getState().order).toEqual(["tmdb:movie:1"]);
+    });
+
+    test("migration: pre-order persisted state seeds order from addedAt desc", async () => {
+      // Simulate a watchlist persisted before this feature shipped (no order
+      // field, entries with different addedAt timestamps).
+      const oldShape = {
+        state: {
+          entries: {
+            "tmdb:movie:A": {
+              itemId: "tmdb:movie:A",
+              domain: "movie",
+              addedAt: "2024-01-01T00:00:00.000Z",
+              status: "want",
+              snapshot: SAMPLE_SNAPSHOT,
+            },
+            "tmdb:movie:B": {
+              itemId: "tmdb:movie:B",
+              domain: "movie",
+              addedAt: "2024-03-01T00:00:00.000Z",
+              status: "want",
+              snapshot: SAMPLE_SNAPSHOT,
+            },
+            "tmdb:movie:C": {
+              itemId: "tmdb:movie:C",
+              domain: "movie",
+              addedAt: "2024-02-01T00:00:00.000Z",
+              status: "want",
+              snapshot: SAMPLE_SNAPSHOT,
+            },
+          },
+          order: [],
+        },
+        version: 0,
+      };
+      localStorage.setItem("watchlist", JSON.stringify(oldShape));
+      await useWatchlistStore.persist.rehydrate();
+      // Most-recently-added first: B (Mar) → C (Feb) → A (Jan).
+      expect(useWatchlistStore.getState().order).toEqual([
+        "tmdb:movie:B",
+        "tmdb:movie:C",
+        "tmdb:movie:A",
+      ]);
+    });
   });
 });
