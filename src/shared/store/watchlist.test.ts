@@ -72,6 +72,39 @@ describe("watchlist store", () => {
     expect(useWatchlistStore.getState().has("tmdb:movie:doesnotexist")).toBe(false);
   });
 
+  describe("bulk", () => {
+    test("setStatusMany updates all matching ids and leaves others untouched", () => {
+      const { add, setStatusMany } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:3", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      setStatusMany(["tmdb:movie:1", "tmdb:movie:2"], "done");
+      expect(useWatchlistStore.getState().entries["tmdb:movie:1"]?.status).toBe("done");
+      expect(useWatchlistStore.getState().entries["tmdb:movie:2"]?.status).toBe("done");
+      expect(useWatchlistStore.getState().entries["tmdb:movie:3"]?.status).toBe("want");
+    });
+
+    test("setStatusMany silently ignores unknown ids", () => {
+      const { add, setStatusMany } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      setStatusMany(["tmdb:movie:1", "tmdb:movie:doesnotexist"], "done");
+      expect(useWatchlistStore.getState().entries["tmdb:movie:1"]?.status).toBe("done");
+      expect(useWatchlistStore.getState().has("tmdb:movie:doesnotexist")).toBe(false);
+    });
+
+    test("removeMany deletes targeted entries and prunes order", () => {
+      const { add, removeMany } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:2", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      add({ itemId: "tmdb:movie:3", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      removeMany(["tmdb:movie:1", "tmdb:movie:3"]);
+      expect(useWatchlistStore.getState().has("tmdb:movie:1")).toBe(false);
+      expect(useWatchlistStore.getState().has("tmdb:movie:2")).toBe(true);
+      expect(useWatchlistStore.getState().has("tmdb:movie:3")).toBe(false);
+      expect(useWatchlistStore.getState().order).toEqual(["tmdb:movie:2"]);
+    });
+  });
+
   describe("order", () => {
     test("add appends to order in insertion sequence", () => {
       const { add } = useWatchlistStore.getState();

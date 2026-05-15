@@ -41,6 +41,10 @@ export interface WatchlistState {
   setStatus: (itemId: string, status: WatchlistEntry["status"]) => void;
   setRating: (itemId: string, rating: 1 | 2 | 3 | 4 | 5) => void;
   setNotes: (itemId: string, notes: string) => void;
+  /** Bulk status update — single set() call so persist writes once. */
+  setStatusMany: (itemIds: string[], status: WatchlistEntry["status"]) => void;
+  /** Bulk remove — single set() call so persist writes once. */
+  removeMany: (itemIds: string[]) => void;
   /** Move itemId to a new position in the user-defined order. Clamps to
    *  valid range and is a no-op if the itemId isn't in the order. */
   reorder: (itemId: string, toIndex: number) => void;
@@ -108,6 +112,29 @@ export const useWatchlistStore = create<WatchlistState>()(
           const existing = state.entries[itemId];
           if (!existing) return state;
           return { entries: { ...state.entries, [itemId]: { ...existing, notes } } };
+        }),
+      setStatusMany: (itemIds, status) =>
+        set((state) => {
+          const next = { ...state.entries };
+          let touched = false;
+          for (const id of itemIds) {
+            const existing = next[id];
+            if (!existing) continue;
+            next[id] = { ...existing, status };
+            touched = true;
+          }
+          return touched ? { entries: next } : state;
+        }),
+      removeMany: (itemIds) =>
+        set((state) => {
+          const toRemove = new Set(itemIds.filter((id) => id in state.entries));
+          if (toRemove.size === 0) return state;
+          const nextEntries = { ...state.entries };
+          for (const id of toRemove) delete nextEntries[id];
+          return {
+            entries: nextEntries,
+            order: state.order.filter((id) => !toRemove.has(id)),
+          };
         }),
       reorder: (itemId, toIndex) =>
         set((state) => {

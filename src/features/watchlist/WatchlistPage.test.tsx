@@ -33,7 +33,7 @@ const wrap = () =>
 
 beforeEach(() => {
   localStorage.clear();
-  useWatchlistStore.setState({ entries: {} });
+  useWatchlistStore.setState({ entries: {}, order: [] });
 });
 afterEach(() => localStorage.clear());
 
@@ -90,5 +90,54 @@ describe("WatchlistPage", () => {
     await user.click(await screen.findByRole("menuitem", { name: /title/i }));
     const headings = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
     expect(headings).toEqual(["Alpha", "Beta", "Charlie"]);
+  });
+
+  test("bulk remove: select two entries, confirm, both gone", async () => {
+    seedSample();
+    const user = userEvent.setup();
+    wrap();
+
+    // Enter selection mode.
+    await user.click(screen.getByRole("button", { name: /^select$/i }));
+
+    // Check Alpha and Beta. SelectableCard renders role="checkbox".
+    await user.click(
+      screen.getByRole("checkbox", { name: /select alpha/i }),
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: /select beta/i }),
+    );
+    expect(screen.getByText(/2 selected/i)).toBeInTheDocument();
+
+    // Click Remove → confirm dialog → confirm.
+    await user.click(screen.getByRole("button", { name: /^remove$/i }));
+    await user.click(
+      await screen.findByRole("button", { name: /^remove$/i }),
+    );
+
+    // Charlie remains; Alpha and Beta are gone.
+    expect(useWatchlistStore.getState().has("tmdb:movie:1")).toBe(false);
+    expect(useWatchlistStore.getState().has("tmdb:movie:2")).toBe(false);
+    expect(useWatchlistStore.getState().has("tmdb:tv:3")).toBe(true);
+  });
+
+  test("bulk mark watched: select one, click Mark watched, status becomes done", async () => {
+    seedSample();
+    const user = userEvent.setup();
+    wrap();
+
+    await user.click(screen.getByRole("button", { name: /^select$/i }));
+    await user.click(
+      screen.getByRole("checkbox", { name: /select alpha/i }),
+    );
+    await user.click(screen.getByRole("button", { name: /mark watched/i }));
+
+    expect(useWatchlistStore.getState().entries["tmdb:movie:1"]?.status).toBe(
+      "done",
+    );
+    // Other entries untouched.
+    expect(useWatchlistStore.getState().entries["tmdb:movie:2"]?.status).toBe(
+      "want",
+    );
   });
 });
