@@ -27,6 +27,20 @@ const apiHandlers = (): Plugin => ({
       if (process.env[key] === undefined) process.env[key] = value;
     }
 
+    // Heads-up for anyone running `npm run dev` behind a corporate SSL-
+    // inspection proxy (Zscaler / Netskope / etc.). Node's fetch uses its
+    // bundled CA list — not the OS keychain — so HTTPS calls from the
+    // edge functions (TMDB, Groq) fail with "unable to get local issuer
+    // certificate" unless NODE_EXTRA_CA_CERTS is set or Node ≥22 was
+    // launched with --use-system-ca. Print a single warning at startup
+    // so the symptom (502 "upstream unavailable") doesn't waste another
+    // debugging session.
+    if (!process.env["NODE_EXTRA_CA_CERTS"] && !process.execArgv.includes("--use-system-ca")) {
+      console.warn(
+        "[vercel-api-dev] NODE_EXTRA_CA_CERTS not set. If you're behind a corporate SSL-inspection proxy, edge-function HTTPS calls (TMDB, Groq) will fail with 502. Fix: export NODE_EXTRA_CA_CERTS=/path/to/corporate-ca.pem before `npm run dev`.",
+      );
+    }
+
     server.middlewares.use(async (req, res, next) => {
       const url = req.url ?? "";
       if (!url.startsWith("/api/")) return next();
