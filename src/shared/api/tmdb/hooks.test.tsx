@@ -9,6 +9,8 @@ import {
   useTvDetails,
   useMovieSearch,
   useUpcomingMovies,
+  useUpcomingReleases,
+  useUpcomingTv,
   useWatchProviders,
 } from "./hooks";
 
@@ -71,6 +73,26 @@ describe("TMDB query hooks (against MSW)", () => {
     const { result } = renderHook(() => useUpcomingMovies(from, to), { wrapper: wrap() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(Array.isArray(result.current.data)).toBe(true);
+  });
+
+  test("useUpcomingTv returns TV ReleaseEvent[]", async () => {
+    const from = new Date("2026-01-01");
+    const to = new Date("2026-12-31");
+    const { result } = renderHook(() => useUpcomingTv(from, to), { wrapper: wrap() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect((result.current.data ?? []).every((e) => e.domain === "tv")).toBe(true);
+  });
+
+  test("useUpcomingReleases merges movies + TV premieres", async () => {
+    const from = new Date("2026-01-01");
+    const to = new Date("2026-12-31");
+    const { result } = renderHook(() => useUpcomingReleases(from, to), {
+      wrapper: wrap(),
+    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const domains = new Set(result.current.data.map((e) => e.domain));
+    expect(domains.has("tv")).toBe(true);
+    expect(domains.has("movie")).toBe(true);
   });
 
   test("useWatchProviders returns string[]", async () => {

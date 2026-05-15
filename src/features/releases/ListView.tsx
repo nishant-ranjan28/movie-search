@@ -41,7 +41,12 @@ export function ListView({ events }: Readonly<ListViewProps>) {
               const route = releaseRoute(e);
               return (
                 <li key={`${e.itemId}@${e.date}`} className="flex items-center gap-2 text-sm">
-                  <span className="inline-block h-2 w-2 rounded-full bg-accent-movie" aria-hidden />
+                  <span
+                    className={`inline-block h-2 w-2 rounded-full ${
+                      e.domain === "tv" ? "bg-accent-tv" : "bg-accent-movie"
+                    }`}
+                    aria-hidden
+                  />
                   <span className="text-muted">{format(new Date(e.date), "MMM d")}</span>
                   {route ? (
                     <Link

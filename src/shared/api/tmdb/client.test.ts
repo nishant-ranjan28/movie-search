@@ -120,6 +120,24 @@ describe("tmdb client URL composition", () => {
     expect(results.every((r) => r.domain === "tv")).toBe(true);
   });
 
+  test("upcomingTv builds discover URL with first_air_date range and maps to ReleaseEvent", async () => {
+    fetchMock.mockResolvedValueOnce(okJson(trendingTvFixture));
+    const from = new Date("2026-01-01T00:00:00Z");
+    const to = new Date("2026-12-31T00:00:00Z");
+    const events = await tmdb.upcomingTv(from, to);
+    const url = fetchMock.mock.calls[0]![0] as string;
+    expect(url).toContain("/api/tmdb/discover/tv");
+    expect(url).toContain("first_air_date.gte=2026-01-01");
+    expect(url).toContain("first_air_date.lte=2026-12-31");
+    for (const ev of events) {
+      expect(ev.domain).toBe("tv");
+      expect(ev.kind).toBe("release");
+      expect(ev.itemId.startsWith("tmdb:tv:")).toBe(true);
+      expect(ev.releaseType).toBe("tv");
+      expect(ev.date.length).toBeGreaterThan(0);
+    }
+  });
+
   test("upcomingMovies builds discover URL with date range and maps to ReleaseEvent", async () => {
     fetchMock.mockResolvedValueOnce(okJson(searchMovieFixture));
     const from = new Date("2026-01-01T00:00:00Z");

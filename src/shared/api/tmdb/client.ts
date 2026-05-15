@@ -229,6 +229,38 @@ export const tmdb = {
       }));
   },
 
+  /**
+   * Upcoming TV series premieres in a date window. Uses /discover/tv with
+   * first_air_date.gte/lte. Returned events carry releaseType "tv".
+   */
+  async upcomingTv(
+    from: Date,
+    to: Date,
+    signal?: AbortSignal,
+  ): Promise<ReleaseEvent[]> {
+    const params: Record<string, string> = {
+      "first_air_date.gte": toIsoDate(from),
+      "first_air_date.lte": toIsoDate(to),
+      sort_by: "popularity.desc",
+    };
+    const data = await request(
+      "/discover/tv",
+      params,
+      TmdbDiscoverTvResponseSchema,
+      signal,
+    );
+    return data.results
+      .filter((r) => r.first_air_date && r.first_air_date.length > 0)
+      .map((r) => ({
+        itemId: `tmdb:tv:${r.id}`,
+        domain: "tv" as const,
+        date: r.first_air_date as string,
+        kind: "release" as const,
+        title: r.name,
+        releaseType: "tv" as ReleaseKind,
+      }));
+  },
+
   async watchProviders(
     domain: "movie" | "tv",
     id: number,

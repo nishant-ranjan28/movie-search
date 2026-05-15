@@ -104,10 +104,21 @@ function ComingThisWeekRail() {
           const where = providers[evt.itemId]?.slice(0, 2).join(", ");
           const label = labelForRelease(evt.releaseType, where);
           const route = releaseRoute(evt);
+          const badgeClass =
+            evt.domain === "tv"
+              ? "bg-accent-tv/20 text-accent-tv"
+              : "bg-accent-movie/20 text-accent-movie";
+          const badgeText = evt.domain === "tv" ? "TV" : "Movie";
           return (
             <li key={`${evt.itemId}@${evt.date}`}>
               <span className="text-muted">{evt.date}</span>
               {" — "}
+              <span
+                className={`mr-1 inline-block rounded px-1 py-px text-[10px] font-semibold uppercase tracking-wide ${badgeClass}`}
+                aria-label={`${evt.domain === "tv" ? "TV" : "Movie"} release`}
+              >
+                {badgeText}
+              </span>
               {route ? (
                 <Link
                   to={route}
