@@ -74,7 +74,15 @@ export function Calendar({ events }: Readonly<CalendarProps>) {
             >
               <span>{format(d, "d")}</span>
               {dayEvents.length > 0 ? (
-                <span aria-hidden className="absolute bottom-1 left-1 inline-block h-1.5 w-1.5 rounded-full bg-accent-movie" />
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute bottom-1 left-1 inline-block h-1.5 w-1.5 rounded-full",
+                    dayEvents.some((e) => e.domain === "tv")
+                      ? "bg-accent-tv"
+                      : "bg-accent-movie",
+                  )}
+                />
               ) : null}
             </button>
           );

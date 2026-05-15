@@ -11,27 +11,39 @@ import { RailCarousel } from "@/shared/components/RailCarousel";
 
 const MIN_WATCHLIST_FOR_PERSONALIZATION = 2;
 
+const DOMAIN_TITLE: Record<"movie" | "tv", string> = {
+  movie: "For you in Movies",
+  tv: "For you in TV",
+};
+
+const DOMAIN_ROUTE_BASE: Record<"movie" | "tv", string> = {
+  movie: "/movies",
+  tv: "/tv",
+};
+
+export interface ForYouRailProps {
+  domain: "movie" | "tv";
+}
+
 /**
- * AI-powered "For you" rail. Sends a summary of the user's watchlist to the
- * Groq-backed /api/ai/recommend endpoint, gets back a TMDB discover filter
- * + a one-sentence reason, then runs the filter through useDiscover to
- * surface real items. Auto-runs on mount, cached 24h per profile signature.
- *
- * Hidden when the watchlist is too thin for meaningful personalization —
- * Trending and Hero already cover the cold-start case on /today.
+ * AI-powered "For you" rail, parameterized by domain so /today renders one
+ * for movies and one for TV. Each rail filters its own watchlist subset and
+ * prompts the AI with its own domain. Hidden when the user has fewer than
+ * MIN_WATCHLIST_FOR_PERSONALIZATION entries in that domain — Trending +
+ * Hero already cover cold-start.
  */
-export function ForYouRail() {
+export function ForYouRail({ domain }: Readonly<ForYouRailProps>) {
   const navigate = useNavigate();
   // Select the stable map reference — deriving a new array inside the
   // selector returns a fresh reference each call, which under Zustand v5 +
   // React 19's useSyncExternalStore triggers a re-render loop (React #185).
   const entriesMap = useWatchlistStore((s) => s.entries);
   const entries = useMemo(
-    () => Object.values(entriesMap).filter((e) => e.domain === "movie"),
-    [entriesMap],
+    () => Object.values(entriesMap).filter((e) => e.domain === domain),
+    [entriesMap, domain],
   );
 
-  const genres = useGenres("movie");
+  const genres = useGenres(domain);
   const watchlistSummary = useMemo(
     () =>
       entries.slice(0, 20).map((e) => {
@@ -58,7 +70,7 @@ export function ForYouRail() {
 
   const recommend = useAiRecommend(
     {
-      domain: "movie",
+      domain,
       genres: genres.data ?? [],
       watchlist: watchlistSummary,
       recents: [],
@@ -66,27 +78,27 @@ export function ForYouRail() {
     enabled,
   );
 
-  const discover = useDiscover("movie", recommend.data?.filters ?? {});
+  const discover = useDiscover(domain, recommend.data?.filters ?? {});
   const items: MediaItem[] = (discover.data ?? []).slice(0, 12);
   const isLoading = recommend.isLoading || discover.isLoading;
 
   if (!hasEnoughSignal) return null;
-  // If the AI failed, fail closed — Trending Movies below covers the gap.
+  // If the AI failed, fail closed — Trending below covers the gap.
   if (recommend.isError) return null;
   // If discover came back empty, also fail closed.
   if (!isLoading && items.length === 0) return null;
 
   const open = (item: MediaItem) => {
     const id = item.id.split(":").pop();
-    if (item.domain === "movie") navigate(`/movies/${id}`);
-    else if (item.domain === "tv") navigate(`/tv/${id}`);
+    const base = DOMAIN_ROUTE_BASE[item.domain as "movie" | "tv"];
+    if (base) navigate(`${base}/${id}`);
   };
 
   return (
     <div className="space-y-1">
-      <RailCarousel title="For you">
+      <RailCarousel title={DOMAIN_TITLE[domain]}>
         {isLoading
-          ? Array.from({ length: 6 }, (_, i) => `for-you-skel-${i}`).map(
+          ? Array.from({ length: 6 }, (_, i) => `for-you-${domain}-skel-${i}`).map(
               (key) => <MediaCardSkeleton key={key} />,
             )
           : items.map((item) => (
