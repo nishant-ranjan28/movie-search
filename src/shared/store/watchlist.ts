@@ -19,6 +19,10 @@ export interface WatchlistEntry {
     achievement?: string;
   };
   snapshot: Snapshot;
+  /** ISO timestamp of the last successful TMDB snapshot refresh. Unset for
+   *  never-refreshed entries; `useWatchlistRefresh` re-fetches anything
+   *  older than 24h. */
+  lastRefreshedAt?: string;
 }
 
 export interface WatchlistState {
@@ -45,6 +49,11 @@ export interface WatchlistState {
   setStatusMany: (itemIds: string[], status: WatchlistEntry["status"]) => void;
   /** Bulk remove — single set() call so persist writes once. */
   removeMany: (itemIds: string[]) => void;
+  /** Replace an entry's snapshot (used by background refresh after a
+   *  successful TMDB detail fetch). No-op if the id is missing. */
+  updateSnapshot: (itemId: string, snapshot: Snapshot) => void;
+  /** Stamp the lastRefreshedAt on an entry. No-op if id is missing. */
+  markRefreshed: (itemId: string, isoTimestamp: string) => void;
   /** Move itemId to a new position in the user-defined order. Clamps to
    *  valid range and is a no-op if the itemId isn't in the order. */
   reorder: (itemId: string, toIndex: number) => void;
@@ -134,6 +143,25 @@ export const useWatchlistStore = create<WatchlistState>()(
           return {
             entries: nextEntries,
             order: state.order.filter((id) => !toRemove.has(id)),
+          };
+        }),
+      updateSnapshot: (itemId, snapshot) =>
+        set((state) => {
+          const existing = state.entries[itemId];
+          if (!existing) return state;
+          return {
+            entries: { ...state.entries, [itemId]: { ...existing, snapshot } },
+          };
+        }),
+      markRefreshed: (itemId, isoTimestamp) =>
+        set((state) => {
+          const existing = state.entries[itemId];
+          if (!existing) return state;
+          return {
+            entries: {
+              ...state.entries,
+              [itemId]: { ...existing, lastRefreshedAt: isoTimestamp },
+            },
           };
         }),
       reorder: (itemId, toIndex) =>

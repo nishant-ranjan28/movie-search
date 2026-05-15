@@ -38,6 +38,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/cn";
+import { useWatchlistRefresh } from "./useWatchlistRefresh";
 
 type SortKey = "custom" | "recent" | "title" | "year" | "rating";
 
@@ -90,6 +91,7 @@ export function WatchlistPage() {
   const [selecting, setSelecting] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
+  const { isSyncing } = useWatchlistRefresh();
 
   // Exit selection mode on Escape. Also clear selection if filters change so
   // hidden cards don't stay selected invisibly.
@@ -181,7 +183,15 @@ export function WatchlistPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Watchlist</h1>
+      <div className="flex items-center gap-3">
+        <h1 className="text-2xl font-semibold">Watchlist</h1>
+        {isSyncing ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-2 py-0.5 text-xs text-muted">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fg/60" aria-hidden />
+            Syncing…
+          </span>
+        ) : null}
+      </div>
 
       <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
         <legend className="sr-only">Domain filter</legend>

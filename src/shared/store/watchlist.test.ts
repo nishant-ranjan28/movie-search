@@ -72,6 +72,42 @@ describe("watchlist store", () => {
     expect(useWatchlistStore.getState().has("tmdb:movie:doesnotexist")).toBe(false);
   });
 
+  describe("refresh fields", () => {
+    test("updateSnapshot replaces an entry's snapshot", () => {
+      const { add, updateSnapshot } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      updateSnapshot("tmdb:movie:1", {
+        title: "The Matrix (4K Restoration)",
+        year: 1999,
+        genres: ["sci-fi", "action"],
+        status: "released",
+      });
+      const entry = useWatchlistStore.getState().entries["tmdb:movie:1"];
+      expect(entry?.snapshot.title).toBe("The Matrix (4K Restoration)");
+      expect(entry?.snapshot.genres).toContain("action");
+      expect(entry?.snapshot.status).toBe("released");
+    });
+
+    test("markRefreshed sets lastRefreshedAt", () => {
+      const { add, markRefreshed } = useWatchlistStore.getState();
+      add({ itemId: "tmdb:movie:1", domain: "movie", snapshot: SAMPLE_SNAPSHOT });
+      const ts = "2026-05-12T10:00:00.000Z";
+      markRefreshed("tmdb:movie:1", ts);
+      expect(
+        useWatchlistStore.getState().entries["tmdb:movie:1"]?.lastRefreshedAt,
+      ).toBe(ts);
+    });
+
+    test("updateSnapshot / markRefreshed on missing id are no-ops", () => {
+      const { updateSnapshot, markRefreshed } = useWatchlistStore.getState();
+      updateSnapshot("tmdb:movie:doesnotexist", {
+        title: "x", genres: [],
+      });
+      markRefreshed("tmdb:movie:doesnotexist", "2026-01-01T00:00:00Z");
+      expect(useWatchlistStore.getState().has("tmdb:movie:doesnotexist")).toBe(false);
+    });
+  });
+
   describe("bulk", () => {
     test("setStatusMany updates all matching ids and leaves others untouched", () => {
       const { add, setStatusMany } = useWatchlistStore.getState();
