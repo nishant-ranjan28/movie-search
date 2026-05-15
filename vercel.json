@@ -4,5 +4,8 @@
   "outputDirectory": "dist",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/api/tmdb/(.*)", "destination": "/api/tmdb?_path=$1" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }

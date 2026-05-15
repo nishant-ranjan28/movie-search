@@ -9,6 +9,12 @@
  * from being a generic open proxy that someone else could point at
  * arbitrary TMDB endpoints.
  *
+ * Routing: Vercel's filesystem catch-all (`[...path].ts`) only matched a
+ * single segment in this project type, so a vercel.json rewrite maps
+ * `/api/tmdb/(.*)` → `/api/tmdb?_path=$1`. The handler reads `_path`
+ * (preferred) and falls back to parsing the URL pathname so the dev
+ * middleware (which doesn't apply rewrites) still works.
+ *
  * Key handling: TMDB_KEY (no VITE_ prefix) is a server-only env var. The
  * old VITE_TMDB_KEY would compile into the bundle and leak on every
  * request — see commit replacing this layer for context.
@@ -55,15 +61,19 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const url = new URL(req.url);
-  // Strip the `/api/tmdb/` prefix. Anything after that is the TMDB path.
-  const path = url.pathname.replace(/^\/api\/tmdb\/?/, "");
+  // Prefer `_path` (set by the vercel.json rewrite). Fall back to parsing
+  // the pathname so the dev middleware — which serves this file directly
+  // without rewrites — still resolves the TMDB path correctly.
+  const upstreamParams = new URLSearchParams(url.search);
+  const rewritten = upstreamParams.get("_path");
+  upstreamParams.delete("_path");
+  const path = rewritten ?? url.pathname.replace(/^\/api\/tmdb\/?/, "");
   if (!isAllowed(path)) {
     return json({ error: "path not allowed" }, 404);
   }
 
   // Rebuild the upstream URL with the caller's query params + our api_key.
   // Strip any caller-supplied api_key so they can't override ours.
-  const upstreamParams = new URLSearchParams(url.search);
   upstreamParams.delete("api_key");
   upstreamParams.set("api_key", apiKey);
   const upstreamUrl = `${TMDB_BASE}/${path}?${upstreamParams.toString()}`;

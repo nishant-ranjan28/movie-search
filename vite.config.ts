@@ -34,19 +34,16 @@ const apiHandlers = (): Plugin => ({
       // First try exact match: /api/foo/bar → api/foo/bar.ts
       let filePath = path.join(__dirname, `${pathOnly}.ts`);
       if (!fs.existsSync(filePath)) {
-        // Fall back to Vercel-style catch-all routing: walk up the path
-        // looking for a `[...name].ts` file (matches the rest of the path).
-        // Example: /api/tmdb/trending/movie/day → api/tmdb/[...path].ts
+        // Mirror the vercel.json rewrite for nested paths: walk up the
+        // segments looking for a flat handler at the prefix.
+        // Example: /api/tmdb/trending/movie/day → api/tmdb.ts
         filePath = "";
         const segments = (pathOnly ?? "").split("/").filter(Boolean);
-        for (let i = segments.length; i > 0; i--) {
-          const dir = path.join(__dirname, ...segments.slice(0, i - 1));
-          if (!fs.existsSync(dir)) continue;
-          const match = fs
-            .readdirSync(dir)
-            .find((f) => /^\[\.\.\..+\]\.ts$/.test(f));
-          if (match) {
-            filePath = path.join(dir, match);
+        for (let i = segments.length - 1; i >= 1; i--) {
+          const candidate =
+            path.join(__dirname, ...segments.slice(0, i)) + ".ts";
+          if (fs.existsSync(candidate)) {
+            filePath = candidate;
             break;
           }
         }
