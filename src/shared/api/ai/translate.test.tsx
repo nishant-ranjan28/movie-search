@@ -14,20 +14,36 @@ const wrap = () => {
 };
 
 describe("useAiTranslate", () => {
-  test("returns the DiscoverFilters shape", async () => {
+  test("returns filters + domain (movie default)", async () => {
     const { result } = renderHook(() => useAiTranslate(), {
       wrapper: wrap(),
     });
 
     result.current.mutate({
       query: "feel-good 90s comedy",
-      domain: "movie",
-      genres: [{ id: 35, name: "Comedy" }],
+      movieGenres: [{ id: 35, name: "Comedy" }],
+      tvGenres: [{ id: 35, name: "Comedy" }],
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.genres).toContain(35);
-    expect(result.current.data?.yearGte).toBe(1990);
-    expect(result.current.data?.yearLte).toBe(1999);
+    expect(result.current.data?.domain).toBe("movie");
+    expect(result.current.data?.filters.genres).toContain(35);
+    expect(result.current.data?.filters.yearGte).toBe(1990);
+    expect(result.current.data?.filters.yearLte).toBe(1999);
+  });
+
+  test("returns domain: tv when the query mentions a TV cue", async () => {
+    const { result } = renderHook(() => useAiTranslate(), {
+      wrapper: wrap(),
+    });
+
+    result.current.mutate({
+      query: "feel-good 90s sitcom",
+      movieGenres: [{ id: 35, name: "Comedy" }],
+      tvGenres: [{ id: 35, name: "Comedy" }],
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.domain).toBe("tv");
   });
 });

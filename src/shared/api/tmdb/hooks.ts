@@ -79,14 +79,27 @@ export const useUpcomingMovies = (
     staleTime: HOUR,
   });
 
+export const useUpcomingTv = (
+  from: Date,
+  to: Date,
+): UseQueryResult<ReleaseEvent[]> =>
+  useQuery({
+    queryKey: [
+      "tmdb",
+      "upcoming",
+      "tv",
+      from.toISOString().slice(0, 10),
+      to.toISOString().slice(0, 10),
+    ],
+    queryFn: ({ signal }) => tmdb.upcomingTv(from, to, signal),
+    staleTime: HOUR,
+  });
+
 /**
- * Combined theatrical + digital upcoming releases. Each event carries its
- * `releaseType` so the UI can label theatrical releases ("In theaters") and
- * surface streaming-provider names when TMDB has them. Digital releases with
- * unknown providers render no label (TMDB has no reliable platform data for
- * pre-release titles, so a generic "OTT" placeholder would just be noise —
- * see labelForRelease.ts). Sorted by date ascending; deduped by
- * `${itemId}@${date}`.
+ * Combined upcoming releases: movie theatrical + movie digital + TV series
+ * premieres. Each event carries its `releaseType` so the UI can label them
+ * accordingly ("In theaters", provider name, "TV premiere"). Sorted by date
+ * ascending; deduped by `${itemId}@${date}`.
  */
 export const useUpcomingReleases = (
   from: Date,
@@ -94,9 +107,10 @@ export const useUpcomingReleases = (
 ): { data: ReleaseEvent[]; isLoading: boolean } => {
   const theatrical = useUpcomingMovies(from, to, "theatrical");
   const digital = useUpcomingMovies(from, to, "digital");
+  const tvPremieres = useUpcomingTv(from, to);
   const merged: ReleaseEvent[] = [];
   const seen = new Set<string>();
-  for (const list of [digital.data ?? [], theatrical.data ?? []]) {
+  for (const list of [digital.data ?? [], theatrical.data ?? [], tvPremieres.data ?? []]) {
     for (const e of list) {
       const key = `${e.itemId}@${e.date}`;
       if (seen.has(key)) continue;
@@ -107,7 +121,7 @@ export const useUpcomingReleases = (
   merged.sort((a, b) => a.date.localeCompare(b.date));
   return {
     data: merged,
-    isLoading: theatrical.isLoading || digital.isLoading,
+    isLoading: theatrical.isLoading || digital.isLoading || tvPremieres.isLoading,
   };
 };
 
